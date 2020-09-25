@@ -1,3 +1,6 @@
-- helped design the user interface with my team in Figma - 4 hrs
+- helped design the user interface with my team in Figma - 5 hrs
+  - high level discussion
+  - settings page creation
+  - design decisions regarding UI
 - lightly discussed high-level design decisions (what api to use, what languages will be used) - 1 hr
 - began research on possible back-end frameworks / db (decided on flask, still between sql and nosql) - 1 hr
