@@ -1,4 +1,3 @@
 - helped design the user interface with my team in Figma - 4 hrs
 - lightly discussed high-level design decisions (what api to use, what languages will be used) - 1 hr
-- created the presentation slides for our pitch - 1 hr
 - began research on possible back-end frameworks / db (decided on flask, still between sql and nosql) - 1 hr
