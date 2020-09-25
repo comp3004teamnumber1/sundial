@@ -1,0 +1,38 @@
+Vinh Nguyen
+101106234
+
+Week of Sept. 21-25
+
+# Monday
+
+## Discussion/Planning/Design
+
+- [2 hr] Began development of the app interface and ui mockups on Figma. We set up an Education team, created the Figma project, and came up with our initial colour scheme and applied it to our logo, created by Nicolas. I laid out initial frames for our screens, including a "Home", "Weather", "Calendar", and "Account" page. I made quick sketches of our "Weather" page's layout (location list, search, adding locations, etc.). Added a navigation bar, icons, and began work on the "Home" page.
+- [1 hr] Discussed with team about our organizational system. We decided on using a Scrum-like approach with Notion to organize our tasks, sprints, documentation, and anything else we would need to keep track of. I also did research on React Native testing libraries and decided to use Jest initially, due to its native integration with React Native. If needed, we can add additional testing libraries in the future.
+
+## Implementation
+
+- None
+
+# Wednesday
+
+## Discussion/Planning/Design
+
+- [2 hr] Continued designing the mockup on Figma. With help on the design aspects from Nick and Deen, we finished the "Home" page to a point where we are content. This page involves the current weather, a snapshot view into the User's calendar for the day, and an additional view into the weather that is separated by hours. I also delegated design tasks (such as other frames) to other team members to keep us on track.
+- [1 hr] Short team meeting to discuss where our current goals for the week are. We are aiming to finish high-level design decisions by the end of this week in order to start actual implementation by the start of next week.
+
+## Implementation
+
+- None
+
+# Friday
+
+## Discussion/Planning/Design
+
+- [1 hr] Continued work on Figma app designs. Finished the initial "Calendar" landing page with pointers from Deen and Nick on aspects of its design. At the moment, it has a full month calendar and a day view. For usability, we should add additional views for viewing a single year, week, day, etc.
+- [1 hr] Official team meeting to discuss where we are currently in terms of progress. We also planned out our Github organization more. This includes branch naming schemes, pull request and merging restrictions, an intermediary branch, etc.
+
+## Implementation
+
+- [0.5 hr] Rebased github repo to better adjust for team's refined organizational direction. Also bootstrapped the repo with the Expo template so development on frontend can begin. The goal for next week is to get our navigation layout done and implemented on the app.
+
