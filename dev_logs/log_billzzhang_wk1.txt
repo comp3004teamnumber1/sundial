@@ -1,0 +1,6 @@
+Student: Bill Zhang #101106261
+Date: September 20 2020 - September 26 2020
+
+(1 HR) Researched and learned about React Native and its fundamentals 
+(3 HR) Learning and starting to implement widgets with Android Studio and Java. These will later connect with the React Native part of the app
+(3 HR) Designing mockups and high level design of the pages in the app and its widgets
