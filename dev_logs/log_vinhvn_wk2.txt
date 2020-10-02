@@ -1,0 +1,15 @@
+Vinh Nguyen
+101106234
+
+Week of Sept. 28-Oct. 2
+
+# Discussion/Planning/Design
+
+- [2 hr] Held our first standup and sprint meeting to discuss and plan our tasks for the first half of October. We also finalized our UI designs on Figma, going over and ironing out the last few details.
+- [1 hr] Finalized frontend and backend technologies as well as team roles, as well as the team dynamic.
+- [1 hr] Researched React Native development process and structure, going through written and video tutorials to start development as soon as possible.
+
+# Implementation
+
+- [1 hr] Bootstrapped the React Native frontend with NativeBase, a React Native UI component library which will help us start prototyping much quicker as it speeds up frontend development.
+- [3 hr] Experimented with coding in React Native, styles, and components. Implemented a basic home page for the week.
