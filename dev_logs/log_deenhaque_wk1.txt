@@ -1,0 +1,7 @@
+Planned out Sundial's home page with the team using Figma - 4hrs
+
+Put up setup tasks on Notion to help the team be ready for development after planning is concluded. - 1hr
+
+Researched other weather apps and organization apps - 2hrs
+
+Weather API research - 1hr
