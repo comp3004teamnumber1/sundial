@@ -1,0 +1,5 @@
+- participated in our standup/sprint to discuss what we want to accomplish this october [2hr]
+- discussed what technologies we will use to develop our app [1hr]
+- discussed back-end priorities and routing to get our app displaying info asap [1hr]
+- continued learning flask/python to develop a back end [3hr]
+- refreshed myself on SQL for our database [1hr]
