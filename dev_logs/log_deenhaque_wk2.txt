@@ -1,0 +1,10 @@
+Discussion
+- Discussed features to be completed for the next two weeks (our sprint) and broke them down into tasks for everyone to complete (2hr)
+- Finalized team member roles (1hr)
+
+Research
+- React Native navigation bar implementation (2hr)
+- Flask routing examples (1hr)
+
+Development
+- Failed React Native navigation bar implementation (3hr) :(
