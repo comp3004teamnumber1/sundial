@@ -1,0 +1,6 @@
+Student: Bill Zhang #101106261
+Date: September 28 2020 - October 4 2020
+
+(2 HR) Researched and learned about React Native and how to apply a shared storage between it and the widget app
+(4 HR) Learning and designing art assets for the widgets.
+(2 HR) Stand up discussion regarding our development plans during this October
