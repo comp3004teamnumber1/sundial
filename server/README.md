@@ -16,9 +16,7 @@ run: `python3 server.py`
 
 #### /weekly
 
-sends:
-
-json
+sends: json
 
 output:
 
