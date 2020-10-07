@@ -22,6 +22,7 @@ json
 
 output:
 
+```json
 [
   {
     date: epoch_time:int,
@@ -36,3 +37,4 @@ output:
     ... array contains 7 more consecutive days with the same info, first one being today ...
   }
 ]
+```
