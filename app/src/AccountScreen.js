@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
 export default function AccountScreen() {
 	return (
 		<Container>
+			<StatusBar />
 			<Content contentContainerStyle={styles.content}>
 				<Text>Welcome to Account</Text>
 			</Content>

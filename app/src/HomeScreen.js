@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { Container, Text, Content } from 'native-base';
 
 const styles = StyleSheet.create({
@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
 export default function HomeScreen() {
 	return (
 		<Container>
+			<StatusBar />
 			<Content contentContainerStyle={styles.content}>
 				<Text>Welcome to Home</Text>
 			</Content>
