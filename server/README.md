@@ -20,7 +20,7 @@ sends: json
 
 output:
 
-```json
+```
 [
   {
     date: epoch_time:int,
