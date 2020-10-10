@@ -87,7 +87,7 @@ def daily():
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
         }
-        days["days"].append(day)
+        days.get("days").append(day)
     # return the json
     return days, 200
 
@@ -114,7 +114,7 @@ def hourly():
     hours = {"hours": []}
     # build the json
     for weather in weather_data["hourly"]:
-        if len(hours) > 23:
+        if len(hours.get("hours")) > 23:
             break
         hour = {
             "date": weather["dt"],
@@ -134,7 +134,7 @@ def hourly():
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
         }
-        hours["hours"].append(hour)
+        hours.get("hours").append(hour)
     # return the json
     return hours, 200
 
