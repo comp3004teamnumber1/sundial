@@ -10,29 +10,64 @@ config = config.Config()
 sessions = {}
 app.config["DEBUG"] = True
 
+# authenticates if the user account exists
+def authenticate_login(username, password):
+    return username and password
 
+
+# checks to see if the user is logged in
+def authenticate_route(get_args):
+    username = get_args.get("username", default=None, type=str)
+    session_key = get_args.get("session_key", default=None, type=str)
+    # verify that a username and session key was sent
+    if username and session_key:
+        if username in sessions:
+            return sessions[username] == session_key
+    return False
+
+
+# POST: /login
+# DESC: authenticates the users account information
+# PARAMS: username:str, password:str
+# SENDS: JSON with the session_key
 @app.route("/login", methods=["POST"])
 def login():
     session_key = uuid.uuid4()
-    post_args = flask.request.json
-    username = post_args.get("username")
-    password = post_args.get("password")
-    if username and password:
+    post_args = flask.request.get_json()
+    # verify that a username and password was sent
+    if post_args["username"] and post_args["password"]:
+        username = post_args.get("username")
+        password = post_args.get("password")
+    else:
+        return {"status": 401}, 401
+    # authenticate the account
+    if authenticate_login(username, password):
         sessions[username] = str(session_key)
         return {"status": 200, "session_key": sessions[username]}, 200
     return {"status": 401}, 401
 
 
+# GET: /daily
+# DESC: gets the information related to the daily componenet
+# PARAMS: username:str, session_key:str
+# SENDS: JSON with 8 days of weather info
 @app.route("/daily", methods=["GET"])
 def daily():
+    get_args = flask.request.args
+    # verify that a username and session key was sent
+    if not authenticate_route(get_args):
+        return {"status": 401}, 401
+    # generate the api url
     api_url = (
         "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
             "45.424721", "-75.695000", config.OWM_API_KEY
         )
     )
     api_return = requests.get(api_url)
+    # convert to json
     weather_data = api_return.json()
     days = {"days": []}
+    # build the json
     for weather in weather_data["daily"]:
         day = {
             "date": weather["dt"],
@@ -53,20 +88,31 @@ def daily():
             "weather_type": weather["weather"][0]["main"],
         }
         days["days"].append(day)
-
+    # return the json
     return days, 200
 
 
+# GET: /daily
+# DESC: gets the information related to the hourly componenet
+# PARAMS: username:str, session_key:str
+# SENDS: JSON with 24 hours of weather info
 @app.route("/hourly", methods=["GET"])
 def hourly():
+    get_args = flask.request.args
+    # verify that a username and session key was sent
+    if not authenticate_route(get_args):
+        return {"status": 401}, 401
+    # generate the api url
     api_url = (
         "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
             "45.424721", "-75.695000", config.OWM_API_KEY
         )
     )
     api_return = requests.get(api_url)
+    # convert to json
     weather_data = api_return.json()
     hours = {"hours": []}
+    # build the json
     for weather in weather_data["hourly"]:
         if len(hours) > 23:
             break
@@ -89,7 +135,7 @@ def hourly():
             "weather_type": weather["weather"][0]["main"],
         }
         hours["hours"].append(hour)
-
+    # return the json
     return hours, 200
 
 
