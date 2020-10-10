@@ -7,18 +7,38 @@
 - python3
   - requests
   - flask
- 
+
 ### USAGE
 
 run: `python3 server.py`
 
 ### DOCUMENTATION
 
-#### GET:/daily
+### POST: /login
 
-sends: json
+PARAMS (JSON): username:str, password:str
 
-output:
+EXAMPLE: `{"username": "naek", "password": "naek_pass"}`
+
+SENDS: JSON
+
+OUTPUT:
+```json
+{
+  "status": 200,
+  "session_key": f44d6ca6-300d-403f-8710-35b52dc4f974
+}
+```
+
+#### GET: /daily
+
+PARAMS (QUERY): username:str, session_key:str
+
+EXAMPLE: /daily?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974
+
+SENDS: JSON
+
+OUTPUT:
 
 ```json
 {
@@ -50,11 +70,15 @@ output:
 }
 ```
 
-#### GET:/hourly
+#### GET: /hourly
 
-sends: json
+PARAMS (QUERY): username:str, session_key:str
 
-output:
+EXAMPLE: /hourly?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974
+
+SENDS: JSON
+
+OUTPUT:
 
 ```json
 {
