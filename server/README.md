@@ -26,7 +26,7 @@ OUTPUT:
 ```json
 {
   "status": 200,
-  "session_key": f44d6ca6-300d-403f-8710-35b52dc4f974
+  "session_key": "f44d6ca6-300d-403f-8710-35b52dc4f974"
 }
 ```
 
