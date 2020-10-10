@@ -8,7 +8,7 @@
   - requests
   - flask
 
-### USAGE
+### SETUP & RUNNING
 
 download the dependencies: `pipenv install`
 
