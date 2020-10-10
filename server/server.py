@@ -7,7 +7,21 @@ from datetime import datetime
 
 app = flask.Flask(__name__)
 config = config.Config()
+sessions = {}
 app.config["DEBUG"] = True
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    session_key = uuid.uuid4()
+    post_args = flask.request.json
+    username = post_args.get("username")
+    password = post_args.get("password")
+    if username and password:
+        sessions[username] = str(session_key)
+        return {"status": 200, "session_key": sessions[username]}, 200
+    return {"status": 401}, 401
+
 
 @app.route("/daily", methods=["GET"])
 def daily():
@@ -18,7 +32,7 @@ def daily():
     )
     api_return = requests.get(api_url)
     weather_data = api_return.json()
-    days = []
+    days = {"days": []}
     for weather in weather_data["daily"]:
         day = {
             "date": weather["dt"],
@@ -38,9 +52,10 @@ def daily():
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
         }
-        days.append(day)
+        days["days"].append(day)
 
-    return flask.Response(json.dumps(days), mimetype="application/json")
+    return days, 200
+
 
 @app.route("/hourly", methods=["GET"])
 def hourly():
@@ -51,7 +66,7 @@ def hourly():
     )
     api_return = requests.get(api_url)
     weather_data = api_return.json()
-    hours = []
+    hours = {"hours": []}
     for weather in weather_data["hourly"]:
         if len(hours) > 23:
             break
@@ -73,8 +88,9 @@ def hourly():
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
         }
-        hours.append(hour)
+        hours["hours"].append(hour)
 
-    return flask.Response(json.dumps(hours), mimetype="application/json")
+    return hours, 200
+
 
 app.run()
