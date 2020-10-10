@@ -25,25 +25,25 @@ output:
   "days": [
     [
       {
-        "date": epoch_time:int,
+        "date": "epoch_time:int",
         "temp": {
-          "c": temp_celsius:int,
-          "f": temp_fahrenheit:int,
-          "k": temp_kelvin:int,
+          "c": "temp_celsius:int",
+          "f": "temp_fahrenheit:int",
+          "k": "temp_kelvin:int",
         },
         "feels_like": {
           "temp": {
-            "c": temp_celsius:int,
-            "f": temp_fahrenheit:int,
-            "k": temp_kelvin:int,
+            "c": "temp_celsius:int",
+            "f": "temp_fahrenheit:int",
+            "k": "temp_kelvin:int",
           },
         },
-        "pop": pop:int,
-        "humidity": humidity:int,
-        "weather_type": weather_description:str,
+        "pop": "pop:int",
+        "humidity": "humidity:int",
+        "weather_type": "weather_description:str",
       },
       {
-    ... array contains 7 more consecutive days with the same info, first one being today ...
+        "__comment": "... array contains 7 more consecutive days with the same info, first one being today ..."
       }
     ]
   ]
@@ -61,25 +61,25 @@ output:
   "hours": [
     [
       {
-        "date": epoch_time:int,
+        "date": "epoch_time:int",
         "temp": {
-          "c": temp_celsius:int,
-          "f": temp_fahrenheit:int,
-          "k": temp_kelvin:int,
+          "c": "temp_celsius:int",
+          "f": "temp_fahrenheit:int",
+          "k": "temp_kelvin:int",
         },
         "feels_like": {
           "temp": {
-            "c": temp_celsius:int,
-            "f": temp_fahrenheit:int,
-            "k": temp_kelvin:int,
+            "c": "temp_celsius:int",
+            "f": "temp_fahrenheit:int",
+            "k": "temp_kelvin:int",
           },
         },
-        "pop": pop:int,
-        "humidity": humidity:int,
-        "weather_type": weather_description:str,
+        "pop": "pop:int",
+        "humidity": "humidity:int",
+        "weather_type": "weather_description:str",
       },
       {
-        ... array contains 23 more consecutive hours with the same info, first one being the current hour ...
+        "__comment": "... array contains 23 more consecutive hours with the same info, first one being the current hour ..."
       }
     ]
   ]
