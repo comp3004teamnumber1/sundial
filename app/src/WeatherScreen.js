@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import { Container, Text, Content } from 'native-base';
+import { Container, Content } from 'native-base';
 import HourlyView from './WeatherScreen/HourlyView';
 
 const styles = StyleSheet.create({
@@ -10,11 +10,14 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginHorizontal: 24,
 	},
+	container: {
+		backgroundColor: '#231F29',
+	},
 });
 
 export default function WeatherScreen() {
 	return (
-		<Container style={{ backgroundColor: '#231F29' }}>
+		<Container style={styles.container}>
 			<StatusBar />
 			<Content contentContainerStyle={styles.content}>
 				<HourlyView />

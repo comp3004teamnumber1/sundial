@@ -1,10 +1,10 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import HomeScreen from './src/HomeScreen';
 import CalendarScreen from './src/CalendarScreen';
 import WeatherScreen from './src/WeatherScreen';
@@ -12,7 +12,7 @@ import AccountScreen from './src/AccountScreen';
 
 const Tab = createBottomTabNavigator();
 
-export default class App extends React.Component {
+export default class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -24,7 +24,7 @@ export default class App extends React.Component {
 		await Font.loadAsync({
 			Roboto: require('native-base/Fonts/Roboto.ttf'),
 			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-			...Ionicons.font,
+			...Feather.font,
 		});
 		this.setState({ isReady: true });
 	}
@@ -37,21 +37,22 @@ export default class App extends React.Component {
 		return (
 			<NavigationContainer>
 				<Tab.Navigator
+					initialRouteName="Home"
 					screenOptions={({ route }) => ({
 						tabBarIcon: ({ focused, color, size }) => {
 							let icon;
 
 							if (route.name === 'Home') {
-								icon = 'md-home';
+								icon = 'home';
 							} else if (route.name === 'Calendar') {
-								icon = 'md-calendar';
+								icon = 'calendar';
 							} else if (route.name === 'Weather') {
-								icon = 'md-partly-sunny';
+								icon = 'sun';
 							} else if (route.name === 'Account') {
-								icon = 'md-person';
+								icon = 'user';
 							}
 
-							return <Ionicons name={icon} size={size} color={color} />;
+							return <Feather name={icon} size={size} color={color} />;
 						},
 					})}
 					tabBarOptions={{
