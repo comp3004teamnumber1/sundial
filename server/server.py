@@ -14,14 +14,12 @@ app.config["DEBUG"] = True
 
 # encryption setup
 pwd_context = CryptContext(
-    schemes=["pbkdf2_sha256"],
-    default="pbkdf2_sha256",
-    pbkdf2_sha256__default_rounds=30000,
+    schemes=["sha256_crypt"],
 )
 
 # encrypts the password
 def encrypt_password(password):
-    return pwd_context.encrypt(password)
+    return pwd_context.hash(password)
 
 
 # checks if the password matches the hash
