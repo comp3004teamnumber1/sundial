@@ -33,6 +33,7 @@ EXAMPLE: `{"username": "naek", "password": "naek_pass"}`
 SENDS: JSON
 
 OUTPUT:
+
 ```json
 {
   "status": 200
@@ -48,6 +49,7 @@ EXAMPLE: `{"username": "naek", "password": "naek_pass"}`
 SENDS: JSON
 
 OUTPUT:
+
 ```json
 {
   "status": 200,
@@ -57,11 +59,12 @@ OUTPUT:
 
 #### GET: /daily
 
-PARAMS (QUERY): `?username=str&session_key=str`
+PARAMS (QUERY): `?username=str&session_key=str&location=str`
   - `username`: username of account
   - `session_key`: associated session_key of the username
+  - `location`: a location, a city, an address
 
-EXAMPLE: /daily?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974
+EXAMPLE: /daily?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974&location=Ottawa, Ontario
 
 SENDS: JSON
 
@@ -99,11 +102,12 @@ OUTPUT:
 
 #### GET: /hourly
 
-PARAMS (QUERY): `?username=str&session_key=str`
+PARAMS (QUERY): `?username=str&session_key=str&location=str`
   - `username`: username of account
   - `session_key`: associated session_key of the username
+  - `location`: a location, a city, an address
 
-EXAMPLE: /hourly?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974
+EXAMPLE: /hourly?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974&location=Ottawa, Ontario
 
 SENDS: JSON
 
