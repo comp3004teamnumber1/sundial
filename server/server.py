@@ -5,26 +5,14 @@ import config
 import uuid
 from datetime import datetime
 import sqlite3
-from passlib.context import CryptContext
 import os
+from geopy.geocoders import Nominatim
+
+from encryption import encrypt_password, check_encrypted_password
 
 # flask setup
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-
-# encryption setup
-pwd_context = CryptContext(
-    schemes=["sha256_crypt"],
-)
-
-# encrypts the password
-def encrypt_password(password):
-    return pwd_context.hash(password)
-
-
-# checks if the password matches the hash
-def check_encrypted_password(password, hashed):
-    return pwd_context.verify(password, hashed)
 
 
 # sqlite3 setup
@@ -36,7 +24,7 @@ def init_db():
     conn.close()
 
 
-# generate database
+# generate initial database
 if not os.path.isfile("db.db"):
     init_db()
 
@@ -64,6 +52,13 @@ def authenticate_route(get_args):
         if username in sessions:
             return sessions[username] == session_key
     return False
+
+
+# turns a location into a latitude and longitude
+def get_lat_long(location):
+    geolocation = Nominatim(user_agent="sundial")
+    location = geolocation.geocode(location)
+    return location.latitude, location.longitude
 
 
 # POST: /register
@@ -123,10 +118,13 @@ def daily():
     # verify that a username and session key was sent
     if not authenticate_route(get_args):
         return {"status": 401}, 401
+    if not get_args["location"]:
+        return {"status": 401}, 401
+    location = get_lat_long(get_args.get("location"))
     # generate the api url
     api_url = (
         "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
-            "45.424721", "-75.695000", config.OWM_API_KEY
+            location[0], location[1], config.OWM_API_KEY
         )
     )
     api_return = requests.get(api_url)
@@ -168,10 +166,13 @@ def hourly():
     # verify that a username and session key was sent
     if not authenticate_route(get_args):
         return {"status": 401}, 401
+    if not get_args["location"]:
+        return {"status": 401}, 401
+    location = get_lat_long(get_args.get("location"))
     # generate the api url
     api_url = (
         "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
-            "45.424721", "-75.695000", config.OWM_API_KEY
+            location[0], location[1], config.OWM_API_KEY
         )
     )
     api_return = requests.get(api_url)
