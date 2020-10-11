@@ -19,10 +19,25 @@ run the server: `python3 server.py`
 ### DOCUMENTATION
 
 ### SHORT USAGE GUIDE
-- make a POST request to /login that sends a username and password in a JSON
-  - you will be sent a session_key if it was successful
+- make a POST request to /register that sends the username and password to the server, once registered
+- make a POST request to /login that sends a username and password to the server, you will be sent a session_key if it was successful
 - take the session_key you are sent and put it in the query string of the GET routes you want to use along with the username associated to the key
   - ie. /daily?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974
+
+### POST: /register
+
+PARAMS (JSON): `{"username": "str", "password": "str"}`
+
+EXAMPLE: `{"username": "naek", "password": "naek_pass"}`
+
+SENDS: JSON
+
+OUTPUT:
+```json
+{
+  "status": 200
+}
+```
 
 ### POST: /login
 

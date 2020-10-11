@@ -38,6 +38,7 @@ def init_db():
     conn.close()
 
 
+# generate database
 if not os.path.isfile("db.db"):
     init_db()
 
@@ -67,19 +68,10 @@ def authenticate_route(get_args):
     return False
 
 
-@app.route("/test", methods=["GET"])
-def test():
-    conn = sqlite3.connect("db.db")
-    c = conn.cursor()
-    c.execute("SELECT * from users")
-    print(c.fetchall())
-    return "yes"
-
-
 # POST: /register
-# DESC: authenticates the users account information
+# DESC: registers the users account information
 # PARAMS: username:str, password:str
-# SENDS: JSON with the session_key
+# SENDS: JSON with status
 @app.route("/register", methods=["POST"])
 def register():
     post_args = flask.request.get_json()
