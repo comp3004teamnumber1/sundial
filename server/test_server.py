@@ -24,7 +24,7 @@ def post_login():
 
 def get_hourly():
     hourly = requests.get(
-        "http://127.0.0.1:5000/hourly?username={}&session_key={}".format(
+        "http://127.0.0.1:5000/hourly?username={}&session_key={}&location=Ottawa, Ontario".format(
             username, session_key
         )
     )
@@ -33,7 +33,7 @@ def get_hourly():
 
 def get_daily():
     daily = requests.get(
-        "http://127.0.0.1:5000/daily?username={}&session_key={}".format(
+        "http://127.0.0.1:5000/daily?username={}&session_key={}&location=Ottawa, Ontario".format(
             username, session_key
         )
     )
