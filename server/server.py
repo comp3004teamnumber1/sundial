@@ -4,15 +4,56 @@ import requests
 import config
 import uuid
 from datetime import datetime
+import sqlite3
+from passlib.context import CryptContext
+import os
 
+# flask setup
 app = flask.Flask(__name__)
+app.config["DEBUG"] = True
+
+# encryption setup
+pwd_context = CryptContext(
+    schemes=["pbkdf2_sha256"],
+    default="pbkdf2_sha256",
+    pbkdf2_sha256__default_rounds=30000,
+)
+
+# encrypts the password
+def encrypt_password(password):
+    return pwd_context.encrypt(password)
+
+
+# checks if the password matches the hash
+def check_encrypted_password(password, hashed):
+    return pwd_context.verify(password, hashed)
+
+
+# sqlite3 setup
+def init_db():
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute("""CREATE TABLE users (username text, password text)""")
+    conn.commit()
+    conn.close()
+
+
+if not os.path.isfile("db.db"):
+    init_db()
+
+# global vars
 config = config.Config()
 sessions = {}
-app.config["DEBUG"] = True
+
 
 # authenticates if the user account exists
 def authenticate_login(username, password):
-    return username and password
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute("SELECT password FROM users WHERE username = '{}'".format(username))
+    hashed_password = c.fetchone()[0]
+    conn.close()
+    return check_encrypted_password(password, hashed_password)
 
 
 # checks to see if the user is logged in
@@ -24,6 +65,41 @@ def authenticate_route(get_args):
         if username in sessions:
             return sessions[username] == session_key
     return False
+
+
+@app.route("/test", methods=["GET"])
+def test():
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute("SELECT * from users")
+    print(c.fetchall())
+    return "yes"
+
+
+# POST: /register
+# DESC: authenticates the users account information
+# PARAMS: username:str, password:str
+# SENDS: JSON with the session_key
+@app.route("/register", methods=["POST"])
+def register():
+    post_args = flask.request.get_json()
+    # verify that a username and password was sent
+    if post_args["username"] and post_args["password"]:
+        username = post_args.get("username")
+        password = post_args.get("password")
+    else:
+        return {"status": 401}, 401
+    # authenticate the account
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO users (username, password) VALUES ('{}', '{}')".format(
+            username, encrypt_password(password)
+        )
+    )
+    conn.commit()
+    conn.close()
+    return {"status": 200}, 200
 
 
 # POST: /login
