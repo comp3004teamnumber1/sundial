@@ -1,0 +1,11 @@
+- added to back_end [12hrs]
+  - sqlite3 database for user accounts
+  - password encryption
+  - session system
+  - login and registration
+  - location to coordinate converter
+  - small refactor
+  - updated routes to support new features
+- documentation updates [1hr]
+- discussed tweaks to our interface [1hr]
+  - daily component
