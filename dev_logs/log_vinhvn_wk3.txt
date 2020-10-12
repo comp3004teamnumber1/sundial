@@ -1,0 +1,4 @@
+- [3 hours] Finished HourlyView component of the Weather page
+- [2 hours] Finished StackNavigation setup of Account and Settings screens
+- [2 hours] Added a basic settings screen and a sub page for ease of development next week
+- [1 hours] Discussed backend API with Nicolas to facilitate requests between the app and the server
