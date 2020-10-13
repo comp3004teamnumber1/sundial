@@ -1,0 +1,5 @@
+Student: Bill Zhang #101106261
+Date: October 5 2020 - October 11 2020
+
+(5 HR) Design and setting up the 2x3 and 4x4 widgets in Android Studio
+(3 HR) Setting up the React Native App with Expo, and looking into Shared Storage
