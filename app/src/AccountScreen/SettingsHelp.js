@@ -1,26 +1,29 @@
 import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import { Container, Content } from 'native-base';
-import HourlyView from './WeatherScreen/HourlyView';
+import { Container, Text, Content } from 'native-base';
+import Header from '../components/Header';
 
 const styles = StyleSheet.create({
 	content: {
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		marginHorizontal: 24,
 	},
 	container: {
 		backgroundColor: '#231F29',
 	},
+	text: {
+		color: '#ffffff',
+	},
 });
 
-export default function WeatherScreen() {
+export default function SettingsHelp() {
 	return (
 		<Container style={styles.container}>
 			<StatusBar />
+			<Header />
 			<Content contentContainerStyle={styles.content}>
-				<HourlyView />
+				<Text style={styles.text}>Contact @ naek.ca</Text>
 			</Content>
 		</Container>
 	);

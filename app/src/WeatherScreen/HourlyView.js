@@ -128,6 +128,7 @@ export default function HourlyView() {
 				dataArray={weather}
 				showsHorizontalScrollIndicator={false}
 				overScrollMode="never"
+				keyExtractor={(item, index) => index.toString()}
 				renderRow={data => {
 					let time = moment.unix(data.date);
 					return now.hour() === time.hour() ? (
