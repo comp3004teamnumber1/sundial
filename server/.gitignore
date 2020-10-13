@@ -1,2 +1,4 @@
-Pipfile
-Pipfile.lock
+config.py
+.vscode
+__pycache__
+.pytest_cache
