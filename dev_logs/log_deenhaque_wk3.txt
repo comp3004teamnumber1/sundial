@@ -1,0 +1,7 @@
+Deen Haque
+
+Development
+- WeeklyView implementation (6hrs)
+
+Troubleshooting
+- Asking Vinh for advice/feedback because the WeeklyView implementation is taking me so long (2hrs)
