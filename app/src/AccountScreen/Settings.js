@@ -11,6 +11,34 @@ import {
 } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 
+const options = [
+	{
+		icon: 'user',
+		dest: 'SettingsAccount',
+		label: 'Account',
+	},
+	{
+		icon: 'cloud',
+		dest: 'SettingsWeather',
+		label: 'Weather',
+	},
+	{
+		icon: 'calendar',
+		dest: 'SettingsCalendar',
+		label: 'Calendar',
+	},
+	{
+		icon: 'bell',
+		dest: 'SettingsNotifications',
+		label: 'Notifications',
+	},
+	{
+		icon: 'help-circle',
+		dest: 'SettingsHelp',
+		label: 'Help',
+	},
+];
+
 const styles = StyleSheet.create({
 	content: {
 		flex: 1,
@@ -36,6 +64,10 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 24,
 	},
+	footerText: {
+		color: '#332E3C',
+		margin: 24,
+	},
 });
 
 export default function Settings({ navigation }) {
@@ -44,37 +76,29 @@ export default function Settings({ navigation }) {
 			<StatusBar />
 			<Content contentContainerStyle={styles.content}>
 				<Text style={styles.title}>Settings</Text>
-				<List style={styles.list}>
-					<ListItem
-						icon
-						button
-						onPress={() => {
-							navigation.navigate('AccountSettings');
-						}}
-						style={styles.listItem}
-					>
-						<Left>
-							<Feather name="user" size={32} color="white" />
-						</Left>
-						<Body>
-							<Text style={styles.text}>Account</Text>
-						</Body>
-					</ListItem>
-					<ListItem
-						icon
-						onPress={() => {
-							console.log('World');
-						}}
-						style={styles.listItem}
-					>
-						<Left>
-							<Feather name="cloud" size={32} color="white" />
-						</Left>
-						<Body>
-							<Text style={styles.text}>Weather</Text>
-						</Body>
-					</ListItem>
-				</List>
+				<List
+					style={styles.list}
+					keyExtractor={(item, index) => index.toString()}
+					dataArray={options}
+					renderRow={data => (
+						<ListItem
+							icon
+							button
+							onPress={() => {
+								navigation.navigate(data.dest);
+							}}
+							style={styles.listItem}
+						>
+							<Left>
+								<Feather name={data.icon} size={32} color="white" />
+							</Left>
+							<Body>
+								<Text style={styles.text}>{data.label}</Text>
+							</Body>
+						</ListItem>
+					)}
+				/>
+				<Text style={styles.footerText}>Developed by comp3004teamnumber1</Text>
 			</Content>
 		</Container>
 	);

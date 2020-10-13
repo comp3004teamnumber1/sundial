@@ -1,6 +1,6 @@
 import React from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
-import { Container, Text, Content } from 'native-base';
+import { StyleSheet } from 'react-native';
+import { Container } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 

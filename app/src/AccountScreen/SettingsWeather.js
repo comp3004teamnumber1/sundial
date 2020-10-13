@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { Container, Text, Content } from 'native-base';
-import Header from './../components/Header';
+import Header from '../components/Header';
 
 const styles = StyleSheet.create({
 	content: {
@@ -9,14 +9,21 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
+	container: {
+		backgroundColor: '#231F29',
+	},
+	text: {
+		color: '#ffffff',
+	},
 });
 
-export default function AccountSettings() {
+export default function SettingsWeather() {
 	return (
-		<Container>
+		<Container style={styles.container}>
+			<StatusBar />
 			<Header />
 			<Content contentContainerStyle={styles.content}>
-				<Text>Temporary</Text>
+				<Text style={styles.text}>Weather Settings</Text>
 			</Content>
 		</Container>
 	);
