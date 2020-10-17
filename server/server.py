@@ -20,6 +20,10 @@ def init_db():
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute("""CREATE TABLE users (username text, password text)""")
+    c.execute(
+        """CREATE TABLE tasks (username text, task text, date text, ideal_weather text, location text)"""
+    )
+    c.execute("""CREATE TABLE cached_locations (location text, lat text, lon text)""")
     conn.commit()
     conn.close()
 
@@ -30,7 +34,7 @@ if not os.path.isfile("db.db"):
 
 # global vars
 config = config.Config()
-sessions = {}
+sessions = []
 
 
 # authenticates if the user account exists
@@ -44,21 +48,43 @@ def authenticate_login(username, password):
 
 
 # checks to see if the user is logged in
-def authenticate_route(get_args):
-    username = get_args.get("username", default=None, type=str)
-    session_key = get_args.get("session_key", default=None, type=str)
-    # verify that a username and session key was sent
-    if username and session_key:
-        if username in sessions:
-            return sessions[username] == session_key
-    return False
+def authenticate_route(get_headers):
+    session_key = get_headers.get("session_key", default=None, type=str)
+    # verify session key was sent
+    return session_key in sessions
 
 
 # turns a location into a latitude and longitude
 def get_lat_long(location):
-    geolocation = Nominatim(user_agent="sundial")
-    location = geolocation.geocode(location)
-    return location.latitude, location.longitude
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        "SELECT lat, lon FROM cached_locations WHERE location = '{}'".format(location)
+    )
+    query = c.fetchone()
+    if not query:
+        geolocation = Nominatim(user_agent="sundial").geocode(location)
+        latlon = {"latitude": geolocation.latitude, "longitude": geolocation.longitude}
+        c.execute(
+            "INSERT INTO cached_locations (location, lat, lon) VALUES ('{}', '{}', '{}')".format(
+                location, latlon.get("latitude"), latlon.get("longitude")
+            )
+        )
+        conn.commit()
+        conn.close()
+        return latlon.get("latitude"), latlon.get("longitude")
+    conn.close()
+    return query[0], query[1]
+
+
+def get_weather_data(location):
+    latlon = get_lat_long(location)
+    api_url = (
+        "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
+            latlon[0], latlon[1], config.OWM_API_KEY
+        )
+    )
+    return requests.get(api_url)
 
 
 # POST: /register
@@ -103,8 +129,8 @@ def login():
         return {"status": 401}, 401
     # authenticate the account
     if authenticate_login(username, password):
-        sessions[username] = str(session_key)
-        return {"status": 200, "session_key": sessions[username]}, 200
+        sessions.append(str(session_key))
+        return {"status": 200, "session_key": session_key}, 200
     return {"status": 401}, 401
 
 
@@ -115,19 +141,13 @@ def login():
 @app.route("/daily", methods=["GET"])
 def daily():
     get_args = flask.request.args
+    get_headers = flask.request.headers
     # verify that a username and session key was sent
-    if not authenticate_route(get_args):
+    if not authenticate_route(get_headers):
         return {"status": 401}, 401
     if not get_args["location"]:
         return {"status": 401}, 401
-    location = get_lat_long(get_args.get("location"))
-    # generate the api url
-    api_url = (
-        "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
-            location[0], location[1], config.OWM_API_KEY
-        )
-    )
-    api_return = requests.get(api_url)
+    api_return = get_weather_data(get_args.get("location"))
     # convert to json
     weather_data = api_return.json()
     days = {"days": []}
@@ -153,6 +173,7 @@ def daily():
         }
         days.get("days").append(day)
     # return the json
+    days.update({"status": 200})
     return days, 200
 
 
@@ -163,19 +184,13 @@ def daily():
 @app.route("/hourly", methods=["GET"])
 def hourly():
     get_args = flask.request.args
+    get_headers = flask.request.headers
     # verify that a username and session key was sent
-    if not authenticate_route(get_args):
+    if not authenticate_route(get_headers):
         return {"status": 401}, 401
     if not get_args["location"]:
         return {"status": 401}, 401
-    location = get_lat_long(get_args.get("location"))
-    # generate the api url
-    api_url = (
-        "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
-            location[0], location[1], config.OWM_API_KEY
-        )
-    )
-    api_return = requests.get(api_url)
+    api_return = get_weather_data(get_args.get("location"))
     # convert to json
     weather_data = api_return.json()
     hours = {"hours": []}
@@ -203,6 +218,7 @@ def hourly():
         }
         hours.get("hours").append(hour)
     # return the json
+    hours.update({"status": 200})
     return hours, 200
 
 

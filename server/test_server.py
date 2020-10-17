@@ -24,18 +24,16 @@ def post_login():
 
 def get_hourly():
     hourly = requests.get(
-        "http://127.0.0.1:5000/hourly?username={}&session_key={}&location=Ottawa, Ontario".format(
-            username, session_key
-        )
+        "http://127.0.0.1:5000/hourly?location=Ottawa, Ontario",
+        headers={"session_key": session_key},
     )
     return hourly.json()
 
 
 def get_daily():
     daily = requests.get(
-        "http://127.0.0.1:5000/daily?username={}&session_key={}&location=Ottawa, Ontario".format(
-            username, session_key
-        )
+        "http://127.0.0.1:5000/daily?location=Ottawa, Ontario",
+        headers={"session_key": session_key},
     )
     return daily.json()
 

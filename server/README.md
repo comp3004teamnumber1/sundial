@@ -5,24 +5,39 @@
 ### DEPENDENCIES
 
 - python3
-  - requests
-  - flask
+  - pipenv
+    - requests
+    - flask
+    - geopy
+    - passlib
+    - pytest
+
+install the dependencies on Ubuntu 20.04 with the following command
+  - `sudo apt install python3 python3-pip`
+  - `sudo pip install pipenv`
+
+everything *should* work with these installed
 
 ### SETUP & RUNNING
 
-download the dependencies: `pipenv install`
+go to the server directory `$ cd /server`
 
-open the shell: `pipenv shell`
+download the dependencies: `$ pipenv install`
 
-run the server: `python3 server.py`
+open the shell: `$ pipenv shell`
+
+run the server: `$ python3 server.py`
+
+run tests: `$ pytest`
 
 ### DOCUMENTATION
 
 ### SHORT USAGE GUIDE
 - make a POST request to /register that sends the username and password to the server, once registered
 - make a POST request to /login that sends a username and password to the server, you will be sent a session_key if it was successful
-- take the session_key you are sent and put it in the query string of the GET routes you want to use along with the username associated to the key
-  - ie. /daily?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974
+- take the session_key you are sent and put it in the headers as `session_key` of the GET routes you want to use along, ie
+  - `/daily?location=Ottawa, Ontario`
+  - `headers={"session_key": "str"}`
 
 ### POST: /register
 
@@ -59,12 +74,13 @@ OUTPUT:
 
 #### GET: /daily
 
-PARAMS (QUERY): `?username=str&session_key=str&location=str`
-  - `username`: username of account
-  - `session_key`: associated session_key of the username
+PARAMS (QUERY): `/daily?location=str`
   - `location`: a location, a city, an address
 
-EXAMPLE: /daily?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974&location=Ottawa, Ontario
+PARAMS (HEADERS): `{"session_key": "str"}`
+  - `session_key`: the authentication key given from `/login`
+
+EXAMPLE: `/daily?location=Ottawa, Ontario`
 
 SENDS: JSON
 
@@ -102,12 +118,13 @@ OUTPUT:
 
 #### GET: /hourly
 
-PARAMS (QUERY): `?username=str&session_key=str&location=str`
-  - `username`: username of account
-  - `session_key`: associated session_key of the username
+PARAMS (QUERY): `/hourly?location=str`
   - `location`: a location, a city, an address
 
-EXAMPLE: /hourly?username=naek&session_key=f44d6ca6-300d-403f-8710-35b52dc4f974&location=Ottawa, Ontario
+PARAMS (HEADERS): `{"session_key": "str"}`
+  - `session_key`: the authentication key given from `/login`
+
+EXAMPLE: `/hourly?location=Ottawa, Ontario`
 
 SENDS: JSON
 
