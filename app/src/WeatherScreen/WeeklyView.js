@@ -61,92 +61,35 @@ const styles = StyleSheet.create({
 export default function WeeklyView(props) {
   const weatherIcon = weather => {
     switch (weather) {
-      case 'clear':
+      case 'Clear':
+        return <Feather name="sun" size={48} color="white" />;
+      case 'Clouds':
+        return <Feather name="cloud" size={48} color="white" />;
+      case 'Rain':
+        return <Feather name="cloud-rain" size={48} color="white" />;
+      case 'Drizzle':
+        return <Feather name="cloud-drizzle" size={48} color="white" />;
+      case 'Thunderstorm':
+        return <Feather name="cloud-lightning" size={48} color="white" />;
+      case 'Snow':
+        return <Feather name="cloud-snow" size={48} color="white" />;
       default:
-        return <Feather name='sun' size={48} color='white' />;
+        return <Feather name="help-circle" size={48} color="white" />;
     }
   };
-
-  let payload = [
-    {
-      date: 1602960464,
-      temp: {
-        c: 21.8,
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12
-    },
-    {
-      date: 1603046864,
-      temp: {
-        c: 2.8,
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12
-    },
-    {
-      date: 1603133264,
-      temp: {
-        c: 21.8,
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12
-    },
-    {
-      date: 1602097200,
-      temp: {
-        c: 21.8,
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12
-    },
-    {
-      date: 1603392464,
-      temp: {
-        c: 21.8,
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12
-    },
-    {
-      date: 1603478864,
-      temp: {
-        c: 21.8,
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12
-    },
-  ];
 
   return (
     <Container style={styles.container}>
       <List
         horizontal={true}
-        dataArray={week}
+        dataArray={props.data}
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'
         renderRow={data => {
+          console.log(data);
           return (
             <Pressable style={moment().format('ddd') === data.date ? styles.activeListItem : styles.listItem}>
-              <Text style={styles.textDate}>{moment.unix(x.date).format('ddd')}</Text>
+              <Text style={styles.textDate}>{moment.unix(data.date).format('ddd')}</Text>
               {weatherIcon(data.weather_type)}
               <Text style={styles.textWeather}> {data.temp.c + '°'} </Text>
               <Text style={styles.textPrecip}>
