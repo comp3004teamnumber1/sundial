@@ -150,6 +150,7 @@ def daily():
         }
         days.get("days").append(day)
     # return the json
+    days.update({"status": 200})
     return days, 200
 
 
@@ -201,6 +202,7 @@ def hourly():
         }
         hours.get("hours").append(hour)
     # return the json
+    hours.update({"status": 200})
     return hours, 200
 
 
