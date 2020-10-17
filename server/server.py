@@ -20,6 +20,10 @@ def init_db():
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute("""CREATE TABLE users (username text, password text)""")
+    c.execute(
+        """CREATE TABLE tasks (username text, task text, date text, ideal_weather text, location text)"""
+    )
+    c.execute("""CREATE TABLE cached_locations (location text, lat text, lon text)""")
     conn.commit()
     conn.close()
 
@@ -52,9 +56,24 @@ def authenticate_route(get_headers):
 
 # turns a location into a latitude and longitude
 def get_lat_long(location):
-    geolocation = Nominatim(user_agent="sundial")
-    location = geolocation.geocode(location)
-    return location.latitude, location.longitude
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        "SELECT lat, lon FROM cached_locations WHERE location = '{}'".format(location)
+    )
+    query = c.fetchone()
+    if not query:
+        geolocation = Nominatim(user_agent="sundial").geocode(location)
+        latlon = {"latitude": geolocation.latitude, "longitude": geolocation.longitude}
+        c.execute(
+            "INSERT INTO cached_locations (location, lat, lon) VALUES ('{}', '{}', '{}')".format(
+                location, latlon.get("latitude"), latlon.get("longitude")
+            )
+        )
+        conn.commit()
+        conn.close()
+        return latlon.get("latitude"), latlon.get("longitude")
+    return query[0], query[1]
 
 
 # POST: /register
@@ -118,6 +137,7 @@ def daily():
     if not get_args["location"]:
         return {"status": 401}, 401
     location = get_lat_long(get_args.get("location"))
+    print(location)
     # generate the api url
     api_url = (
         "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
