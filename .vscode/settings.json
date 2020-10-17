@@ -1,9 +1,0 @@
-{
-    "python.pythonPath": "/home/naek/.local/share/virtualenvs/server-R6jxFIv9/bin/python3.8",
-    "python.testing.pytestArgs": [
-        "server"
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.nosetestsEnabled": false,
-    "python.testing.pytestEnabled": true
-}
