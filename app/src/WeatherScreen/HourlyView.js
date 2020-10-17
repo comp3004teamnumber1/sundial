@@ -4,63 +4,6 @@ import { Container, List, Text } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 
-let weather = [
-	{
-		date: 1602086400,
-		temp: {
-			c: 21.8,
-			f: 71.2,
-			k: 295.95,
-		},
-		weather: 'Clear',
-	},
-	{
-		date: 1602090000,
-		temp: {
-			c: 21.8,
-			f: 71.2,
-			k: 295.95,
-		},
-		weather: 'Clear',
-	},
-	{
-		date: 1602093600,
-		temp: {
-			c: 21.8,
-			f: 71.2,
-			k: 295.95,
-		},
-		weather: 'Clear',
-	},
-	{
-		date: 1602097200,
-		temp: {
-			c: 21.8,
-			f: 71.2,
-			k: 295.95,
-		},
-		weather: 'Clear',
-	},
-	{
-		date: 1602100800,
-		temp: {
-			c: 21.8,
-			f: 71.2,
-			k: 295.95,
-		},
-		weather: 'Clear',
-	},
-	{
-		date: 1602104400,
-		temp: {
-			c: 21.8,
-			f: 71.2,
-			k: 295.95,
-		},
-		weather: 'Clear',
-	},
-];
-
 const styles = StyleSheet.create({
 	container: {
 		maxHeight: 220,
@@ -110,12 +53,23 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default function HourlyView() {
+export default function HourlyView({ data }) {
 	const weatherIcon = weather => {
 		switch (weather) {
-			case 'clear':
-			default:
+			case 'Clear':
 				return <Feather name="sun" size={48} color="white" />;
+			case 'Clouds':
+				return <Feather name="cloud" size={48} color="white" />;
+			case 'Rain':
+				return <Feather name="cloud-rain" size={48} color="white" />;
+			case 'Drizzle':
+				return <Feather name="cloud-drizzle" size={48} color="white" />;
+			case 'Thunderstorm':
+				return <Feather name="cloud-lightning" size={48} color="white" />;
+			case 'Snow':
+				return <Feather name="cloud-snow" size={48} color="white" />;
+			default:
+				return <Feather name="help-circle" size={48} color="white" />;
 		}
 	};
 
@@ -125,25 +79,25 @@ export default function HourlyView() {
 		<Container style={styles.container}>
 			<List
 				horizontal={true}
-				dataArray={weather}
+				dataArray={data}
 				showsHorizontalScrollIndicator={false}
 				overScrollMode="never"
 				keyExtractor={(item, index) => index.toString()}
-				renderRow={data => {
-					let time = moment.unix(data.date);
+				renderRow={item => {
+					let time = moment.unix(item.date);
 					return now.hour() === time.hour() ? (
-						<Pressable style={styles.listItemActive} key={data.date}>
+						<Pressable style={styles.listItemActive} key={item.date}>
 							<Text style={styles.text}>{time.format('h A')}</Text>
-							{weatherIcon(data.weather)}
-							<Text style={styles.tempPrimary}>{data.temp.c + '°'}</Text>
+							{weatherIcon(item.weather_type)}
+							<Text style={styles.tempPrimary}>{item.temp.c + '°'}</Text>
 						</Pressable>
 					) : (
-							<Pressable style={styles.listItem} key={data.date}>
-								<Text style={styles.text}>{time.format('h A')}</Text>
-								{weatherIcon(data.weather)}
-								<Text style={styles.tempPrimary}>{data.temp.c + '°'}</Text>
-							</Pressable>
-						);
+						<Pressable style={styles.listItem} key={item.date}>
+							<Text style={styles.text}>{time.format('h A')}</Text>
+							{weatherIcon(item.weather_type)}
+							<Text style={styles.tempPrimary}>{item.temp.c + '°'}</Text>
+						</Pressable>
+					);
 				}}
 			/>
 		</Container>
