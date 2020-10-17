@@ -30,7 +30,7 @@ if not os.path.isfile("db.db"):
 
 # global vars
 config = config.Config()
-sessions = {}
+sessions = []
 
 
 # authenticates if the user account exists
@@ -44,14 +44,10 @@ def authenticate_login(username, password):
 
 
 # checks to see if the user is logged in
-def authenticate_route(get_args):
-    username = get_args.get("username", default=None, type=str)
-    session_key = get_args.get("session_key", default=None, type=str)
+def authenticate_route(get_headers):
+    session_key = get_headers.get("session_key", default=None, type=str)
     # verify that a username and session key was sent
-    if username and session_key:
-        if username in sessions:
-            return sessions[username] == session_key
-    return False
+    return session_key in sessions
 
 
 # turns a location into a latitude and longitude
@@ -103,8 +99,8 @@ def login():
         return {"status": 401}, 401
     # authenticate the account
     if authenticate_login(username, password):
-        sessions[username] = str(session_key)
-        return {"status": 200, "session_key": sessions[username]}, 200
+        sessions.append(str(session_key))
+        return {"status": 200, "session_key": session_key}, 200
     return {"status": 401}, 401
 
 
@@ -115,8 +111,9 @@ def login():
 @app.route("/daily", methods=["GET"])
 def daily():
     get_args = flask.request.args
+    get_headers = flask.request.headers
     # verify that a username and session key was sent
-    if not authenticate_route(get_args):
+    if not authenticate_route(get_headers):
         return {"status": 401}, 401
     if not get_args["location"]:
         return {"status": 401}, 401
@@ -163,8 +160,9 @@ def daily():
 @app.route("/hourly", methods=["GET"])
 def hourly():
     get_args = flask.request.args
+    get_headers = flask.request.headers
     # verify that a username and session key was sent
-    if not authenticate_route(get_args):
+    if not authenticate_route(get_headers):
         return {"status": 401}, 401
     if not get_args["location"]:
         return {"status": 401}, 401
