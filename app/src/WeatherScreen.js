@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, Text } from 'react-native';
 import { Container, Content } from 'native-base';
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
@@ -22,6 +22,7 @@ export default function WeatherScreen() {
 			<StatusBar />
 			<Content contentContainerStyle={styles.content}>
 				<HourlyView />
+				<WeeklyView />
 			</Content>
 		</Container>
 	);
