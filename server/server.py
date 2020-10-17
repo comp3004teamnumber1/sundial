@@ -50,7 +50,7 @@ def authenticate_login(username, password):
 # checks to see if the user is logged in
 def authenticate_route(get_headers):
     session_key = get_headers.get("session_key", default=None, type=str)
-    # verify that a username and session key was sent
+    # verify session key was sent
     return session_key in sessions
 
 
