@@ -136,19 +136,6 @@ export default function WeeklyView(props) {
     },
   ];
 
-  let week = payload.map(
-    (x) => {
-      return {
-        ...x,
-        date: moment.unix(x.date).format('ddd')
-      }
-    }
-  );
-
-  while (week[0].date !== 'Mon') {
-    week.push(week.shift());
-    console.log('monka');
-  }
   return (
     <Container style={styles.container}>
       <List
@@ -157,11 +144,9 @@ export default function WeeklyView(props) {
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'
         renderRow={data => {
-          console.log('data');
-          console.log(data);
           return (
             <Pressable style={moment().format('ddd') === data.date ? styles.activeListItem : styles.listItem}>
-              <Text style={styles.textDate}>{data.date}</Text>
+              <Text style={styles.textDate}>{moment.unix(x.date).format('ddd')}</Text>
               {weatherIcon(data.weather_type)}
               <Text style={styles.textWeather}> {data.temp.c + '°'} </Text>
               <Text style={styles.textPrecip}>

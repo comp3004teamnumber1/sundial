@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
 	},
 });
 
-
 export default class WeatherScreen extends Component {
 	constructor(props) {
 		super(props);
