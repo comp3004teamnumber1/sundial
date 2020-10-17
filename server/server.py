@@ -76,6 +76,16 @@ def get_lat_long(location):
     return query[0], query[1]
 
 
+def get_weather_data(location):
+    latlon = get_lat_long(location)
+    api_url = (
+        "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
+            latlon[0], latlon[1], config.OWM_API_KEY
+        )
+    )
+    return requests.get(api_url)
+
+
 # POST: /register
 # DESC: registers the users account information
 # PARAMS: username:str, password:str
@@ -136,15 +146,7 @@ def daily():
         return {"status": 401}, 401
     if not get_args["location"]:
         return {"status": 401}, 401
-    location = get_lat_long(get_args.get("location"))
-    print(location)
-    # generate the api url
-    api_url = (
-        "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
-            location[0], location[1], config.OWM_API_KEY
-        )
-    )
-    api_return = requests.get(api_url)
+    api_return = get_weather_data(get_args.get("location"))
     # convert to json
     weather_data = api_return.json()
     days = {"days": []}
@@ -187,14 +189,7 @@ def hourly():
         return {"status": 401}, 401
     if not get_args["location"]:
         return {"status": 401}, 401
-    location = get_lat_long(get_args.get("location"))
-    # generate the api url
-    api_url = (
-        "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
-            location[0], location[1], config.OWM_API_KEY
-        )
-    )
-    api_return = requests.get(api_url)
+    api_return = get_weather_data(get_args.get("location"))
     # convert to json
     weather_data = api_return.json()
     hours = {"hours": []}
