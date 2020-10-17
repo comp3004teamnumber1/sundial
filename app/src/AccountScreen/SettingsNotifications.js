@@ -1,6 +1,7 @@
 import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { Container, Text, Content } from 'native-base';
+import Header from '../components/Header';
 
 const styles = StyleSheet.create({
 	content: {
@@ -8,14 +9,21 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
+	container: {
+		backgroundColor: '#231F29',
+	},
+	text: {
+		color: '#ffffff',
+	},
 });
 
-export default function HomeScreen() {
+export default function SettingsNotifications() {
 	return (
-		<Container>
+		<Container style={styles.container}>
 			<StatusBar />
+			<Header />
 			<Content contentContainerStyle={styles.content}>
-				<Text>Welcome to Home</Text>
+				<Text style={styles.text}>Notification Settings</Text>
 			</Content>
 		</Container>
 	);

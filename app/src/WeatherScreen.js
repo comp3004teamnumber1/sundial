@@ -1,24 +1,28 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Container, Text, Content } from 'native-base';
+import { StatusBar, StyleSheet } from 'react-native';
+import { Container, Content } from 'native-base';
+import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
 
-const week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+	content: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginHorizontal: 24,
+	},
+	container: {
+		backgroundColor: '#231F29',
+	},
 });
 
 export default function WeatherScreen() {
-  return (
-    <Container>
-      <Content contentContainerStyle={styles.content}>
-        <Text>Welcome to Weather</Text>
-        <WeeklyView week={week} />
-      </Content>
-    </Container>
-  );
+	return (
+		<Container style={styles.container}>
+			<StatusBar />
+			<Content contentContainerStyle={styles.content}>
+				<HourlyView />
+			</Content>
+		</Container>
+	);
 }
