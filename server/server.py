@@ -73,6 +73,7 @@ def get_lat_long(location):
         conn.commit()
         conn.close()
         return latlon.get("latitude"), latlon.get("longitude")
+    conn.close()
     return query[0], query[1]
 
 
