@@ -1,0 +1,11 @@
+- back end development [6 hours]
+  - discussed and implemented the task table
+  - updated documentation to support new changes
+  - implemented caching of locations
+  - refactored routes
+    - removed username
+    - placed session_key in headers
+  - refactored session system
+- conducted a stand up and member check-in [2 hours]
+  - discussed future deadlines
+  - discussed team productivity
