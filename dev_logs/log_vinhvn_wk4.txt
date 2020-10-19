@@ -1,0 +1,4 @@
+- [2 hours] Did code review for the WeeklyView component and elements of the back end server
+- [3 hours] Integrated frontend app to use backend server and requests instead of dummy data
+- [1 hours] Set up calendar page and initial component templates although waiting on database design
+- [2 hours] Discussed calendar, tasks routes with Nick and the SQL database design
