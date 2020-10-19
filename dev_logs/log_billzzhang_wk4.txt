@@ -1,0 +1,6 @@
+Student: Bill Zhang #101106261
+Date: October 12 2020 - October 18 2020
+
+(2 HR) Fixing Lists to display proper info in Android Studio
+(0.5 HR) Integrating git to the android studio project
+(5 HR) Trying to get SharedStorage to work with React Native, and getting the widgets to show up on Expo
