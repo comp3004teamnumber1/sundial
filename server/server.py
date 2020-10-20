@@ -21,7 +21,7 @@ def init_db():
     c = conn.cursor()
     c.execute("""CREATE TABLE users (username text, password text)""")
     c.execute(
-        """CREATE TABLE tasks (username text, task text, date text, ideal_weather text, location text)"""
+        """CREATE TABLE tasks (id, username text, task text, date integer, ideal_weather text, location text)"""
     )
     c.execute("""CREATE TABLE cached_locations (location text, lat text, lon text)""")
     conn.commit()
@@ -34,7 +34,7 @@ if not os.path.isfile("db.db"):
 
 # global vars
 config = config.Config()
-sessions = []
+sessions = {}
 
 
 # authenticates if the user account exists
@@ -129,7 +129,7 @@ def login():
         return {"status": 401}, 401
     # authenticate the account
     if authenticate_login(username, password):
-        sessions.append(str(session_key))
+        sessions.update({str(session_key): username})
         return {"status": 200, "session_key": session_key}, 200
     return {"status": 401}, 401
 
@@ -220,6 +220,38 @@ def hourly():
     # return the json
     hours.update({"status": 200})
     return hours, 200
+
+
+# (username text, task text, date text, ideal_weather text, location text)
+@app.route("/task/create", methods=["POST"])
+def create_task():
+    post_args = flask.request.get_json()
+    post_headers = flask.request.headers
+    if not authenticate_route(post_headers):
+        return {"status": 401}, 401
+    if (
+        not post_args.get("task", 0)
+        or not post_args.get("date", 0)
+        or not post_args.get("ideal_weather", 0)
+        or not post_args.get("location", 0)
+    ):
+        return {"status": 401}, 401
+    task_id = str(uuid.uuid4())
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO tasks (id, username, task, date, ideal_weather, location) VALUES ('{}', '{}', '{}', '{}', '{}', '{}')".format(
+            task_id,
+            sessions.get(post_headers.get("session_key")),
+            post_args.get("task"),
+            post_args.get("date"),
+            post_args.get("ideal_weather"),
+            post_args.get("location"),
+        )
+    )
+    conn.commit()
+    conn.close()
+    return {"status": 200, "id": task_id}, 200
 
 
 app.run()
