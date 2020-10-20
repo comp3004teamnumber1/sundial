@@ -38,6 +38,20 @@ def get_daily():
     return daily.json()
 
 
+def post_task_create():
+    task = requests.post(
+        "http://127.0.0.1:5000/task/create",
+        json={
+            "task": "test server",
+            "date": 1603152293,
+            "ideal_weather": "Sunny",
+            "location": "Ottawa, Ontario",
+        },
+        headers={"session_key": session_key},
+    )
+    return task.json()
+
+
 def test_register():
     assert post_register().get("status") == 200
 
@@ -55,3 +69,7 @@ def test_hourly():
 
 def test_daily():
     assert get_daily().get("days")
+
+
+def test_task_create():
+    assert post_task_create().get("id")
