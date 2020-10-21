@@ -1,0 +1,12 @@
+Deen Haque
+
+Discussion
+- Standup (1hr)
+
+Research
+- Researched React Native Pressables to support changing locations in the Weather screen (2hrs)
+
+Development
+- Reviewed, discussed and approved Vinh's merge requests (2hrs)
+- Reviewed and discussed my merge request with Vinh (1hrs)
+- Fixed my code so it'll be approved by Vinh (turns out we don't want console.log() statements in master, who knew?) (2hrs)
