@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
-import HourlyView from './WeatherScreen/HourlyView';
 import axios from 'axios';
+import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
 
-let WeeklyViewTestPayload = [
+let weeklyViewTestPayload = [
   {
     date: 1602960464,
     temp: {
@@ -15,7 +15,7 @@ let WeeklyViewTestPayload = [
     },
     weather_type: 'Clouds',
     pop: 32,
-    humidity: 12
+    humidity: 12,
   },
   {
     date: 1603046864,
@@ -26,7 +26,7 @@ let WeeklyViewTestPayload = [
     },
     weather_type: 'Clear',
     pop: 32,
-    humidity: 12
+    humidity: 12,
   },
   {
     date: 1603133264,
@@ -37,7 +37,7 @@ let WeeklyViewTestPayload = [
     },
     weather_type: 'Clear',
     pop: 32,
-    humidity: 12
+    humidity: 12,
   },
   {
     date: 1602097200,
@@ -48,7 +48,7 @@ let WeeklyViewTestPayload = [
     },
     weather_type: 'Clear',
     pop: 32,
-    humidity: 12
+    humidity: 12,
   },
   {
     date: 1603392464,
@@ -59,7 +59,7 @@ let WeeklyViewTestPayload = [
     },
     weather_type: 'Clear',
     pop: 32,
-    humidity: 12
+    humidity: 12,
   },
   {
     date: 1603478864,
@@ -70,11 +70,11 @@ let WeeklyViewTestPayload = [
     },
     weather_type: 'Clear',
     pop: 32,
-    humidity: 12
+    humidity: 12,
   },
 ];
 
-let HourlyViewTestPayload = [
+let hourlyViewTestPayload = [
   {
     date: 1602086400,
     temp: {
@@ -161,11 +161,12 @@ export default class WeatherScreen extends Component {
     super(props);
     this.state = {
       hourly: null,
-      weekly: null
+      weekly: null,
     };
   }
 
   componentDidMount() {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     let options = {
       username: 'nick',
       session_key: '5bb92746-46b0-4b74-80b4-592f44f93e4b',
@@ -180,6 +181,8 @@ export default class WeatherScreen extends Component {
   }
 
   render() {
+    const { hourly, weekly } = this.state;
+
     return (
       <Container style={styles.container}>
         <StatusBar />
@@ -187,12 +190,8 @@ export default class WeatherScreen extends Component {
           <Text style={styles.title}>Weather</Text>
           <Container style={styles.view}>
             <Text style={styles.subtitle}>Hourly</Text>
-            <HourlyView
-              data={this.state.hourly ? this.state.hourly : HourlyViewTestPayload}
-            />
-            <WeeklyView
-              data={this.state.weekly ? this.state.weekly : WeeklyViewTestPayload}
-            />
+            <HourlyView data={hourly || hourlyViewTestPayload} />
+            <WeeklyView data={weekly || weeklyViewTestPayload} />
           </Container>
         </Content>
       </Container>
