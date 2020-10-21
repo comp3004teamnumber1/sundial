@@ -1,74 +1,69 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-community/async-storage';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Feather } from '@expo/vector-icons';
-import HomeScreen from './src/HomeScreen';
-import CalendarScreen from './src/CalendarScreen';
-import WeatherScreen from './src/WeatherScreen';
-import AccountScreen from './src/AccountScreen';
+import MainStack from './src/MainStack';
+import LoginScreen from './src/LoginScreen';
 
-const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export default class App extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isReady: false,
-		};
-	}
+  constructor(props) {
+    super(props);
+    this.state = {
+      isReady: false,
+      loggedIn: false,
+    };
+  }
 
-	async componentDidMount() {
-		await Font.loadAsync({
-			Roboto: require('native-base/Fonts/Roboto.ttf'),
-			Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-			...Feather.font,
-		});
-		this.setState({ isReady: true });
-	}
+  async componentDidMount() {
+    // load fonts
+    await Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+      ...Feather.font,
+    });
 
-	render() {
-		if (!this.state.isReady) {
-			return <AppLoading />;
-		}
+    // use this line to clear the key (for testing)
+    // await AsyncStorage.setItem('session_key', '');
 
-		return (
-			<NavigationContainer>
-				<Tab.Navigator
-					initialRouteName="Home"
-					screenOptions={({ route }) => ({
-						tabBarIcon: ({ focused, color, size }) => {
-							let icon;
+    // check if logged in
+    try {
+      let key = await AsyncStorage.getItem('session_key');
+      if (key) {
+        this.setState({ loggedIn: true });
+      }
+    } catch (e) {
+      console.log('No session key found. Rerouting to Login screen...');
+    }
+    this.setState({ isReady: true });
+  }
 
-							if (route.name === 'Home') {
-								icon = 'home';
-							} else if (route.name === 'Calendar') {
-								icon = 'calendar';
-							} else if (route.name === 'Weather') {
-								icon = 'sun';
-							} else if (route.name === 'Account') {
-								icon = 'user';
-							}
+  handleLogin = async key => {
+    try {
+      // Set our key
+      await AsyncStorage.setItem('session_key', key);
+      this.setState({ loggedIn: true });
+    } catch (e) {
+      console.error('Error setting session key.');
+    }
+  };
 
-							return <Feather name={icon} size={size} color={color} />;
-						},
-					})}
-					tabBarOptions={{
-						activeTintColor: '#ffffff',
-						inactiveTintColor: '#ffffff',
-						activeBackgroundColor: '#000000',
-						inactiveBackgroundColor: '#000000',
-						showLabel: false,
-					}}
-				>
-					<Tab.Screen name="Home" component={HomeScreen} />
-					<Tab.Screen name="Calendar" component={CalendarScreen} />
-					<Tab.Screen name="Weather" component={WeatherScreen} />
-					<Tab.Screen name="Account" component={AccountScreen} />
-				</Tab.Navigator>
-			</NavigationContainer>
-		);
-	}
+  render() {
+    const { isReady, loggedIn } = this.state;
+    if (!isReady) {
+      return <AppLoading />;
+    }
+
+    return (
+      <NavigationContainer>
+        {loggedIn && <MainStack />}
+        {!loggedIn && <LoginScreen loginFn={this.handleLogin} />}
+      </NavigationContainer>
+    );
+  }
 }
