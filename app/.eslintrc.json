@@ -1,5 +1,6 @@
 {
   "extends": ["airbnb", "plugin:prettier/recommended", "prettier/react"],
+  "parser": "babel-eslint",
   "env": {
     "browser": true,
     "commonjs": true,
@@ -35,6 +36,7 @@
     "no-restricted-syntax": "off",
     "eqeqeq": "off",
     "no-undef": "off",
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "global-require": "off"
   }
 }
