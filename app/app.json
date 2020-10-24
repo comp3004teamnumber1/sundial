@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Sundial",
+    "description": "A modern weather app",
+    "owner": "comp3004teamnumber1",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#000000",
+    "primaryColor": "#000000",
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#000000",
+      "hidden": false,
+      "translucent": false
+    },
+    "androidNavigationBar": {
+      "visible": "leanback",
+      "barStyle": "light-content",
+      "backgroundColor": "#000000"
+    }
+  }
+}
