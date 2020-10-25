@@ -48,8 +48,8 @@ def authenticate_login(username, password):
 
 
 # checks to see if the user is logged in
-def authenticate_route(get_headers):
-    session_key = get_headers.get("session_key", default=None, type=str)
+def authenticate_route(headers):
+    session_key = headers.get("session_key", default=None, type=str)
     # verify session key was sent
     return session_key in sessions
 
@@ -223,7 +223,7 @@ def hourly():
 
 
 # (username text, task text, date text, ideal_weather text, location text)
-@app.route("/task/create", methods=["POST"])
+@app.route("/task", methods=["POST"])
 def create_task():
     post_args = flask.request.get_json()
     post_headers = flask.request.headers
@@ -253,5 +253,43 @@ def create_task():
     conn.close()
     return {"status": 200, "id": task_id}, 200
 
+
+@app.route("/task/<id>", methods=["POST"])
+def update_task(id):
+    post_args = flask.request.get_json()
+    post_headers = flask.request.headers
+    if not authenticate_route(post_headers):
+        return {"status": 401}, 401
+    if not id:
+        return {"status": 401}, 401
+    if (
+        not post_args.get("task", 0)
+        or not post_args.get("date", 0)
+        or not post_args.get("ideal_weather", 0)
+        or not post_args.get("location", 0)
+    ):
+        return {"status": 401}, 401
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute("SELECT username FROM tasks WHERE id = '{}'".format(id))
+    query = c.fetchone()
+    if query:
+        if query[0] != sessions.get(post_headers.get("session_key")):
+            return {"status": 401}, 401
+    c.execute(
+        "UPDATE tasks SET task = '{}', date = '{}', ideal_weather = '{}', location = '{}' WHERE id = '{}'".format(
+            post_args.get("task"),
+            post_args.get("date"),
+            post_args.get("ideal_weather"),
+            post_args.get("location"),
+            id,
+        )
+    )
+    conn.commit()
+    conn.close()
+    return {"status": 200}, 200
+
+
+# """CREATE TABLE tasks (id, username text, task text, date integer, ideal_weather text, location text)"""
 
 app.run()
