@@ -290,6 +290,26 @@ def update_task(id):
     return {"status": 200}, 200
 
 
+@app.route("/task/<id>", methods=["DELETE"])
+def delete_task(id):
+    post_headers = flask.request.headers
+    if not authenticate_route(post_headers):
+        return {"status": 401}, 401
+    if not id:
+        return {"status": 401}, 401
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute("SELECT username FROM tasks WHERE id = '{}'".format(id))
+    query = c.fetchone()
+    if query:
+        if query[0] != sessions.get(post_headers.get("session_key")):
+            return {"status": 401}, 401
+    c.execute("DELETE FROM tasks WHERE id = '{}'".format(id))
+    conn.commit()
+    conn.close()
+    return {"status": 200}, 200
+
+
 # """CREATE TABLE tasks (id, username text, task text, date integer, ideal_weather text, location text)"""
 
 app.run()
