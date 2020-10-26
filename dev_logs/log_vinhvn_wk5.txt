@@ -1,0 +1,5 @@
+- [1 hours] Collaborated together with Deen to facilitate frontend development on our weather screen components
+- [1 hours] Added styling files to the frontend so collaboration is seamless between developers and updated components to match these styles
+- [3 hours] Restructured frontend app to require registration and authentication before access to other screens is available
+- [2 hours] Added a login and register screen with persistent storage to store settings, session keys using async storage
+- [1 hours] Reviewed backend task, authentication routes, as well as exploring testing using a REST request client in VSCode
