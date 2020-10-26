@@ -2,6 +2,7 @@ import requests
 import sys
 
 session_key = ""
+task_id = ""
 username = "naek"
 password = "naek_password"
 
@@ -40,13 +41,35 @@ def get_daily():
 
 def post_task_create():
     task = requests.post(
-        "http://127.0.0.1:5000/task/create",
+        "http://127.0.0.1:5000/task",
         json={
-            "task": "test server",
+            "task": "Finish 3004.",
             "date": 1603152293,
             "ideal_weather": "Sunny",
             "location": "Ottawa, Ontario",
         },
+        headers={"session_key": session_key},
+    )
+    return task.json()
+
+
+def post_task_update():
+    task = requests.post(
+        "http://127.0.0.1:5000/task/{}".format(task_id),
+        json={
+            "task": "Read 3004 notes.",
+            "date": 1603152299,
+            "ideal_weather": "Rainy",
+            "location": "Ottawa, Ontario",
+        },
+        headers={"session_key": session_key},
+    )
+    return task.json()
+
+
+def delete_task():
+    task = requests.delete(
+        "http://127.0.0.1:5000/task/{}".format(task_id),
         headers={"session_key": session_key},
     )
     return task.json()
@@ -59,7 +82,7 @@ def test_register():
 def test_login():
     global session_key
     response = post_login()
-    session_key = response["session_key"] if response["session_key"] else 0
+    session_key = response.get("session_key", 0)
     assert session_key != 0
 
 
@@ -72,4 +95,15 @@ def test_daily():
 
 
 def test_task_create():
-    assert post_task_create().get("id")
+    global task_id
+    response = post_task_create()
+    task_id = response.get("id", 0)
+    assert task_id != 0
+
+
+def test_task_update():
+    assert post_task_update().get("status") == 200
+
+
+def test_delete_task():
+    assert delete_task().get("status") == 200
