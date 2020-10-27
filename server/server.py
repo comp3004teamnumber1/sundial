@@ -19,9 +19,9 @@ app.config["DEBUG"] = True
 def init_db():
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
-    c.execute("""CREATE TABLE users (username text, password text)""")
+    c.execute("""CREATE TABLE users (username text PRIMARY KEY, password text)""")
     c.execute(
-        """CREATE TABLE tasks (id, username text, task text, date integer, ideal_weather text, location text)"""
+        """CREATE TABLE tasks (id PRIMARY KEY, username text, task text, date integer, ideal_weather text, location text)"""
     )
     c.execute("""CREATE TABLE cached_locations (location text, lat text, lon text)""")
     conn.commit()
@@ -308,6 +308,20 @@ def delete_task(id):
     conn.commit()
     conn.close()
     return {"status": 200}, 200
+
+
+# @app.route("/task", methods=["GET"])
+# def get_task():
+#    get_headers = flask.request.headers
+#    if not authenticate_route(get_headers):
+#        return {"status": 401}, 401
+#    conn = sqlite3.connect("db.db")
+#    c = conn.cursor()
+#    c.execute(
+#        "SELECT id, task, date, ideal_weather, location FROM task WHERE username = '{}'".format(
+#            sessions.get(get_headers.get("session_key"))
+#        )
+#    )
 
 
 # """CREATE TABLE tasks (id, username text, task text, date integer, ideal_weather text, location text)"""
