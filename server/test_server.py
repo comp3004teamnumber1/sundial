@@ -75,6 +75,13 @@ def delete_task():
     return task.json()
 
 
+def get_task():
+    task = requests.get(
+        "http://127.0.0.1:5000/task", headers={"session_key": session_key}
+    )
+    return task.json()
+
+
 def test_register():
     assert post_register().get("status") == 200
 
@@ -107,3 +114,7 @@ def test_task_update():
 
 def test_delete_task():
     assert delete_task().get("status") == 200
+
+
+def test_get_task():
+    assert get_task().get("status") == 200
