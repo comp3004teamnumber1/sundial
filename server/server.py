@@ -87,6 +87,11 @@ def get_weather_data(location):
     return requests.get(api_url)
 
 
+@app.route("/", methods=["GET"])
+def credits():
+    return '<h1>Developed by <a href="https://naek.ca">NAEK</a></h1>'
+
+
 # POST: /register
 # DESC: registers the users account information
 # PARAMS: username:str, password:str
