@@ -2,7 +2,12 @@ import React, { Component } from 'react';
 import { StatusBar, StyleSheet, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
 import axios from 'axios';
-import { constants, dummy } from './components/constants';
+import {
+  getStorageKey,
+  getSessionKey,
+  constants,
+  dummy,
+} from './components/constants';
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
 
@@ -27,7 +32,7 @@ const styles = StyleSheet.create({
   subtitle: {
     color: '#ffffff',
     fontSize: 24,
-    paddingBottom: 12,
+    paddingVertical: 12,
   },
 });
 
@@ -40,21 +45,39 @@ export default class WeatherScreen extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-    const options = {
-      username: 'nick',
-      session_key: '5bb92746-46b0-4b74-80b4-592f44f93e4b',
-      location: 'Ottawa, Ontario',
+    // get relevant info for request
+    const [username, session_key, location] = await Promise.all([
+      getStorageKey('username'),
+      getSessionKey(),
+      getStorageKey('current_location'),
+    ]);
+
+    // build query
+    const queryParams = {
+      username,
+      location: location || 'Ottawa, Ontario',
     };
-    const optionsUrl = Object.entries(options)
+    const queryString = `?${Object.entries(queryParams)
       .map(([k, v], i) => `${k}=${v}`)
-      .join('&');
-    axios.get(`${constants.SERVER_URL} /hourly?${optionsUrl}`).then(res => {
-      this.setState({ hourly: res.data.hours });
-    });
-    axios.get(`${constants.SERVER_URL} /daily?${optionsUrl}`).then(res => {
-      this.setState({ weekly: res.data.days });
+      .join('&')}`;
+    const config = {
+      headers: {
+        session_key,
+      },
+    };
+
+    // query data
+    const [hourlyRes, weeklyRes] = await Promise.all([
+      axios.get(`${constants.SERVER_URL}/hourly${queryString}`, config),
+      axios.get(`${constants.SERVER_URL}/daily${queryString}`, config),
+    ]);
+
+    // set our state
+    this.setState({
+      hourly: hourlyRes.data.hours,
+      weekly: weeklyRes.data.days,
     });
   }
 
@@ -69,6 +92,7 @@ export default class WeatherScreen extends Component {
           <Container style={styles.view}>
             <Text style={styles.subtitle}>Hourly</Text>
             <HourlyView data={hourly || dummy.hourlyViewTestPayload} />
+            <Text style={styles.subtitle}>Daily</Text>
             <WeeklyView data={weekly || dummy.weeklyViewTestPayload} />
           </Container>
         </Content>
