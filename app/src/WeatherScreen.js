@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { Pressable, StatusBar, StyleSheet, View, ScrollView } from 'react-native';
 import { Container, Text, Content } from 'native-base';
 import HourlyView from './WeatherScreen/HourlyView';
 import axios from 'axios';
 import WeeklyView from './WeatherScreen/WeeklyView';
+import { Feather } from '@expo/vector-icons';
+import { icon } from './components/constants';
 
 let WeeklyViewTestPayload = [
   {
@@ -154,6 +156,31 @@ const styles = StyleSheet.create({
     fontSize: 24,
     paddingBottom: 12,
   },
+  locationView: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    minHeight: 60,
+    maxHeight: 60,
+  },
+  locationTitle: {
+    color: '#ffffff',
+    textAlign: 'center'
+  },
+  locationDescription: {
+    textAlign: 'justify',
+    color: '#ffffff',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    fontSize: 24
+  },
+  locationSummary: {
+    color: '#ffffff',
+    textAlign: 'center',
+    width: '50%',
+    fontSize: 24,
+  },
 });
 
 export default class WeatherScreen extends Component {
@@ -181,21 +208,43 @@ export default class WeatherScreen extends Component {
 
   render() {
     return (
-      <Container style={styles.container}>
+      <ScrollView style={styles.container}>
         <StatusBar />
         <Content contentContainerStyle={styles.content}>
-          <Text style={styles.title}>Weather</Text>
+          <Pressable>
+            <Text style={styles.title}> Location </Text>
+            <Text style={styles.locationDescription}> Clear Skies </Text>
+          </Pressable>
+          <View style={styles.locationView}>
+            <Text style={styles.locationSummary}>
+              {icon('Wind', 24)}
+                5.7 m/s
+                W
+            </Text>
+            <Text style={styles.locationSummary}>
+              {icon('Drizzle', 24)}
+              {'28%'}
+            </Text>
+            <Text style={styles.locationSummary}>
+              {icon('Drop', 24)}
+              43%
+            </Text>
+            <Text style={styles.locationSummary}>
+              UV: Low
+            </Text>
+          </View>
           <Container style={styles.view}>
             <Text style={styles.subtitle}>Hourly</Text>
             <HourlyView
               data={this.state.hourly ? this.state.hourly : HourlyViewTestPayload}
             />
+            <Text style={styles.subtitle}>Daily</Text>
             <WeeklyView
               data={this.state.weekly ? this.state.weekly : WeeklyViewTestPayload}
             />
           </Container>
         </Content>
-      </Container>
+      </ScrollView>
     );
   }
 }

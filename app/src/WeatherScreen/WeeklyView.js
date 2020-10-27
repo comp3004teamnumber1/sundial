@@ -1,12 +1,13 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
-import { Entypo, Feather } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import moment from 'moment';
+import { icon } from './../components/constants';
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: 220,
+    maxHeight: 240,
     borderColor: '#332E3C',
     borderLeftWidth: 10,
     borderRightWidth: 10,
@@ -16,21 +17,21 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
   listItem: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    // flexDirection: 'column',
+    // justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#332E3C',
-    height: 220,
+    height: 350,
     width: 85,
     paddingVertical: 18,
     zIndex: 0,
   },
   activeListItem: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    // flexDirection: 'column',
+    // justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#FF8C42',
-    height: 220,
+    height: 350,
     width: 85,
     paddingVertical: 18,
     zIndex: 0,
@@ -39,12 +40,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 18,
+    marginBottom: 35
   },
   textWeather: {
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 23,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    marginTop: 40,
+    marginBottom: 20
   },
   textPrecip: {
     textAlign: 'center',
@@ -59,25 +63,6 @@ const styles = StyleSheet.create({
 });
 
 export default function WeeklyView(props) {
-  const weatherIcon = weather => {
-    switch (weather) {
-      case 'Clear':
-        return <Feather name="sun" size={48} color="white" />;
-      case 'Clouds':
-        return <Feather name="cloud" size={48} color="white" />;
-      case 'Rain':
-        return <Feather name="cloud-rain" size={48} color="white" />;
-      case 'Drizzle':
-        return <Feather name="cloud-drizzle" size={48} color="white" />;
-      case 'Thunderstorm':
-        return <Feather name="cloud-lightning" size={48} color="white" />;
-      case 'Snow':
-        return <Feather name="cloud-snow" size={48} color="white" />;
-      default:
-        return <Feather name="help-circle" size={48} color="white" />;
-    }
-  };
-
   return (
     <Container style={styles.container}>
       <List
@@ -86,11 +71,10 @@ export default function WeeklyView(props) {
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'
         renderRow={data => {
-          console.log(data);
           return (
             <Pressable style={moment().format('ddd') === data.date ? styles.activeListItem : styles.listItem}>
               <Text style={styles.textDate}>{moment.unix(data.date).format('ddd')}</Text>
-              {weatherIcon(data.weather_type)}
+              {icon(data.weather_type)}
               <Text style={styles.textWeather}> {data.temp.c + '°'} </Text>
               <Text style={styles.textPrecip}>
                 {data.pop + '%'}

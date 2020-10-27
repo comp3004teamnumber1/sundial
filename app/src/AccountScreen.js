@@ -10,23 +10,23 @@ import SettingsNotifications from './AccountScreen/SettingsNotifications';
 const AccountStack = createStackNavigator();
 
 export default function AccountScreen() {
-	return (
-		<AccountStack.Navigator
-			initialRouteName="Settings"
-			screenOptions={{ headerShown: false }}
-		>
-			<AccountStack.Screen name="Settings" component={Settings} />
-			<AccountStack.Screen name="SettingsAccount" component={SettingsAccount} />
-			<AccountStack.Screen
-				name="SettingsCalendar"
-				component={SettingsCalendar}
-			/>
-			<AccountStack.Screen name="SettingsHelp" component={SettingsHelp} />
-			<AccountStack.Screen
-				name="SettingsNotifications"
-				component={SettingsNotifications}
-			/>
-			<AccountStack.Screen name="SettingsWeather" component={SettingsWeather} />
-		</AccountStack.Navigator>
-	);
+  return (
+    <AccountStack.Navigator
+      initialRouteName='Settings'
+      screenOptions={{ headerShown: false }}
+    >
+      <AccountStack.Screen name='Settings' component={Settings} />
+      <AccountStack.Screen name='SettingsAccount' component={SettingsAccount} />
+      <AccountStack.Screen
+        name='SettingsCalendar'
+        component={SettingsCalendar}
+      />
+      <AccountStack.Screen name='SettingsHelp' component={SettingsHelp} />
+      <AccountStack.Screen
+        name='SettingsNotifications'
+        component={SettingsNotifications}
+      />
+      <AccountStack.Screen name='SettingsWeather' component={SettingsWeather} />
+    </AccountStack.Navigator>
+  );
 }
