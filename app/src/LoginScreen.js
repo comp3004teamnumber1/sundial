@@ -12,6 +12,7 @@ import {
 } from 'native-base';
 import axios from 'axios';
 import { Feather } from '@expo/vector-icons';
+import { constants } from './components/constants';
 
 const styles = StyleSheet.create({
   content: {
@@ -61,25 +62,28 @@ export default class LoginScreen extends Component {
     };
   }
 
-  handleLogin = async () => {
+  handleLogin = () => {
     const { username, password } = this.state;
     if (!username || !password) {
       return;
     }
-    // hack for now
-    const { loginFn } = this.props;
-    loginFn('1');
-    // axios
-    //   .post('http://10.0.2.2:5000/login', {
-    //     username,
-    //     password,
-    //   })
-    //   .then(res => {
-    //     console.log(res);
-    //   })
-    //   .catch(e => {
-    //     console.error(e);
-    //   });
+    const { login } = this.props;
+
+    axios
+      .post(`${constants.SERVER_URL}/login`, {
+        username,
+        password,
+      })
+      .then(
+        res => {
+          const { session_key } = res.data;
+          login(username, session_key);
+        },
+        e => {
+          console.log('Error occured while logging in.');
+          // console.error(e);
+        }
+      );
   };
 
   handleRegister = () => {
@@ -88,7 +92,7 @@ export default class LoginScreen extends Component {
       return;
     }
     axios
-      .post('http://10.0.2.2:5000/register', {
+      .post(`${constants.SERVER_URL}/register`, {
         username,
         password,
       })
@@ -97,7 +101,8 @@ export default class LoginScreen extends Component {
           this.handleLogin();
         },
         e => {
-          console.error(e);
+          console.log('Error occured while registering.');
+          // console.error(e);
         }
       );
   };
@@ -112,11 +117,11 @@ export default class LoginScreen extends Component {
           <Form style={styles.form}>
             <Item>
               <Label style={styles.textLight}>
-                <Feather name="user" size={24} color="white" />
+                <Feather name='user' size={24} color='white' />
               </Label>
               <Input
                 style={styles.textLight}
-                placeholder="Username"
+                placeholder='Username'
                 onChangeText={val => {
                   this.setState({ username: val });
                 }}
@@ -124,12 +129,12 @@ export default class LoginScreen extends Component {
             </Item>
             <Item>
               <Label style={styles.textLight}>
-                <Feather name="lock" size={24} color="white" />
+                <Feather name='lock' size={24} color='white' />
               </Label>
               <Input
                 style={styles.textLight}
                 secureTextEntry
-                placeholder="••••••••"
+                placeholder='••••••••'
                 onChangeText={val => {
                   this.setState({ password: val });
                 }}

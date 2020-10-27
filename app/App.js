@@ -1,15 +1,12 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-community/async-storage';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Feather } from '@expo/vector-icons';
+import { getSessionKey, setStorageKey } from './src/components/constants';
 import MainStack from './src/MainStack';
 import LoginScreen from './src/LoginScreen';
-
-const Stack = createStackNavigator();
 
 export default class App extends Component {
   constructor(props) {
@@ -29,28 +26,24 @@ export default class App extends Component {
     });
 
     // use this line to clear the key (for testing)
-    // await AsyncStorage.setItem('session_key', '');
-
+    // await setStorageKey('session_key', '');
     // check if logged in
-    try {
-      let key = await AsyncStorage.getItem('session_key');
-      if (key) {
-        this.setState({ loggedIn: true });
-      }
-    } catch (e) {
-      console.log('No session key found. Rerouting to Login screen...');
+    const res = await getSessionKey();
+    if (res === null) {
+      console.log('No session key found.');
+      return;
     }
     this.setState({ isReady: true });
   }
 
-  handleLogin = async key => {
-    try {
-      // Set our key
-      await AsyncStorage.setItem('session_key', key);
-      this.setState({ loggedIn: true });
-    } catch (e) {
-      console.error('Error setting session key.');
+  handleLogin = async (username, session_key) => {
+    const res1 = await setStorageKey('username', username);
+    const res2 = await setStorageKey('session_key', session_key);
+    if (!res1 || !res2) {
+      console.log('Error setting login credentials');
+      return;
     }
+    this.setState({ loggedIn: true });
   };
 
   render() {
@@ -62,7 +55,7 @@ export default class App extends Component {
     return (
       <NavigationContainer>
         {loggedIn && <MainStack />}
-        {!loggedIn && <LoginScreen loginFn={this.handleLogin} />}
+        {!loggedIn && <LoginScreen login={this.handleLogin} />}
       </NavigationContainer>
     );
   }

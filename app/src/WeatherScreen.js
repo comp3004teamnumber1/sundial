@@ -2,134 +2,9 @@ import React, { Component } from 'react';
 import { StatusBar, StyleSheet, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
 import axios from 'axios';
+import { constants, dummy } from './components/constants';
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
-
-let weeklyViewTestPayload = [
-  {
-    date: 1602960464,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clouds',
-    pop: 32,
-    humidity: 12,
-  },
-  {
-    date: 1603046864,
-    temp: {
-      c: 2.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12,
-  },
-  {
-    date: 1603133264,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12,
-  },
-  {
-    date: 1602097200,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12,
-  },
-  {
-    date: 1603392464,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12,
-  },
-  {
-    date: 1603478864,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12,
-  },
-];
-
-let hourlyViewTestPayload = [
-  {
-    date: 1602086400,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602090000,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602093600,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602097200,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602100800,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602104400,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-];
 
 const styles = StyleSheet.create({
   content: {
@@ -167,16 +42,19 @@ export default class WeatherScreen extends Component {
 
   componentDidMount() {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-    let options = {
+    const options = {
       username: 'nick',
       session_key: '5bb92746-46b0-4b74-80b4-592f44f93e4b',
       location: 'Ottawa, Ontario',
     };
-    let url = `http://10.0.2.2:5000/hourly?${Object.entries(options)
+    const optionsUrl = Object.entries(options)
       .map(([k, v], i) => `${k}=${v}`)
-      .join('&')}`;
-    axios.get(url).then(res => {
+      .join('&');
+    axios.get(`${constants.SERVER_URL} /hourly?${optionsUrl}`).then(res => {
       this.setState({ hourly: res.data.hours });
+    });
+    axios.get(`${constants.SERVER_URL} /daily?${optionsUrl}`).then(res => {
+      this.setState({ weekly: res.data.days });
     });
   }
 
@@ -190,8 +68,8 @@ export default class WeatherScreen extends Component {
           <Text style={styles.title}>Weather</Text>
           <Container style={styles.view}>
             <Text style={styles.subtitle}>Hourly</Text>
-            <HourlyView data={hourly || hourlyViewTestPayload} />
-            <WeeklyView data={weekly || weeklyViewTestPayload} />
+            <HourlyView data={hourly || dummy.hourlyViewTestPayload} />
+            <WeeklyView data={weekly || dummy.weeklyViewTestPayload} />
           </Container>
         </Content>
       </Container>
