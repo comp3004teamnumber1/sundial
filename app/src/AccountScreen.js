@@ -15,24 +15,24 @@ const AccountStack = createStackNavigator();
 export default function AccountScreen() {
   return (
     <AccountStack.Navigator
-      initialRouteName="Settings"
+      initialRouteName='Settings'
       screenOptions={{
         headerShown: false,
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
       }}
     >
-      <AccountStack.Screen name="Settings" component={Settings} />
-      <AccountStack.Screen name="SettingsAccount" component={SettingsAccount} />
+      <AccountStack.Screen name='Settings' component={Settings} />
+      <AccountStack.Screen name='SettingsAccount' component={SettingsAccount} />
       <AccountStack.Screen
-        name="SettingsCalendar"
+        name='SettingsCalendar'
         component={SettingsCalendar}
       />
-      <AccountStack.Screen name="SettingsHelp" component={SettingsHelp} />
+      <AccountStack.Screen name='SettingsHelp' component={SettingsHelp} />
       <AccountStack.Screen
-        name="SettingsNotifications"
+        name='SettingsNotifications'
         component={SettingsNotifications}
       />
-      <AccountStack.Screen name="SettingsWeather" component={SettingsWeather} />
+      <AccountStack.Screen name='SettingsWeather' component={SettingsWeather} />
     </AccountStack.Navigator>
   );
 }

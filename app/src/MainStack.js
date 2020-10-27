@@ -11,7 +11,7 @@ const Tab = createBottomTabNavigator();
 export default function MainStack() {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName='Home'
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let icon;
@@ -37,10 +37,10 @@ export default function MainStack() {
         showLabel: false,
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Calendar" component={CalendarScreen} />
-      <Tab.Screen name="Weather" component={WeatherScreen} />
-      <Tab.Screen name="Account" component={AccountScreen} />
+      <Tab.Screen name='Home' component={HomeScreen} />
+      <Tab.Screen name='Calendar' component={CalendarScreen} />
+      <Tab.Screen name='Weather' component={WeatherScreen} />
+      <Tab.Screen name='Account' component={AccountScreen} />
     </Tab.Navigator>
   );
 }

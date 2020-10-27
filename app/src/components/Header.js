@@ -5,27 +5,27 @@ import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 0.08,
-		backgroundColor: '#000000',
-		justifyContent: 'center',
-		paddingLeft: 18,
-	},
+  container: {
+    flex: 0.08,
+    backgroundColor: '#000000',
+    justifyContent: 'center',
+    paddingLeft: 18,
+  },
 });
 
 export default function Header() {
-	const navigation = useNavigation();
+  const navigation = useNavigation();
 
-	return (
-		<Container style={styles.container}>
-			<Feather
-				name="arrow-left"
-				size={24}
-				color="white"
-				onPress={() => {
-					navigation.goBack();
-				}}
-			/>
-		</Container>
-	);
+  return (
+    <Container style={styles.container}>
+      <Feather
+        name='arrow-left'
+        size={24}
+        color='white'
+        onPress={() => {
+          navigation.goBack();
+        }}
+      />
+    </Container>
+  );
 }
