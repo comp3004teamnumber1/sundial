@@ -315,18 +315,19 @@ def delete_task(id):
     return {"status": 200}, 200
 
 
-# @app.route("/task", methods=["GET"])
-# def get_task():
-#    get_headers = flask.request.headers
-#    if not authenticate_route(get_headers):
-#        return {"status": 401}, 401
-#    conn = sqlite3.connect("db.db")
-#    c = conn.cursor()
-#    c.execute(
-#        "SELECT id, task, date, ideal_weather, location FROM task WHERE username = '{}'".format(
-#            sessions.get(get_headers.get("session_key"))
-#        )
-#    )
+@app.route("/task", methods=["GET"])
+def get_task():
+    get_headers = flask.request.headers
+    if not authenticate_route(get_headers):
+        return {"status": 401}, 401
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        "SELECT id, task, date, ideal_weather, location FROM tasks WHERE username = '{}'".format(
+            sessions.get(get_headers.get("session_key"))
+        )
+    )
+    return {"tasks": c.fetchall(), "status": 200}, 200
 
 
 # """CREATE TABLE tasks (id, username text, task text, date integer, ideal_weather text, location text)"""
