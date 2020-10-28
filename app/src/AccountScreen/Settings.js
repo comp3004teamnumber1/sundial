@@ -77,6 +77,7 @@ export default function Settings({ navigation }) {
       <Content contentContainerStyle={styles.content}>
         <Text style={styles.title}>Settings</Text>
         <List
+          nestedScrollEnabled
           style={styles.list}
           keyExtractor={(item, index) => index.toString()}
           dataArray={options}
