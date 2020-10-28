@@ -17,29 +17,36 @@ import { constants } from './components/constants';
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,
     marginRight: 24,
-    marginBottom: 48,
+    marginBottom: 24,
   },
   container: {
     backgroundColor: '#231F29',
   },
-  form: {
+  containerForm: {
+    flex: 1,
     width: '100%',
+    justifyContent: 'center',
     marginTop: 16,
-    marginBottom: 36,
+    marginBottom: 20,
   },
   title: {
     color: '#ffffff',
     fontSize: 48,
+    marginTop: 24,
   },
   textLight: {
     color: '#ffffff',
   },
   textDark: {
     color: '#000000',
+  },
+  textError: {
+    color: '#ffffff',
+    textAlign: 'center',
+    marginTop: 24,
   },
   buttonLogin: {
     marginLeft: 16,
@@ -59,16 +66,37 @@ export default class LoginScreen extends Component {
     this.state = {
       username: '',
       password: '',
+      alertUsername: false,
+      alertPassword: false,
+      errorMsg: '',
     };
   }
 
-  handleLogin = () => {
+  checkInputs = () => {
     const { username, password } = this.state;
-    if (!username || !password) {
+    let verified = true;
+    if (!username) {
+      this.setState({ alertUsername: true });
+      verified = false;
+    } else {
+      this.setState({ alertUsername: false });
+    }
+    if (!password) {
+      this.setState({ alertPassword: true });
+      verified = false;
+    } else {
+      this.setState({ alertPassword: false });
+    }
+    return verified;
+  };
+
+  handleLogin = () => {
+    if (!this.checkInputs()) {
+      this.setState({ errorMsg: 'Please check your username/password.' });
       return;
     }
+    const { username, password } = this.state;
     const { login } = this.props;
-
     axios
       .post(`${constants.SERVER_URL}/login`, {
         username,
@@ -80,6 +108,9 @@ export default class LoginScreen extends Component {
           login(username, session_key);
         },
         e => {
+          this.setState({
+            errorMsg: 'An error occurred. Please try again.',
+          });
           console.log('Error occured while logging in.');
           // console.error(e);
         }
@@ -87,10 +118,11 @@ export default class LoginScreen extends Component {
   };
 
   handleRegister = () => {
-    const { username, password } = this.state;
-    if (!username || !password) {
+    if (!this.checkInputs()) {
+      this.setState({ errorMsg: 'Please check your username/password.' });
       return;
     }
+    const { username, password } = this.state;
     axios
       .post(`${constants.SERVER_URL}/register`, {
         username,
@@ -101,6 +133,9 @@ export default class LoginScreen extends Component {
           this.handleLogin();
         },
         e => {
+          this.setState({
+            errorMsg: 'An error occurred. Please try again.',
+          });
           console.log('Error occured while registering.');
           // console.error(e);
         }
@@ -108,14 +143,16 @@ export default class LoginScreen extends Component {
   };
 
   render() {
+    const { alertUsername, alertPassword, errorMsg } = this.state;
+
     return (
       <Container style={styles.container}>
         <StatusBar />
         <Content contentContainerStyle={styles.content}>
           <Text style={styles.title}>Login</Text>
 
-          <Form style={styles.form}>
-            <Item>
+          <Form style={styles.containerForm}>
+            <Item error={alertUsername}>
               <Label style={styles.textLight}>
                 <Feather name='user' size={24} color='white' />
               </Label>
@@ -127,7 +164,7 @@ export default class LoginScreen extends Component {
                 }}
               />
             </Item>
-            <Item>
+            <Item error={alertPassword}>
               <Label style={styles.textLight}>
                 <Feather name='lock' size={24} color='white' />
               </Label>
@@ -140,6 +177,7 @@ export default class LoginScreen extends Component {
                 }}
               />
             </Item>
+            <Text style={styles.textError}>{errorMsg}</Text>
           </Form>
           <Button block style={styles.buttonLogin} onPress={this.handleLogin}>
             <Text style={styles.textDark}>Sign In</Text>
