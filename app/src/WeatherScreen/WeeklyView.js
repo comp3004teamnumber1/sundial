@@ -62,19 +62,19 @@ export default function WeeklyView({ data }) {
   const weatherIcon = weather => {
     switch (weather) {
       case 'Clear':
-        return <Feather name="sun" size={48} color="white" />;
+        return <Feather name='sun' size={48} color='white' />;
       case 'Clouds':
-        return <Feather name="cloud" size={48} color="white" />;
+        return <Feather name='cloud' size={48} color='white' />;
       case 'Rain':
-        return <Feather name="cloud-rain" size={48} color="white" />;
+        return <Feather name='cloud-rain' size={48} color='white' />;
       case 'Drizzle':
-        return <Feather name="cloud-drizzle" size={48} color="white" />;
+        return <Feather name='cloud-drizzle' size={48} color='white' />;
       case 'Thunderstorm':
-        return <Feather name="cloud-lightning" size={48} color="white" />;
+        return <Feather name='cloud-lightning' size={48} color='white' />;
       case 'Snow':
-        return <Feather name="cloud-snow" size={48} color="white" />;
+        return <Feather name='cloud-snow' size={48} color='white' />;
       default:
-        return <Feather name="help-circle" size={48} color="white" />;
+        return <Feather name='help-circle' size={48} color='white' />;
     }
   };
 
@@ -84,7 +84,7 @@ export default function WeeklyView({ data }) {
         horizontal
         dataArray={data}
         showsHorizontalScrollIndicator={false}
-        overScrollMode="never"
+        overScrollMode='never'
         keyExtractor={(item, i) => `Day${i.toString()}`}
         renderRow={item => {
           return (
@@ -102,7 +102,7 @@ export default function WeeklyView({ data }) {
               <Text style={styles.textWeather}> {`${item.temp.c}°`} </Text>
               <Text style={styles.textPrecip}>
                 {`${item.pop}%`}
-                <Entypo name="drop" size={12} color="#6699CC" />
+                <Entypo name='drop' size={12} color='#6699CC' />
                 <Text style={styles.textHumidity}> {`${item.humidity}`}</Text>
               </Text>
             </Pressable>

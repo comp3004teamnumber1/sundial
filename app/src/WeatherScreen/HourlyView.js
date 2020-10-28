@@ -57,19 +57,19 @@ export default function HourlyView({ data }) {
   const weatherIcon = weather => {
     switch (weather) {
       case 'Clear':
-        return <Feather name="sun" size={48} color="white" />;
+        return <Feather name='sun' size={48} color='white' />;
       case 'Clouds':
-        return <Feather name="cloud" size={48} color="white" />;
+        return <Feather name='cloud' size={48} color='white' />;
       case 'Rain':
-        return <Feather name="cloud-rain" size={48} color="white" />;
+        return <Feather name='cloud-rain' size={48} color='white' />;
       case 'Drizzle':
-        return <Feather name="cloud-drizzle" size={48} color="white" />;
+        return <Feather name='cloud-drizzle' size={48} color='white' />;
       case 'Thunderstorm':
-        return <Feather name="cloud-lightning" size={48} color="white" />;
+        return <Feather name='cloud-lightning' size={48} color='white' />;
       case 'Snow':
-        return <Feather name="cloud-snow" size={48} color="white" />;
+        return <Feather name='cloud-snow' size={48} color='white' />;
       default:
-        return <Feather name="help-circle" size={48} color="white" />;
+        return <Feather name='help-circle' size={48} color='white' />;
     }
   };
 
@@ -81,7 +81,7 @@ export default function HourlyView({ data }) {
         horizontal
         dataArray={data}
         showsHorizontalScrollIndicator={false}
-        overScrollMode="never"
+        overScrollMode='never'
         keyExtractor={(item, index) => `Hour${index.toString()}`}
         renderRow={item => {
           let time = moment.unix(item.date);

@@ -91,7 +91,7 @@ export default function Settings({ navigation }) {
               style={styles.listItem}
             >
               <Left>
-                <Feather name={data.icon} size={32} color="white" />
+                <Feather name={data.icon} size={32} color='white' />
               </Left>
               <Body>
                 <Text style={styles.text}>{data.label}</Text>

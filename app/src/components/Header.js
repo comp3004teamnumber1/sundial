@@ -19,9 +19,9 @@ export default function Header() {
   return (
     <Container style={styles.container}>
       <Feather
-        name="arrow-left"
+        name='arrow-left'
         size={24}
-        color="white"
+        color='white'
         onPress={() => {
           navigation.goBack();
         }}

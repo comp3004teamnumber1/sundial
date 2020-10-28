@@ -1,5 +1,8 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from '@react-navigation/stack';
 import Settings from './AccountScreen/Settings';
 import SettingsAccount from './AccountScreen/SettingsAccount';
 import SettingsCalendar from './AccountScreen/SettingsCalendar';
@@ -12,21 +15,24 @@ const AccountStack = createStackNavigator();
 export default function AccountScreen() {
   return (
     <AccountStack.Navigator
-      initialRouteName="Settings"
-      screenOptions={{ headerShown: false }}
+      initialRouteName='Settings'
+      screenOptions={{
+        headerShown: false,
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      }}
     >
-      <AccountStack.Screen name="Settings" component={Settings} />
-      <AccountStack.Screen name="SettingsAccount" component={SettingsAccount} />
+      <AccountStack.Screen name='Settings' component={Settings} />
+      <AccountStack.Screen name='SettingsAccount' component={SettingsAccount} />
       <AccountStack.Screen
-        name="SettingsCalendar"
+        name='SettingsCalendar'
         component={SettingsCalendar}
       />
-      <AccountStack.Screen name="SettingsHelp" component={SettingsHelp} />
+      <AccountStack.Screen name='SettingsHelp' component={SettingsHelp} />
       <AccountStack.Screen
-        name="SettingsNotifications"
+        name='SettingsNotifications'
         component={SettingsNotifications}
       />
-      <AccountStack.Screen name="SettingsWeather" component={SettingsWeather} />
+      <AccountStack.Screen name='SettingsWeather' component={SettingsWeather} />
     </AccountStack.Navigator>
   );
 }
