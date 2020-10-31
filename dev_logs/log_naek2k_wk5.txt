@@ -1,0 +1,7 @@
+back end development [7 hours]
+  - redesigned db so accounts are unique
+  - fixed db locking
+    - check before adding duplicate accounts
+  - added error messages for user clarity
+  - completed more routes for tasks, nearly finished all task related routes
+team meetings/standups [1 hour]
