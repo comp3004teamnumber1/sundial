@@ -104,10 +104,14 @@ def register():
         username = post_args.get("username")
         password = post_args.get("password")
     else:
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Username or password is missing."}, 401
     # authenticate the account
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
+    c.execute("SELECT username FROM users WHERE username = '{}'".format(username))
+    if c.fetchone():
+        if c.fetchone()[0] == username:
+            return {"status": 401, "error": "That username is taken."}, 401
     c.execute(
         "INSERT INTO users (username, password) VALUES ('{}', '{}')".format(
             username, encrypt_password(password)
@@ -131,12 +135,12 @@ def login():
         username = post_args.get("username")
         password = post_args.get("password")
     else:
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Username or password is missing."}, 401
     # authenticate the account
     if authenticate_login(username, password):
         sessions.update({str(session_key): username})
         return {"status": 200, "session_key": session_key}, 200
-    return {"status": 401}, 401
+    return {"status": 401, "error": "Incorrect password."}, 401
 
 
 # GET: /daily
@@ -149,9 +153,9 @@ def daily():
     get_headers = flask.request.headers
     # verify that a username and session key was sent
     if not authenticate_route(get_headers):
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Missing session key."}, 401
     if not get_args["location"]:
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Missing location."}, 401
     api_return = get_weather_data(get_args.get("location"))
     # convert to json
     weather_data = api_return.json()
@@ -192,9 +196,9 @@ def hourly():
     get_headers = flask.request.headers
     # verify that a username and session key was sent
     if not authenticate_route(get_headers):
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Missing session key."}, 401
     if not get_args["location"]:
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Missing location."}, 401
     api_return = get_weather_data(get_args.get("location"))
     # convert to json
     weather_data = api_return.json()
@@ -233,14 +237,17 @@ def create_task():
     post_args = flask.request.get_json()
     post_headers = flask.request.headers
     if not authenticate_route(post_headers):
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Missing session key."}, 401
     if (
         not post_args.get("task", 0)
         or not post_args.get("date", 0)
         or not post_args.get("ideal_weather", 0)
         or not post_args.get("location", 0)
     ):
-        return {"status": 401}, 401
+        return {
+            "status": 401,
+            "error": "Missing required field. (task, date, ideal weather, or location)",
+        }, 401
     task_id = str(uuid.uuid4())
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
@@ -259,35 +266,38 @@ def create_task():
     return {"status": 200, "id": task_id}, 200
 
 
-@app.route("/task/<id>", methods=["POST"])
-def update_task(id):
+@app.route("/task/<task_id>", methods=["POST"])
+def update_task(task_id):
     post_args = flask.request.get_json()
     post_headers = flask.request.headers
     if not authenticate_route(post_headers):
-        return {"status": 401}, 401
-    if not id:
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Missing session key."}, 401
+    if not task_id:
+        return {"status": 401, "error": "Missing task id."}, 401
     if (
         not post_args.get("task", 0)
         or not post_args.get("date", 0)
         or not post_args.get("ideal_weather", 0)
         or not post_args.get("location", 0)
     ):
-        return {"status": 401}, 401
+        return {
+            "status": 401,
+            "error": "Missing required field. (task, date, ideal weather, or location)",
+        }, 401
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
-    c.execute("SELECT username FROM tasks WHERE id = '{}'".format(id))
+    c.execute("SELECT username FROM tasks WHERE id = '{}'".format(task_id))
     query = c.fetchone()
     if query:
         if query[0] != sessions.get(post_headers.get("session_key")):
-            return {"status": 401}, 401
+            return {"status": 401, "error": "This task does not belong to you."}, 401
     c.execute(
         "UPDATE tasks SET task = '{}', date = '{}', ideal_weather = '{}', location = '{}' WHERE id = '{}'".format(
             post_args.get("task"),
             post_args.get("date"),
             post_args.get("ideal_weather"),
             post_args.get("location"),
-            id,
+            task_id,
         )
     )
     conn.commit()
@@ -295,21 +305,21 @@ def update_task(id):
     return {"status": 200}, 200
 
 
-@app.route("/task/<id>", methods=["DELETE"])
-def delete_task(id):
+@app.route("/task/<task_id>", methods=["DELETE"])
+def delete_task(task_id):
     post_headers = flask.request.headers
     if not authenticate_route(post_headers):
-        return {"status": 401}, 401
-    if not id:
-        return {"status": 401}, 401
+        return {"status": 401, "error": "Missing session key."}, 401
+    if not task_id:
+        return {"status": 401, "error": "Missing task id."}, 401
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
-    c.execute("SELECT username FROM tasks WHERE id = '{}'".format(id))
+    c.execute("SELECT username FROM tasks WHERE id = '{}'".format(task_id))
     query = c.fetchone()
     if query:
         if query[0] != sessions.get(post_headers.get("session_key")):
-            return {"status": 401}, 401
-    c.execute("DELETE FROM tasks WHERE id = '{}'".format(id))
+            return {"status": 401, "error": "This task does not belong to you."}, 401
+    c.execute("DELETE FROM tasks WHERE id = '{}'".format(task_id))
     conn.commit()
     conn.close()
     return {"status": 200}, 200
@@ -329,7 +339,5 @@ def get_task():
     )
     return {"tasks": c.fetchall(), "status": 200}, 200
 
-
-# """CREATE TABLE tasks (id, username text, task text, date integer, ideal_weather text, location text)"""
 
 app.run()
