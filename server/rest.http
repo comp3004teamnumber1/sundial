@@ -1,0 +1,87 @@
+@hostname = 127.0.0.1
+@port = 5000
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@location = "Ottawa, Ontario"
+
+# @name register
+POST http://{{host}}/register HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "username": "naek",
+    "password": "naek"
+}
+
+###
+
+# @name login
+POST http://{{host}}/login HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "username": "naek",
+    "password": "naek"
+}
+
+
+###
+
+@sessionKey = {{login.response.body.session_key}}
+
+# @name daily
+
+GET http://{{host}}/daily
+    ?location={{location}}
+Content-Type: {{contentType}}
+Session-Key: {{sessionKey}}
+
+###
+
+# @name hourly
+
+GET http://{{host}}/hourly
+    ?location={{location}}
+Content-Type: {{contentType}}
+Session-Key: {{sessionKey}}
+
+
+###
+
+# @name task_post
+
+POST http://{{host}}/task
+Content-Type: {{contentType}}
+Session-Key: {{sessionKey}}
+
+{
+    "task": "Finish 3004.",
+    "date": "156828372",
+    "ideal_weather": "Sunny",
+    "location": {{location}}
+}
+
+###
+
+@taskId = {{task_post.response.body.id}}
+
+# @name task_id_post
+
+POST http://{{host}}/task/{{taskId}}
+Content-Type: {{contentType}}
+Session-Key: {{sessionKey}}
+
+{
+    "task": "Read 3004 notes.",
+    "date": "156828399",
+    "ideal_weather": "Cloudy",
+    "location": {{location}}
+}
+
+###
+
+# @name task_id_get
+
+GET http://{{host}}/task
+Content-Type: {{contentType}}
+Session-Key: {{sessionKey}}
