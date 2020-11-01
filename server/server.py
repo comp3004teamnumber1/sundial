@@ -49,7 +49,7 @@ def authenticate_login(username, password):
 
 # checks to see if the user is logged in
 def authenticate_route(headers):
-    session_key = headers.get("session_key", default=None, type=str)
+    session_key = headers.get("Session-Key", default=None, type=str)
     # verify session key was sent
     return session_key in sessions
 
@@ -139,7 +139,7 @@ def login():
     # authenticate the account
     if authenticate_login(username, password):
         sessions.update({str(session_key): username})
-        return {"status": 200, "session_key": session_key}, 200
+        return {"status": 200, "Session-Key": session_key}, 200
     return {"status": 401, "error": "Incorrect password."}, 401
 
 
@@ -254,7 +254,7 @@ def create_task():
     c.execute(
         "INSERT INTO tasks (id, username, task, date, ideal_weather, location) VALUES ('{}', '{}', '{}', '{}', '{}', '{}')".format(
             task_id,
-            sessions.get(post_headers.get("session_key")),
+            sessions.get(post_headers.get("Session-Key")),
             post_args.get("task"),
             post_args.get("date"),
             post_args.get("ideal_weather"),
@@ -289,7 +289,7 @@ def update_task(task_id):
     c.execute("SELECT username FROM tasks WHERE id = '{}'".format(task_id))
     query = c.fetchone()
     if query:
-        if query[0] != sessions.get(post_headers.get("session_key")):
+        if query[0] != sessions.get(post_headers.get("Session-Key")):
             return {"status": 401, "error": "This task does not belong to you."}, 401
     c.execute(
         "UPDATE tasks SET task = '{}', date = '{}', ideal_weather = '{}', location = '{}' WHERE id = '{}'".format(
@@ -317,7 +317,7 @@ def delete_task(task_id):
     c.execute("SELECT username FROM tasks WHERE id = '{}'".format(task_id))
     query = c.fetchone()
     if query:
-        if query[0] != sessions.get(post_headers.get("session_key")):
+        if query[0] != sessions.get(post_headers.get("Session-Key")):
             return {"status": 401, "error": "This task does not belong to you."}, 401
     c.execute("DELETE FROM tasks WHERE id = '{}'".format(task_id))
     conn.commit()
@@ -334,7 +334,7 @@ def get_task():
     c = conn.cursor()
     c.execute(
         "SELECT id, task, date, ideal_weather, location FROM tasks WHERE username = '{}'".format(
-            sessions.get(get_headers.get("session_key"))
+            sessions.get(get_headers.get("Session-Key"))
         )
     )
     return {"tasks": c.fetchall(), "status": 200}, 200
