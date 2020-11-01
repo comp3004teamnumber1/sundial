@@ -139,7 +139,7 @@ def login():
     # authenticate the account
     if authenticate_login(username, password):
         sessions.update({str(session_key): username})
-        return {"status": 200, "Session-Key": session_key}, 200
+        return {"status": 200, "session_key": session_key}, 200
     return {"status": 401, "error": "Incorrect password."}, 401
 
 
