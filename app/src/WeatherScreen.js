@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 import { StatusBar, StyleSheet, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
-import axios from 'axios';
-import {
-  getStorageKey,
-  getSessionKey,
-  constants,
-  dummy,
-} from './components/constants';
+import { dummy } from './components/constants';
+import { queryHourlyWeekly } from './components/queryHourlyWeekly.js'
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
 
@@ -47,37 +42,14 @@ export default class WeatherScreen extends Component {
 
   async componentDidMount() {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-    // get relevant info for request
-    const [username, session_key, location] = await Promise.all([
-      getStorageKey('username'),
-      getSessionKey(),
-      getStorageKey('current_location'),
-    ]);
-
-    // build query
-    const queryParams = {
-      username,
-      location: location || 'Ottawa, Ontario',
-    };
-    const queryString = `?${Object.entries(queryParams)
-      .map(([k, v], i) => `${k}=${v}`)
-      .join('&')}`;
-    const config = {
-      headers: {
-        session_key,
-      },
-    };
 
     // query data
-    const [hourlyRes, weeklyRes] = await Promise.all([
-      axios.get(`${constants.SERVER_URL}/hourly${queryString}`, config),
-      axios.get(`${constants.SERVER_URL}/daily${queryString}`, config),
-    ]);
+    const HourlyWeeklyData = queryHourlyWeekly();
 
     // set our state
     this.setState({
-      hourly: hourlyRes.data.hours,
-      weekly: weeklyRes.data.days,
+      hourly: HourlyWeeklyData.hourly.data.hours,
+      weekly: HourlyWeeklyData.weekly.data.days,
     });
   }
 

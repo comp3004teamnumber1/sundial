@@ -26,7 +26,7 @@ export default class App extends Component {
     });
 
     // use this line to clear the key (for testing)
-    // await setStorageKey('session_key', '');
+    await setStorageKey('session_key', 'key');
     // check if logged in
     const res = await getSessionKey();
     if (res === null) {
