@@ -26,7 +26,7 @@ def post_login():
 def get_hourly():
     hourly = requests.get(
         "http://127.0.0.1:5000/hourly?location=Ottawa, Ontario",
-        headers={"session_key": session_key},
+        headers={"Session-Key": session_key},
     )
     return hourly.json()
 
@@ -34,7 +34,7 @@ def get_hourly():
 def get_daily():
     daily = requests.get(
         "http://127.0.0.1:5000/daily?location=Ottawa, Ontario",
-        headers={"session_key": session_key},
+        headers={"Session-Key": session_key},
     )
     return daily.json()
 
@@ -48,7 +48,7 @@ def post_task_create():
             "ideal_weather": "Sunny",
             "location": "Ottawa, Ontario",
         },
-        headers={"session_key": session_key},
+        headers={"Session-Key": session_key},
     )
     return task.json()
 
@@ -62,7 +62,7 @@ def post_task_update():
             "ideal_weather": "Rainy",
             "location": "Ottawa, Ontario",
         },
-        headers={"session_key": session_key},
+        headers={"Session-Key": session_key},
     )
     return task.json()
 
@@ -70,14 +70,14 @@ def post_task_update():
 def delete_task():
     task = requests.delete(
         "http://127.0.0.1:5000/task/{}".format(task_id),
-        headers={"session_key": session_key},
+        headers={"Session-Key": session_key},
     )
     return task.json()
 
 
 def get_task():
     task = requests.get(
-        "http://127.0.0.1:5000/task", headers={"session_key": session_key}
+        "http://127.0.0.1:5000/task", headers={"Session-Key": session_key}
     )
     return task.json()
 
