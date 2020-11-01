@@ -34,7 +34,7 @@ Content-Type: {{contentType}}
 GET http://{{host}}/daily
     ?location={{location}}
 Content-Type: {{contentType}}
-session_key: {{sessionKey}}
+Session-Key: {{sessionKey}}
 
 ###
 
@@ -43,7 +43,7 @@ session_key: {{sessionKey}}
 GET http://{{host}}/hourly
     ?location={{location}}
 Content-Type: {{contentType}}
-session_key: {{sessionKey}}
+Session-Key: {{sessionKey}}
 
 
 ###
@@ -52,7 +52,7 @@ session_key: {{sessionKey}}
 
 POST http://{{host}}/task
 Content-Type: {{contentType}}
-session_key: {{sessionKey}}
+Session-Key: {{sessionKey}}
 
 {
     "task": "Finish 3004.",
@@ -69,7 +69,7 @@ session_key: {{sessionKey}}
 
 POST http://{{host}}/task/{{taskId}}
 Content-Type: {{contentType}}
-session_key: {{sessionKey}}
+Session-Key: {{sessionKey}}
 
 {
     "task": "Read 3004 notes.",
