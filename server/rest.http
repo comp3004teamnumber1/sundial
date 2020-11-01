@@ -77,3 +77,11 @@ session_key: {{sessionKey}}
     "ideal_weather": "Cloudy",
     "location": {{location}}
 }
+
+###
+
+# @name task_id_get
+
+GET http://{{host}}/task
+Content-Type: {{contentType}}
+Session-Key: {{sessionKey}}
