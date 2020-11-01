@@ -7,8 +7,16 @@ from datetime import datetime
 import sqlite3
 import os
 from geopy.geocoders import Nominatim
+import argparse
 
 from encryption import encrypt_password, check_encrypted_password
+
+# argparse
+parser = argparse.ArgumentParser(
+    description="Flags for Sundial Backend: Developed by NAEK (https://naek.ca)"
+)
+parser.add_argument("--https", action="store_true")
+args = parser.parse_args()
 
 # flask setup
 app = flask.Flask(__name__)
@@ -355,4 +363,13 @@ def get_task():
     return {"tasks": tasks, "status": 200}, 200
 
 
-app.run()
+if args.https:
+    app.run(
+        host="0.0.0.0",
+        ssl_context=(
+            "/etc/letsencrypt/live/sundial.vinhnguyen.ca/fullchain.pem",
+            "/etc/letsencrypt/live/sundial.vinhnguyen.ca/privkey.pem",
+        ),
+    )
+else:
+    app.run()
