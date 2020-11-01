@@ -35,9 +35,9 @@ run tests: `$ pytest`
 ### SHORT USAGE GUIDE
 - make a POST request to /register that sends the username and password to the server, once registered
 - make a POST request to /login that sends a username and password to the server, you will be sent a session_key if it was successful
-- take the session_key you are sent and put it in the headers as `session_key` of the GET routes you want to use along, ie
+- take the session_key you are sent and put it in the headers as `Session-Key` of the GET routes you want to use along, ie
   - `/daily?location=Ottawa, Ontario`
-  - `headers={"session_key": "str"}`
+  - `headers={"Session-Key": "str"}`
 
 ### POST: /register
 
