@@ -48,15 +48,13 @@ export default class WeatherScreen extends Component {
   async componentDidMount() {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     // get relevant info for request
-    const [username, session_key, location] = await Promise.all([
-      getStorageKey('username'),
+    const [session_key, location] = await Promise.all([
       getSessionKey(),
       getStorageKey('current_location'),
     ]);
 
     // build query
     const queryParams = {
-      username,
       location: location || 'Ottawa, Ontario',
     };
     const queryString = `?${Object.entries(queryParams)
@@ -64,15 +62,23 @@ export default class WeatherScreen extends Component {
       .join('&')}`;
     const config = {
       headers: {
-        session_key,
+        'Session-Key': session_key,
       },
     };
 
     // query data
-    const [hourlyRes, weeklyRes] = await Promise.all([
-      axios.get(`${constants.SERVER_URL}/hourly${queryString}`, config),
-      axios.get(`${constants.SERVER_URL}/daily${queryString}`, config),
-    ]);
+    let hourlyRes;
+    let weeklyRes;
+    try {
+      [hourlyRes, weeklyRes] = await Promise.all([
+        axios.get(`${constants.SERVER_URL}/hourly${queryString}`, config),
+        axios.get(`${constants.SERVER_URL}/daily${queryString}`, config),
+      ]);
+    } catch (e) {
+      console.log('An error occurred while fetching weather data.');
+      console.error(e);
+      return;
+    }
 
     // set our state
     this.setState({

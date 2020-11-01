@@ -22,7 +22,7 @@ export async function getSessionKey() {
 }
 
 export const constants = {
-  SERVER_URL: 'http://10.0.2.2:5000',
+  SERVER_URL: 'https://sundial.vinhnguyen.ca' || 'http://10.0.2.2:5000',
 };
 
 export const dummy = {
