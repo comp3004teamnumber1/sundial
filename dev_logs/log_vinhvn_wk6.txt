@@ -1,0 +1,6 @@
+- [2 hours] Updated frontend to be compatible with the backend server and properly store session keys within async storage modules.
+- [1 hours] Rewrote asynchronous functions to be more efficient and request all promises to resolve more quickly.
+- [1 hours] Added status messages to the login screen for better user design.
+- [1 hours] Deployed backend server to https://sundial.vinhnguyen.ca/ and set it up to be relatively fail-safe.
+- [2 hours] Debugged HTTPS headers not correctly working on the hosted backend server along with Nick's help.
+- [1 hours] Started Calendar screen components and set up initial requests for tasks.
