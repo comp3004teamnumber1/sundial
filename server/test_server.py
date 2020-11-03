@@ -112,9 +112,11 @@ def test_task_update():
     assert post_task_update().get("status") == 200
 
 
+def test_get_task():
+    response = get_task()
+    print("\nGET: /task {}\n".format(response))
+    assert response.get("status") == 200
+
+
 def test_delete_task():
     assert delete_task().get("status") == 200
-
-
-def test_get_task():
-    assert get_task().get("status") == 200
