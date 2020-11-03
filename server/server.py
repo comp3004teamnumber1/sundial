@@ -360,7 +360,10 @@ def get_task():
                     "location": task[4],
                 }
             )
-    return {"tasks": tasks, "status": 200}, 200
+    return {
+        "tasks": sorted(tasks, key=lambda task: task.get("date")),
+        "status": 200,
+    }, 200
 
 
 if args.https:
