@@ -1,0 +1,12 @@
+Deen Haque
+
+Discussion
+- Standup (1hr)
+- Broke down front end development with Vinh to discuss weather screen components (1hr)
+
+Research
+- Researched AWS Lambdas briefly to see if they're a valid server hosting option (they might be!) (2hrs)
+
+Development
+- Re-factored a lot of existing code due to a new "constants.js" file which will share common code between all src files. (3hrs)
+- Developed on WeatherScreen page to have it match our Figma specs. (1hr)

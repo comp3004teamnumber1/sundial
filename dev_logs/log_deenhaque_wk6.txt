@@ -1,0 +1,9 @@
+Deen Haque
+
+Research
+- Concluded that AWS lambdas may not be an ideal server host (databases are set using AWS' DynamoDB, but our backend has a database all set up already) (1hr)
+
+Deliverables
+- Worked on D2 with the group (3hrs)
+
+Honestly, kind of had a lot going on this week, so I couldn't do too much. Sorry guys :(
