@@ -185,7 +185,6 @@ OUTPUT:
 }
 ```
 
-
 #### POST: /task/<task_id>
 
 NOTE: This will update the task with task_id as long as the Session-Key sent matches the username that created the task.
@@ -209,7 +208,6 @@ OUTPUT:
   "status": 200
 }
 ```
-
 
 #### DELETE: /task/<task_id>
 
