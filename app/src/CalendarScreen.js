@@ -1,22 +1,22 @@
 import React from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
-import { Container, Text, Content } from 'native-base';
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from '@react-navigation/stack';
+import CalendarHome from './CalendarScreen/CalendarHome';
 
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+const CalendarStack = createStackNavigator();
 
 export default function CalendarScreen() {
   return (
-    <Container>
-      <StatusBar />
-      <Content contentContainerStyle={styles.content}>
-        <Text>Welcome to Calendar</Text>
-      </Content>
-    </Container>
+    <CalendarStack.Navigator
+      initialRouteName='CalendarHome'
+      screenOptions={{
+        headerShown: false,
+        cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
+      }}
+    >
+      <CalendarStack.Screen name='CalendarHome' component={CalendarHome} />
+    </CalendarStack.Navigator>
   );
 }
