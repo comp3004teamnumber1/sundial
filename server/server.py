@@ -95,6 +95,24 @@ def get_weather_data(location):
     return requests.get(api_url)
 
 
+def build_insert_query(table, params):
+    query_string = "INSERT INTO {} ({}) VALUES ({})".format(
+        table,
+        ", ".join([col for col in params.keys() if params.get(col, 0)]),
+        ", ".join(["'{}'".format(val) for val in params.values() if val]),
+    )
+    return query_string
+
+
+def build_update_query(table, params, where):
+    query_string = "UPDATE {} SET {} WHERE {}".format(
+        table,
+        ", ".join(["{} = '{}'".format(col, val) for col, val in params.items() if val]),
+        where,
+    )
+    return query_string
+
+
 @app.route("/", methods=["GET"])
 def credits():
     return '<h1>Developed by <a href="https://naek.ca">NAEK</a></h1>'
@@ -153,7 +171,8 @@ def login():
 
 # GET: /daily
 # DESC: gets the information related to the daily componenet
-# PARAMS: username:str, session_key:str
+# PARAMS: location
+# HEADERS: Session-Key
 # SENDS: JSON with 8 days of weather info
 @app.route("/daily", methods=["GET"])
 def daily():
@@ -194,9 +213,10 @@ def daily():
     return days, 200
 
 
-# GET: /daily
-# DESC: gets the information related to the hourly componenet
-# PARAMS: username:str, session_key:str
+# GET: /hourly
+# DESC: gets the information related to the hourly component
+# PARAMS: location
+# HEADERS: Session-Key
 # SENDS: JSON with 24 hours of weather info
 @app.route("/hourly", methods=["GET"])
 def hourly():
@@ -239,41 +259,44 @@ def hourly():
     return hours, 200
 
 
-# (username text, task text, date text, ideal_weather text, location text)
+# POST: /task
+# DESC: creates a new task
+# PARAMS: task:str, date:int, ideal_weather:str, location:str
+# HEADERS: Session-Key
+# SENDS: JSON with task id
 @app.route("/task", methods=["POST"])
 def create_task():
     post_args = flask.request.get_json()
     post_headers = flask.request.headers
     if not authenticate_route(post_headers):
         return {"status": 401, "error": "Missing session key."}, 200
-    if (
-        not post_args.get("task", 0)
-        or not post_args.get("date", 0)
-        or not post_args.get("ideal_weather", 0)
-        or not post_args.get("location", 0)
-    ):
+    if not post_args.get("task", 0):
         return {
             "status": 401,
-            "error": "Missing required field. (task, date, ideal weather, or location)",
+            "error": "Missing task.",
         }, 200
     task_id = str(uuid.uuid4())
+    task = {
+        "id": task_id,
+        "username": sessions.get(post_headers.get("Session-Key")),
+        "task": post_args.get("task", ""),
+        "date": post_args.get("date", ""),
+        "ideal_weather": post_args.get("ideal_weather", ""),
+        "location": post_args.get("location", ""),
+    }
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
-    c.execute(
-        "INSERT INTO tasks (id, username, task, date, ideal_weather, location) VALUES ('{}', '{}', '{}', '{}', '{}', '{}')".format(
-            task_id,
-            sessions.get(post_headers.get("Session-Key")),
-            post_args.get("task"),
-            post_args.get("date"),
-            post_args.get("ideal_weather"),
-            post_args.get("location"),
-        )
-    )
+    c.execute(build_insert_query("tasks", task))
     conn.commit()
     conn.close()
     return {"status": 200, "id": task_id}, 200
 
 
+# POST: /task/<task_id>
+# DESC: updates a task
+# PARAMS: task:str, date:int, ideal_weather:str, location:str
+# HEADERS: Session-Key
+# SENDS: JSON with status
 @app.route("/task/<task_id>", methods=["POST"])
 def update_task(task_id):
     post_args = flask.request.get_json()
@@ -282,16 +305,8 @@ def update_task(task_id):
         return {"status": 401, "error": "Missing session key."}, 200
     if not task_id:
         return {"status": 401, "error": "Missing task id."}, 200
-    if (
-        not post_args.get("task", 0)
-        or not post_args.get("date", 0)
-        or not post_args.get("ideal_weather", 0)
-        or not post_args.get("location", 0)
-    ):
-        return {
-            "status": 401,
-            "error": "Missing required field. (task, date, ideal weather, or location)",
-        }, 200
+    if not post_args.get("task", 0):
+        return {"status": 401, "error": "Missing task."}, 200
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute("SELECT username FROM tasks WHERE id = '{}'".format(task_id))
@@ -299,15 +314,13 @@ def update_task(task_id):
     if query:
         if query[0] != sessions.get(post_headers.get("Session-Key")):
             return {"status": 401, "error": "This task does not belong to you."}, 401
-    c.execute(
-        "UPDATE tasks SET task = '{}', date = '{}', ideal_weather = '{}', location = '{}' WHERE id = '{}'".format(
-            post_args.get("task"),
-            post_args.get("date"),
-            post_args.get("ideal_weather"),
-            post_args.get("location"),
-            task_id,
-        )
-    )
+    task = {
+        "task": post_args.get("task", ""),
+        "date": post_args.get("date", ""),
+        "ideal_weather": post_args.get("ideal_weather", ""),
+        "location": post_args.get("location", ""),
+    }
+    c.execute(build_update_query("tasks", task, "id = '{}'".format(task_id)))
     conn.commit()
     conn.close()
     return {"status": 200}, 200
