@@ -326,6 +326,10 @@ def update_task(task_id):
     return {"status": 200}, 200
 
 
+# POST: /task/<task_id>
+# DESC: deletes a task
+# HEADERS: Session-Key
+# SENDS: JSON with status
 @app.route("/task/<task_id>", methods=["DELETE"])
 def delete_task(task_id):
     post_headers = flask.request.headers
@@ -346,6 +350,10 @@ def delete_task(task_id):
     return {"status": 200}, 200
 
 
+# GET: /task
+# DESC: sends a list of all tasks of a user
+# HEADERS: Session-Key
+# SENDS: JSON with tasks
 @app.route("/task", methods=["GET"])
 def get_task():
     get_headers = flask.request.headers
