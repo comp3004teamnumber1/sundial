@@ -13,8 +13,9 @@
     - pytest
 
 install the dependencies on Ubuntu 20.04 with the following command
-  - `sudo apt install python3 python3-pip`
-  - `sudo pip install pipenv`
+
+- `sudo apt install python3 python3-pip`
+- `sudo pip install pipenv`
 
 everything *should* work with these installed
 
@@ -33,6 +34,7 @@ run tests: `$ pytest`
 ### DOCUMENTATION
 
 ### SHORT USAGE GUIDE
+
 - make a POST request to /register that sends the username and password to the server, once registered
 - make a POST request to /login that sends a username and password to the server, you will be sent a session_key if it was successful
 - take the session_key you are sent and put it in the headers as `Session-Key` of the GET routes you want to use along, ie
@@ -75,10 +77,12 @@ OUTPUT:
 #### GET: /daily
 
 PARAMS (QUERY): `/daily?location=str`
-  - `location`: a location, a city, an address
+
+- `location`: a location, a city, an address
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 EXAMPLE: `/daily?location=Ottawa, Ontario`
 
@@ -117,10 +121,12 @@ OUTPUT:
 #### GET: /hourly
 
 PARAMS (QUERY): `/hourly?location=str`
-  - `location`: a location, a city, an address
+
+- `location`: a location, a city, an address
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 EXAMPLE: `/hourly?location=Ottawa, Ontario`
 
@@ -156,14 +162,15 @@ OUTPUT:
 }
 ```
 
-
 #### POST: /task
 
 PARAMS (JSON): `{"task": "description:str", "date": "epoch_time:int", "ideal_weather": "weather_description:str", "location": "location:str"}`
-  - `location`: a location, a city, an address
+
+- `location`: a location, a city, an address
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 EXAMPLE: `{"task": "Finish 3004", "date": 1604253175, "ideal_weather": "Clear", "location": "Ottawa, Ontario"}`
 
@@ -184,10 +191,12 @@ OUTPUT:
 NOTE: This will update the task with task_id as long as the Session-Key sent matches the username that created the task.
 
 PARAMS (JSON): `{"task": "description:str", "date": "epoch_time:int", "ideal_weather": "weather_description:str", "location": "location:str"}`
-  - `location`: a location, a city, an address
+
+- `location`: a location, a city, an address
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 EXAMPLE: `{"task": "Finish 3004", "date": 1604253175, "ideal_weather": "Clear", "location": "Ottawa, Ontario"}`
 
@@ -207,7 +216,8 @@ OUTPUT:
 NOTE: This will delete the task with the task_id if the Session-Key matches the username that created the taks.
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 SENDS: JSON
 
