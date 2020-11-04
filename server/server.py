@@ -305,8 +305,13 @@ def update_task(task_id):
         return {"status": 401, "error": "Missing session key."}, 200
     if not task_id:
         return {"status": 401, "error": "Missing task id."}, 200
-    if not post_args.get("task", 0):
-        return {"status": 401, "error": "Missing task."}, 200
+    if (
+        not post_args.get("task", 0)
+        and not post_args.get("date")
+        and not post_args.get("ideal_weather")
+        and not post_args.get("location")
+    ):
+        return {"status": 401, "error": "All fields are empty."}, 200
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute("SELECT username FROM tasks WHERE id = '{}'".format(task_id))
