@@ -60,7 +60,6 @@ def post_task_update():
             "task": "Read 3004 notes.",
             "date": 1603152299,
             "ideal_weather": "Rainy",
-            "location": "Ottawa, Ontario",
         },
         headers={"Session-Key": session_key},
     )
