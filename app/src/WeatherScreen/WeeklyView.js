@@ -66,8 +66,8 @@ export default function WeeklyView(props) {
   return (
     <Container style={styles.container}>
       <List
-        horizontal
-        dataArray={data}
+        horizontal={true}
+        dataArray={props.data}
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'
         keyExtractor={(item, i) => `Day${i.toString()}`}
@@ -83,7 +83,7 @@ export default function WeeklyView(props) {
               <Text style={styles.textDate}>
                 {moment.unix(item.date).format('ddd')}
               </Text>
-              {weatherIcon(item.weather_type)}
+              {icon(item.weather_type)}
               <Text style={styles.textWeather}> {`${item.temp.c}°`} </Text>
               <Text style={styles.textPrecip}>
                 {`${item.pop}%`}

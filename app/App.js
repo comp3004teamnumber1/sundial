@@ -31,7 +31,6 @@ export default class App extends Component {
     const res = await getSessionKey();
     if (res === null) {
       console.log('No session key found.');
-      return;
     }
     this.setState({ isReady: true });
   }
