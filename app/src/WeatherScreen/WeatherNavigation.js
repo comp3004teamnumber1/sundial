@@ -1,66 +1,87 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { WeatherScreen } from './../WeatherScreen';
+import { Feather } from '@expo/vector-icons';
+import { icon } from './../components/constants';
 
+const Drawer = createDrawerNavigator();
 const styles = StyleSheet.create({
   container: {
-    maxHeight: 220,
-    borderColor: '#332E3C',
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderRadius: 10,
-    backgroundColor: '#332E3C',
-    zIndex: 1,
+    paddingTop: 20,
+    backgroundColor: '#332E3C'
   },
-  listItem: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#332E3C',
-    height: 220,
-    width: 85,
-    paddingVertical: 18,
-    zIndex: 0,
-  },
-  listItemActive: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#FF8C42',
-    height: 220,
-    width: 85,
-    paddingVertical: 18,
-    zIndex: 0,
-  },
-  text: {
-    textAlign: 'center',
-    color: '#ffffff',
-    fontSize: 18,
-  },
-  tempPrimary: {
-    textAlign: 'center',
-    color: '#ffffff',
+  header: {
+    color: '#FFFFFF',
     fontSize: 24,
-    fontWeight: 'bold',
-  },
-  tempSecondary: {
     textAlign: 'center',
-    color: '#6699CC',
-    fontSize: 18,
-    fontWeight: 'bold',
+    paddingBottom: 15
   },
+  pressable: {
+    paddingLeft: 15,
+    borderBottomColor: '#FF8C42',
+    borderWidth: 1,
+    borderLeftColor: '#332E3C',
+    borderRightColor: '#332E3C',
+    backgroundColor: '#332E3C',
+    height: 120
+  },
+  locationText: {
+    color: '#FFFFFF',
+    fontSize: 48
+  },
+  locationInfo: {
+    color: '#FFFFFF',
+    fontSize: 24
+  }
 });
 
-let locations = [
+let places = [
   'London',
   'Thunder Bay',
-  'Perth'
+  'Ottawa',
+  'Nepean',
 ]
 
 export default function WeatherNavigation() {
+
+  let locations = (place, props) => {
+    return (<Drawer.Screen name={place} component={WeatherScreen} />)
+  }
   return (
     <Container style={styles.container}>
-
+      <Text style={styles.header}>
+        Saved Locations
+      </Text>
+      <List
+        horizontal={false}
+        dataArray={places}
+        showsHorizontalScrollIndicator={false}
+        overScrollMode='never'
+        renderRow={place => {
+          return (
+            <Pressable style={styles.pressable}>
+              <Text style={styles.locationText}>
+                <Feather name={'map-pin'} size={24} color='white' />
+                {place}
+              </Text>
+              <Pressable style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                <Text style={styles.locationInfo}>
+                  {icon('wind')}
+                  5.7 m/s
+                  W
+                </Text>
+                <Text style={styles.locationInfo}>
+                  {icon('drizzle')}
+                  10deg
+                </Text>
+              </Pressable>
+            </Pressable>
+          );
+        }}
+        keyExtractor={(data, i) => 'location  ' + i.toString()}
+      />
     </Container>
   );
 }
