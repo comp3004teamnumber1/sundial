@@ -1,0 +1,8 @@
+Student: Bill Zhang #101106261
+Date: October 26 2020 - November 2 2020
+
+(2 HR) Investigating and test expo cli and react-native cli and getting both to work simulateously for testing widgets
+(3 HR) Refactored old code to be more usable between components and implementing it into the new components
+(2 HR) Getting and display current location within the home screen
+(1 HR) Designing and displaying the current date
+(3 HR) Designing and implementing a view for the next up events in the ome screen

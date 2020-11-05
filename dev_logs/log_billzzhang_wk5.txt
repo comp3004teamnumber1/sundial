@@ -1,0 +1,4 @@
+Student: Bill Zhang #101106261
+Date: October 19 2020 - October 25 2020
+
+(7 HR) Investigating and test expo cli and react-native cli and getting both to work simulateously for testing widgets
