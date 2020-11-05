@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import { Feather } from '@expo/vector-icons';
+import React from 'react';
 
 export async function getStorageKey(key) {
   try {
@@ -14,6 +16,25 @@ export async function setStorageKey(key, value) {
     return true;
   } catch (e) {
     return false;
+  }
+}
+
+export function getWeatherIcon(weather) {
+  switch (weather) {
+    case 'Clear':
+      return <Feather name='sun' size={48} color='white' />;
+    case 'Clouds':
+      return <Feather name='cloud' size={48} color='white' />;
+    case 'Rain':
+      return <Feather name='cloud-rain' size={48} color='white' />;
+    case 'Drizzle':
+      return <Feather name='cloud-drizzle' size={48} color='white' />;
+    case 'Thunderstorm':
+      return <Feather name='cloud-lightning' size={48} color='white' />;
+    case 'Snow':
+      return <Feather name='cloud-snow' size={48} color='white' />;
+    default:
+      return <Feather name='help-circle' size={48} color='white' />;
   }
 }
 
@@ -150,4 +171,34 @@ export const dummy = {
       weather: 'Clear',
     },
   ],
+  taskPayload: [
+    {
+      id: 1,
+      task: "Eat lunch",
+      date: 1602104400,
+      ideal_weather: "Clear",
+      location: "Ottawa"
+    },
+    {
+      id: 2,
+      task: "Eat Dinner",
+      date: 1602114400,
+      ideal_weather: "Clouds",
+      location: "Ottawa"
+    },
+    {
+      id: 3,
+      task: "Eat Yourself",
+      date: 1602124400,
+      ideal_weather: "Clear",
+      location: "Ottawa"
+    },
+    {
+      id: 4,
+      task: "Eat myself",
+      date: 1602134400,
+      ideal_weather: "Rain",
+      location: "Ottawa"
+    },
+  ]
 };

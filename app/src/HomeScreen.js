@@ -1,10 +1,13 @@
-import React from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
-import { Container, Text, Content, View } from 'native-base';
+import React, { Component } from 'react';
+import { ActivityIndicator, StatusBar, StyleSheet } from 'react-native';
+import { Container, Text, View } from 'native-base';
 import { queryHourlyWeekly } from './components/queryHourlyWeekly.js'
-import { EvilIcons, Feather } from 'react-native-vector-icons';
+import { EvilIcons} from 'react-native-vector-icons';
 import { dummy } from './components/constants';
+import moment from 'moment';
 import HourlyView from './WeatherScreen/HourlyView';
+import UpNext from './Calendar/UpNext'
+import * as Location from 'expo-location';
 
 const styles = StyleSheet.create({
   content: {
@@ -32,40 +35,107 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 40,
   },
-  windView: {
+  dateView: {
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  windText: {
+  dateText: {
     flex: 0,
     margin: 0,
     color: '#FFFFFF',
     fontSize: 30,
     marginTop: 5,
+  },
+  spinnerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: 'center',
+  },
+  spinner: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10
+  },
+  padded: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: '#231F29',
   }
 });
 
 
 
-export default function HomeScreen() {
+export default class HomeScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hourly: dummy.hourlyViewTestPayload,
+      weekly: null,
+      currLocation: "Placeholder",
+      ready: false
+    };
+  }
 
-  const HourlyWeeklyData = queryHourlyWeekly();
-  const hourly = HourlyWeeklyData.hourly.data.hours;
-  const weekly = HourlyWeeklyData.weekly.data.days;
-  return (
-    <Container style={styles.container}>
-      <Container style={styles.wrapper}>
-        <StatusBar />
-        <View style={styles.locationView}>
-          <EvilIcons name='location' numberOfLines={1} size={50} color='white' style={{marginTop: 7}}/>
-          <Text style={styles.locationText}>Placeholder</Text>
-        </View>
-        <View style={styles.windView}>
-          <Feather name='wind' numberOfLines={1} size={50} color='white'/>
-          <Text style={styles.windText}>12 m/s E</Text>
-        </View>
-        <HourlyView data={hourly || dummy.hourlyViewTestPayload} />
-      </Container>
-    </Container>
-  );
+  async componentDidMount() {
+    // query data
+    const HourlyWeeklyData = await queryHourlyWeekly();
+
+    let { status } = await Location.requestPermissionsAsync();
+    if (status !== 'granted') {
+      setErrorMsg('Permission to access location was denied');
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+
+    let city = await Location.reverseGeocodeAsync({
+      latitude : location.coords.latitude,
+      longitude : location.coords.longitude
+    });
+
+    await this.setState({
+      hourly: HourlyWeeklyData.hourly.data.hours,
+      currLocation: location,
+      currCity: city,
+      ready: true
+    });
+  }
+
+  render() {
+    let { ready } = this.state;
+    if (ready) {
+      const { hourly, currCity } = this.state;
+      const now = moment().format('MMM DD h:mm A');
+
+      return (
+        <Container style={styles.container}>
+          <Container style={styles.wrapper}>
+            <StatusBar />
+            <View style={styles.locationView}>
+              <EvilIcons name='location' numberOfLines={1} size={50} color='white' style={{marginTop: 7}}/>
+              <Text style={styles.locationText}>{currCity[0].city}</Text>
+            </View>
+            <View style={styles.dateView}>
+              <Text style={styles.dateText}>{now}</Text>
+            </View>
+            <Container style={styles.padded}>
+              <UpNext style={styles.padded} data={dummy.taskPayload}/>
+            </Container>
+            <Container style={styles.padded}>
+              <HourlyView style={styles.padded} data={hourly || dummy.hourlyViewTestPayload} />
+            </Container>
+          </Container>
+        </Container>
+      );
+    } else {
+      return (
+        <Container style={styles.container}>
+          <Container style={styles.wrapper}>
+            <View style={[styles.container, styles.horizontal]}>
+              <ActivityIndicator size="large" color="#FF8C42" />
+            </View>
+          </Container>
+        </Container>
+      )
+    }    
+  }
 }

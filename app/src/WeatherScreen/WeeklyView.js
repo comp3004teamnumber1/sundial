@@ -1,8 +1,9 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
-import { Entypo, Feather } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import moment from 'moment';
+import { getWeatherIcon } from '../components/constants.js';
 
 const styles = StyleSheet.create({
   container: {
@@ -59,24 +60,6 @@ const styles = StyleSheet.create({
 });
 
 export default function WeeklyView({ data }) {
-  const weatherIcon = weather => {
-    switch (weather) {
-      case 'Clear':
-        return <Feather name='sun' size={48} color='white' />;
-      case 'Clouds':
-        return <Feather name='cloud' size={48} color='white' />;
-      case 'Rain':
-        return <Feather name='cloud-rain' size={48} color='white' />;
-      case 'Drizzle':
-        return <Feather name='cloud-drizzle' size={48} color='white' />;
-      case 'Thunderstorm':
-        return <Feather name='cloud-lightning' size={48} color='white' />;
-      case 'Snow':
-        return <Feather name='cloud-snow' size={48} color='white' />;
-      default:
-        return <Feather name='help-circle' size={48} color='white' />;
-    }
-  };
 
   return (
     <Container style={styles.container}>
@@ -98,7 +81,7 @@ export default function WeeklyView({ data }) {
               <Text style={styles.textDate}>
                 {moment.unix(item.date).format('ddd')}
               </Text>
-              {weatherIcon(item.weather_type)}
+              {getWeatherIcon(item.weather_type)}
               <Text style={styles.textWeather}> {`${item.temp.c}°`} </Text>
               <Text style={styles.textPrecip}>
                 {`${item.pop}%`}

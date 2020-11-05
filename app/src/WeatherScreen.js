@@ -44,7 +44,7 @@ export default class WeatherScreen extends Component {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
 
     // query data
-    const HourlyWeeklyData = queryHourlyWeekly();
+    const HourlyWeeklyData = await queryHourlyWeekly();
 
     // set our state
     this.setState({
