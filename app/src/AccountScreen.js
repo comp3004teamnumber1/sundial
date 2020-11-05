@@ -1,5 +1,8 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from '@react-navigation/stack';
 import Settings from './AccountScreen/Settings';
 import SettingsAccount from './AccountScreen/SettingsAccount';
 import SettingsCalendar from './AccountScreen/SettingsCalendar';
@@ -13,7 +16,10 @@ export default function AccountScreen() {
   return (
     <AccountStack.Navigator
       initialRouteName='Settings'
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      }}
     >
       <AccountStack.Screen name='Settings' component={Settings} />
       <AccountStack.Screen name='SettingsAccount' component={SettingsAccount} />

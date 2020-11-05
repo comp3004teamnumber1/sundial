@@ -1,137 +1,17 @@
 import React, { Component } from 'react';
-import { Pressable, StatusBar, StyleSheet, View, ScrollView } from 'react-native';
+import { Pressable, StatusBar, StyleSheet, View, ScrollView, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
-import HourlyView from './WeatherScreen/HourlyView';
 import axios from 'axios';
+import {
+  getStorageKey,
+  getSessionKey,
+  constants,
+  dummy,
+} from './components/constants';
+import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
 import { Feather } from '@expo/vector-icons';
 import { icon } from './components/constants';
-
-let WeeklyViewTestPayload = [
-  {
-    date: 1602960464,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clouds',
-    pop: 32,
-    humidity: 12
-  },
-  {
-    date: 1603046864,
-    temp: {
-      c: 2.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12
-  },
-  {
-    date: 1603133264,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12
-  },
-  {
-    date: 1602097200,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12
-  },
-  {
-    date: 1603392464,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12
-  },
-  {
-    date: 1603478864,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather_type: 'Clear',
-    pop: 32,
-    humidity: 12
-  },
-];
-
-let HourlyViewTestPayload = [
-  {
-    date: 1602086400,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602090000,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602093600,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602097200,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602100800,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-  {
-    date: 1602104400,
-    temp: {
-      c: 21.8,
-      f: 71.2,
-      k: 295.95,
-    },
-    weather: 'Clear',
-  },
-];
 
 const styles = StyleSheet.create({
   content: {
@@ -154,7 +34,7 @@ const styles = StyleSheet.create({
   subtitle: {
     color: '#ffffff',
     fontSize: 24,
-    paddingBottom: 12,
+    paddingVertical: 12,
   },
   locationView: {
     display: 'flex',
@@ -188,25 +68,55 @@ export default class WeatherScreen extends Component {
     super(props);
     this.state = {
       hourly: null,
-      weekly: null
+      weekly: null,
     };
   }
 
-  componentDidMount() {
-    let options = {
-      username: 'nick',
-      session_key: '5bb92746-46b0-4b74-80b4-592f44f93e4b',
-      location: 'Ottawa, Ontario',
+  async componentDidMount() {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+    // get relevant info for request
+    const [session_key, location] = await Promise.all([
+      getSessionKey(),
+      getStorageKey('current_location'),
+    ]);
+
+    // build query
+    const queryParams = {
+      location: location || 'Ottawa, Ontario',
     };
-    let url = `http://10.0.2.2:5000/hourly?${Object.entries(options)
+    const queryString = `?${Object.entries(queryParams)
       .map(([k, v], i) => `${k}=${v}`)
       .join('&')}`;
-    axios.get(url).then(res => {
-      this.setState({ hourly: res.data.hours });
+    const config = {
+      headers: {
+        'Session-Key': session_key,
+      },
+    };
+
+    // query data
+    let hourlyRes;
+    let weeklyRes;
+    try {
+      [hourlyRes, weeklyRes] = await Promise.all([
+        axios.get(`${constants.SERVER_URL}/hourly${queryString}`, config),
+        axios.get(`${constants.SERVER_URL}/daily${queryString}`, config),
+      ]);
+    } catch (e) {
+      console.log('An error occurred while fetching weather data.');
+      console.error(e);
+      return;
+    }
+
+    // set our state
+    this.setState({
+      hourly: hourlyRes.data.hours,
+      weekly: weeklyRes.data.days,
     });
   }
 
   render() {
+    const { hourly, weekly } = this.state;
+
     return (
       <ScrollView style={styles.container}>
         <StatusBar />
@@ -235,13 +145,9 @@ export default class WeatherScreen extends Component {
           </View>
           <Container style={styles.view}>
             <Text style={styles.subtitle}>Hourly</Text>
-            <HourlyView
-              data={this.state.hourly ? this.state.hourly : HourlyViewTestPayload}
-            />
+            <HourlyView data={hourly || dummy.hourlyViewTestPayload} />
             <Text style={styles.subtitle}>Daily</Text>
-            <WeeklyView
-              data={this.state.weekly ? this.state.weekly : WeeklyViewTestPayload}
-            />
+            <WeeklyView data={weekly || dummy.weeklyViewTestPayload} />
           </Container>
         </Content>
       </ScrollView>

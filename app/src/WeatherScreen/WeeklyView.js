@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
 import { Entypo } from '@expo/vector-icons';
 import moment from 'moment';
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     minWidth: '100%',
     backgroundColor: '#332E3C',
-    zIndex: 1
+    zIndex: 1,
   },
   listItem: {
     // flexDirection: 'column',
@@ -53,39 +53,47 @@ const styles = StyleSheet.create({
   textPrecip: {
     textAlign: 'center',
     color: '#6699CC',
-    fontSize: 12
+    fontSize: 12,
   },
   textHumidity: {
     textAlign: 'center',
     color: '#ffffff',
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 });
 
 export default function WeeklyView(props) {
   return (
     <Container style={styles.container}>
       <List
-        horizontal={true}
-        dataArray={props.data}
+        horizontal
+        dataArray={data}
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'
-        renderRow={data => {
+        keyExtractor={(item, i) => `Day${i.toString()}`}
+        renderRow={item => {
           return (
-            <Pressable style={moment().format('ddd') === data.date ? styles.activeListItem : styles.listItem}>
-              <Text style={styles.textDate}>{moment.unix(data.date).format('ddd')}</Text>
-              {icon(data.weather_type)}
-              <Text style={styles.textWeather}> {data.temp.c + '°'} </Text>
+            <Pressable
+              style={
+                moment().format('ddd') === item.date
+                  ? styles.activeListItem
+                  : styles.listItem
+              }
+            >
+              <Text style={styles.textDate}>
+                {moment.unix(item.date).format('ddd')}
+              </Text>
+              {weatherIcon(item.weather_type)}
+              <Text style={styles.textWeather}> {`${item.temp.c}°`} </Text>
               <Text style={styles.textPrecip}>
-                {data.pop + '%'}
+                {`${item.pop}%`}
                 <Entypo name='drop' size={12} color='#6699CC' />
-                <Text style={styles.textHumidity}> {data.humidity + '%'}</Text>
+                <Text style={styles.textHumidity}> {`${item.humidity}`}</Text>
               </Text>
             </Pressable>
           );
         }}
-        keyExtractor={(data, i) => 'Day' + i.toString()}
       />
-    </Container >
+    </Container>
   );
 }

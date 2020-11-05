@@ -77,6 +77,7 @@ export default function Settings({ navigation }) {
       <Content contentContainerStyle={styles.content}>
         <Text style={styles.title}>Settings</Text>
         <List
+          nestedScrollEnabled
           style={styles.list}
           keyExtractor={(item, index) => index.toString()}
           dataArray={options}
@@ -87,7 +88,8 @@ export default function Settings({ navigation }) {
               onPress={() => {
                 navigation.navigate(data.dest);
               }}
-              style={styles.listItem}>
+              style={styles.listItem}
+            >
               <Left>
                 <Feather name={data.icon} size={32} color='white' />
               </Left>

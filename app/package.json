@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@expo/vector-icons": "~10.2.0",
+    "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/bottom-tabs": "^5.9.1",
     "@react-navigation/native": "^5.7.5",
@@ -19,10 +20,13 @@
     "react-native-screens": "~2.10.1",
     "react-native-vector-icons": "^7.1.0",
     "react-native-web": "0.13.13",
+    "react-navigation": "^4.4.2",
     "react-navigation-stack": "^2.8.4"
   },
   "devDependencies": {
-    "@babel/core": "7.9.0"
+    "@babel/core": "7.9.0",
+    "eslint": "^7.11.0",
+    "prettier": "^2.1.2"
   },
   "scripts": {
     "start": "expo start",
