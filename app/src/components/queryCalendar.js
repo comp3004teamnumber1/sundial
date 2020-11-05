@@ -6,15 +6,13 @@ import {
 import axios from 'axios';
 
 export async function queryHourlyWeekly() {
-    const [username, session_key, location] = await Promise.all([
-        getStorageKey('username'),
+    const [session_key, location] = await Promise.all([
         getSessionKey(),
         getStorageKey('current_location'),
     ]);
   
     // build query
     const queryParams = {
-        username,
         location: location || 'Ottawa, Ontario',
     };
     const queryString = `?${Object.entries(queryParams)

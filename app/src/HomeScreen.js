@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { Container, Text, View } from 'native-base';
-import { queryHourlyWeekly } from './components/queryHourlyWeekly.js'
-import { EvilIcons} from 'react-native-vector-icons';
-import { dummy } from './components/constants';
+import { queryHourlyWeekly } from './components/queryCalendar.js'
+import { EvilIcons } from 'react-native-vector-icons';
+import { dummy, setStorageKey } from './components/constants';
 import moment from 'moment';
 import HourlyView from './WeatherScreen/HourlyView';
 import UpNext from './Calendar/UpNext'
 import * as Location from 'expo-location';
+import LoadingComponent from './components/loadingComponent';
+import { queryTasks } from './components/queryTasks'
 
 const styles = StyleSheet.create({
   content: {
@@ -69,9 +71,6 @@ export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      hourly: dummy.hourlyViewTestPayload,
-      weekly: null,
-      currLocation: "Placeholder",
       ready: false
     };
   }
@@ -79,6 +78,7 @@ export default class HomeScreen extends Component {
   async componentDidMount() {
     // query data
     const HourlyWeeklyData = await queryHourlyWeekly();
+    const tasks = await queryTasks();
 
     let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
@@ -91,19 +91,21 @@ export default class HomeScreen extends Component {
       latitude : location.coords.latitude,
       longitude : location.coords.longitude
     });
+    setStorageKey("current_location", city[0].city);
 
     await this.setState({
       hourly: HourlyWeeklyData.hourly.data.hours,
       currLocation: location,
       currCity: city,
-      ready: true
+      ready: true,
+      tasks: tasks.tasks
     });
   }
 
   render() {
     let { ready } = this.state;
     if (ready) {
-      const { hourly, currCity } = this.state;
+      const { hourly, currCity, tasks } = this.state;
       const now = moment().format('MMM DD h:mm A');
 
       return (
@@ -118,23 +120,17 @@ export default class HomeScreen extends Component {
               <Text style={styles.dateText}>{now}</Text>
             </View>
             <Container style={styles.padded}>
-              <UpNext style={styles.padded} data={dummy.taskPayload}/>
+              <UpNext style={styles.padded} data={tasks || dummy.taskPayload}/>
             </Container>
             <Container style={styles.padded}>
-              <HourlyView style={styles.padded} data={hourly || dummy.hourlyViewTestPayload} />
+              <HourlyView style={styles.padded} data={hourly} />
             </Container>
           </Container>
         </Container>
       );
     } else {
       return (
-        <Container style={styles.container}>
-          <Container style={styles.wrapper}>
-            <View style={[styles.container, styles.horizontal]}>
-              <ActivityIndicator size="large" color="#FF8C42" />
-            </View>
-          </Container>
-        </Container>
+        <LoadingComponent/>
       )
     }    
   }

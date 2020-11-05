@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StatusBar, StyleSheet, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
 import { dummy } from './components/constants';
-import { queryHourlyWeekly } from './components/queryHourlyWeekly.js'
+import { queryHourlyWeekly } from './components/queryCalendar.js'
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
 
