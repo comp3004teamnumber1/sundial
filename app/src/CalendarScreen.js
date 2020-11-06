@@ -4,6 +4,7 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 import CalendarHome from './CalendarScreen/CalendarHome';
+import AddEvent from './CalendarScreen/AddEvent';
 
 const CalendarStack = createStackNavigator();
 
@@ -13,10 +14,11 @@ export default function CalendarScreen() {
       initialRouteName='CalendarHome'
       screenOptions={{
         headerShown: false,
-        cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
+        cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
       }}
     >
       <CalendarStack.Screen name='CalendarHome' component={CalendarHome} />
+      <CalendarStack.Screen name='AddEvent' component={AddEvent} />
     </CalendarStack.Navigator>
   );
 }

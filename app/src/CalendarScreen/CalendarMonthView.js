@@ -7,7 +7,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#231F29',
-    maxHeight: 280,
+    minHeight: 300,
+    maxHeight: 300,
     flexDirection: 'column',
     alignContent: 'flex-start',
     justifyContent: 'space-between',
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   col: {
     flex: 1,
     flexShrink: 0,
-    maxWidth: 44,
+    maxWidth: 48,
     paddingVertical: 20,
     backgroundColor: '#332E3C',
     alignItems: 'center',
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
   colSelected: {
     flex: 1,
     flexShrink: 0,
-    maxWidth: 44,
+    maxWidth: 48,
     paddingVertical: 20,
     backgroundColor: '#FF8C42',
     alignItems: 'center',
