@@ -76,7 +76,7 @@ def delete_task():
 
 def get_task():
     task = requests.get(
-        "http://127.0.0.1:5000/task?current=True",
+        "http://127.0.0.1:5000/task",
         headers={"Session-Key": session_key},
     )
     return task.json()
