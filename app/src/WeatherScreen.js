@@ -10,7 +10,6 @@ import {
 } from './components/constants';
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
-import { Feather } from '@expo/vector-icons';
 import { icon } from './components/constants';
 
 const styles = StyleSheet.create({
@@ -69,6 +68,7 @@ export default class WeatherScreen extends Component {
     this.state = {
       hourly: null,
       weekly: null,
+      location: null
     };
   }
 
@@ -79,6 +79,8 @@ export default class WeatherScreen extends Component {
       getSessionKey(),
       getStorageKey('current_location'),
     ]);
+
+    this.setState({ location: location });
 
     // build query
     const queryParams = {
@@ -116,14 +118,19 @@ export default class WeatherScreen extends Component {
 
   render() {
     const { hourly, weekly } = this.state;
-
     return (
       <ScrollView style={styles.container}>
         <StatusBar />
         <Content contentContainerStyle={styles.content}>
-          <Pressable>
-            <Text style={styles.title}> Location </Text>
-            <Text style={styles.locationDescription}> Clear Skies </Text>
+          <Pressable
+            onPress={() => this.props.navigation.navigate('WeatherNavigation')}
+          >
+            <Text style={styles.title}>
+              {this.state.location}
+            </Text>
+            <Text style={styles.locationDescription}>
+              Clear Skies
+            </Text>
           </Pressable>
           <View style={styles.locationView}>
             <Text style={styles.locationSummary}>

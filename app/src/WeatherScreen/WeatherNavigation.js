@@ -1,12 +1,119 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import { Container, List, Text } from 'native-base';
+import { Container, List, Text, Fab, Spinner } from 'native-base';
+import axios from 'axios';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { WeatherScreen } from './../WeatherScreen';
 import { Feather } from '@expo/vector-icons';
-import { icon } from './../components/constants';
+import { constants, getSessionKey, icon, setStorageKey } from './../components/constants';
 
-const Drawer = createDrawerNavigator();
+let places = [ //TODO: Make it so that places is a query from our asyncStorage
+  'London',
+  'Thunder Bay',
+  'Ottawa',
+  'Nepean'
+];
+
+export default class WeatherNavigation extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      places: places.map(place => { return { [place]: null } })
+    }
+  }
+  async componentDidMount() {
+    let places = this.state.places.map(
+      place => Object.keys(place)[0]
+    );
+
+    if (places.length === 0) return;
+    let sessionKey = await getSessionKey();
+    const headers = {
+      headers: {
+        'Session-Key': sessionKey
+      }
+    };
+    let promises = places.map(async place =>
+      axios.get(`https://sundial.vinhnguyen.ca/daily?location=${place}`, headers)
+    );
+    let res = (await Promise.all(promises)).map(res => {
+      return {
+        data: res.data.days[0]
+      }
+    });
+
+    this.setState({
+      places: places.map((place, i) => { return { [place]: res[i] } })
+    });
+  }
+  render() {
+    return (
+      <Container style={styles.container}>
+        <Text style={styles.header}>
+          Saved Locations
+        </Text>
+
+        <List
+          horizontal={false}
+          dataArray={this.state.places}
+          showsHorizontalScrollIndicator={false}
+          overScrollMode='never'
+          renderRow={area => {
+            //If the state doesn't cotain actual information yet
+            if (Object.values(this.state.places[0])[0] === null) {
+              console.log('Nothing in the state');
+              return (
+                <Pressable style={styles.pressable}>
+                  <Spinner color='#FF8C42' />
+                </Pressable>
+              );
+            }
+            let place = Object.keys(area)[0];
+            let data = area[place].data;
+            return (
+              <Pressable style={styles.pressable}
+                onPress={async () => {
+                  await setStorageKey('current_location', place);
+                  this.props.navigation.navigate('WeatherView');
+                }}
+              >
+                <Text style={styles.locationText}>
+                  <Feather name={'map-pin'} size={24} color='white' />
+                  {place}
+                </Text>
+                <Pressable style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                  <Text style={styles.locationInfo}>
+                    {icon('wind')}
+                  5.7 m/s
+                  W
+                </Text>
+                  <Text style={styles.locationInfo}>
+                    {icon(data.weather_type)}
+                    {' °' + data.temp.c + '°'}
+                  </Text>
+                </Pressable>
+              </Pressable>
+            );
+          }}
+          keyExtractor={(data, i) => 'location  ' + i.toString()}
+        />
+        <Fab
+          active={false}
+          direction='up'
+          style={styles.fab}
+          position='bottomRight'
+          onPress={(() => {
+            this.props.navigation.navigate('AddWeatherLocation');
+          })}
+        >
+          <Text>
+            +
+          </Text>
+        </Fab>
+      </Container >
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     paddingTop: 20,
@@ -20,8 +127,6 @@ const styles = StyleSheet.create({
   },
   pressable: {
     paddingLeft: 15,
-    borderBottomColor: '#FF8C42',
-    borderWidth: 1,
     borderLeftColor: '#332E3C',
     borderRightColor: '#332E3C',
     backgroundColor: '#332E3C',
@@ -34,54 +139,8 @@ const styles = StyleSheet.create({
   locationInfo: {
     color: '#FFFFFF',
     fontSize: 24
+  },
+  fab: {
+    backgroundColor: '#FF8C42'
   }
 });
-
-let places = [
-  'London',
-  'Thunder Bay',
-  'Ottawa',
-  'Nepean',
-]
-
-export default function WeatherNavigation() {
-
-  let locations = (place, props) => {
-    return (<Drawer.Screen name={place} component={WeatherScreen} />)
-  }
-  return (
-    <Container style={styles.container}>
-      <Text style={styles.header}>
-        Saved Locations
-      </Text>
-      <List
-        horizontal={false}
-        dataArray={places}
-        showsHorizontalScrollIndicator={false}
-        overScrollMode='never'
-        renderRow={place => {
-          return (
-            <Pressable style={styles.pressable}>
-              <Text style={styles.locationText}>
-                <Feather name={'map-pin'} size={24} color='white' />
-                {place}
-              </Text>
-              <Pressable style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                <Text style={styles.locationInfo}>
-                  {icon('wind')}
-                  5.7 m/s
-                  W
-                </Text>
-                <Text style={styles.locationInfo}>
-                  {icon('drizzle')}
-                  10deg
-                </Text>
-              </Pressable>
-            </Pressable>
-          );
-        }}
-        keyExtractor={(data, i) => 'location  ' + i.toString()}
-      />
-    </Container>
-  );
-}

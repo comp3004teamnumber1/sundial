@@ -4,7 +4,9 @@ import { Feather } from '@expo/vector-icons';
 import HomeScreen from './HomeScreen';
 import CalendarScreen from './CalendarScreen';
 import WeatherScreen from './WeatherScreen';
+import WeatherStack from './WeatherScreen/weatherStack';
 import AccountScreen from './AccountScreen';
+import WeatherNavigation from './WeatherScreen/WeatherNavigation';
 
 const Tab = createBottomTabNavigator();
 
@@ -39,7 +41,7 @@ export default function MainStack() {
     >
       <Tab.Screen name='Home' component={HomeScreen} />
       <Tab.Screen name='Calendar' component={CalendarScreen} />
-      <Tab.Screen name='Weather' component={WeatherScreen} />
+      <Tab.Screen name='Weather' component={WeatherStack} />
       <Tab.Screen name='Account' component={AccountScreen} />
     </Tab.Navigator>
   );

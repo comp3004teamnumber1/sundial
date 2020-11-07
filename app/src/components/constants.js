@@ -1,8 +1,9 @@
 import React from 'react';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-community/async-storage';
+import { exp } from 'react-native-reanimated';
 
-let icon = (description = '', size = 48, color = 'white') => {
+export function icon(description = '', size = 48, color = 'white') {
   //The default size and colour were chosen due to those values being used for the Weekly and Hourly Views
   let name = description.toLowerCase();
   switch (name) {
@@ -28,8 +29,6 @@ let icon = (description = '', size = 48, color = 'white') => {
       return <Feather name='help-circle' size={size} color={color} />;
   }
 };
-
-export { icon }
 
 export async function getStorageKey(key) {
   try {
@@ -61,7 +60,7 @@ export const dummy = {
     {
       date: 1602960464,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -83,7 +82,7 @@ export const dummy = {
     {
       date: 1603133264,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -94,7 +93,7 @@ export const dummy = {
     {
       date: 1602097200,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -105,7 +104,7 @@ export const dummy = {
     {
       date: 1603392464,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -116,7 +115,7 @@ export const dummy = {
     {
       date: 1603478864,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -129,7 +128,7 @@ export const dummy = {
     {
       date: 1602086400,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -138,7 +137,7 @@ export const dummy = {
     {
       date: 1602090000,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -147,7 +146,7 @@ export const dummy = {
     {
       date: 1602093600,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -156,7 +155,7 @@ export const dummy = {
     {
       date: 1602097200,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -165,7 +164,7 @@ export const dummy = {
     {
       date: 1602100800,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -174,7 +173,7 @@ export const dummy = {
     {
       date: 1602104400,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
