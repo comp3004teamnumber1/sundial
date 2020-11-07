@@ -3,7 +3,7 @@ import json
 import requests
 import config
 import uuid
-from datetime import datetime
+from datetime import datetime, date, time
 import sqlite3
 import os
 from geopy.geocoders import Nominatim
@@ -361,6 +361,7 @@ def delete_task(task_id):
 # SENDS: JSON with tasks
 @app.route("/task", methods=["GET"])
 def get_task():
+    get_args = flask.request.args
     get_headers = flask.request.headers
     if not authenticate_route(get_headers):
         return {"status": 401, "error": "Missing session key."}, 200
@@ -372,20 +373,40 @@ def get_task():
         )
     )
     tasks = []
-    query = [list(row) for row in c.fetchall()]
-    print(query, flush=True)
+    if get_args.get("current", False):
+        query = [
+            list(row)
+            for row in c.fetchall()
+            if datetime.fromtimestamp(int(list(row)[2])) >= datetime.now()
+        ]
+    else:
+        query = [list(row) for row in c.fetchall()]
     if query:
         for task in query:
-            print(task, flush=True)
-            tasks.append(
-                {
-                    "id": task[0],
-                    "task": task[1],
-                    "date": task[2],
-                    "ideal_weather": task[3],
-                    "location": task[4],
-                }
-            )
+            if get_args.get("date", 0):
+                formatted_date = datetime.fromtimestamp(task[2]).strftime("%Y-%m-%d")
+                print(formatted_date, flush=True)
+                if get_args.get("date") == formatted_date:
+                    tasks.append(
+                        {
+                            "id": task[0],
+                            "task": task[1],
+                            "date": task[2],
+                            "ideal_weather": task[3],
+                            "location": task[4],
+                        }
+                    )
+            else:
+                tasks.append(
+                    {
+                        "id": task[0],
+                        "task": task[1],
+                        "date": task[2],
+                        "ideal_weather": task[3],
+                        "location": task[4],
+                    }
+                )
+
     return {
         "tasks": sorted(tasks, key=lambda task: task.get("date")),
         "status": 200,
