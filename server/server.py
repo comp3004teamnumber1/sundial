@@ -384,7 +384,9 @@ def get_task():
     if query:
         for task in query:
             if get_args.get("date", 0):
-                formatted_date = datetime.fromtimestamp(task[2]).strftime("%Y-%m-%d")
+                formatted_date = datetime.fromtimestamp(int(task[2])).strftime(
+                    "%Y-%m-%d"
+                )
                 print(formatted_date, flush=True)
                 if get_args.get("date") == formatted_date:
                     tasks.append(
