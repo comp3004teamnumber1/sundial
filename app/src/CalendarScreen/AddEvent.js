@@ -122,7 +122,7 @@ export default class AddEvent extends Component {
     };
     const data = {
       task,
-      date,
+      date: moment(date).unix(),
       ideal_weather,
       location,
     };

@@ -83,8 +83,9 @@ export default class CalendarHome extends Component {
   }
 
   setDate = async newDate => {
-    this.setState({ date: moment(newDate).format('YYYY-MM-DD') });
-    await this.updateTasks();
+    const formattedDate = moment(newDate).format('YYYY-MM-DD');
+    this.setState({ date: formattedDate });
+    await this.updateTasks(formattedDate);
   };
 
   // eslint-disable-next-line react/destructuring-assignment
