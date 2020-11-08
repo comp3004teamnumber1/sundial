@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import { Container, List, Text, Fab, Spinner } from 'native-base';
+import { Container, List, Text, Fab, Spinner, Button } from 'native-base';
 import axios from 'axios';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Feather } from '@expo/vector-icons';
@@ -17,7 +17,8 @@ export default class WeatherNavigation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      places: places.map(place => { return { [place]: null } })
+      places: places.map(place => { return { [place]: null } }),
+      fabOpen: false,
     }
   }
   async componentDidMount() {
@@ -97,17 +98,21 @@ export default class WeatherNavigation extends Component {
           keyExtractor={(data, i) => 'location  ' + i.toString()}
         />
         <Fab
-          active={false}
+          active={this.state.fabOpen}
           direction='up'
           style={styles.fab}
           position='bottomRight'
           onPress={(() => {
-            this.props.navigation.navigate('AddWeatherLocation');
+            this.setState({ fabOpen: !fabOpen });
           })}
         >
-          <Text>
-            +
-          </Text>
+          <Feather name='edit-3' size={24} color='white' />
+          <Button
+            style={{ backgroundColor: '#6699CC' }}
+            onPress={() => {this.props.navigation.navigate('AddWeatherLocation')}}
+          >
+            <Feather name='plus' size={24} color='white' />
+          </Button>
         </Fab>
       </Container >
     );
