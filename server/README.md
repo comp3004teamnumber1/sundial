@@ -76,9 +76,11 @@ OUTPUT:
 
 #### GET: /daily
 
-PARAMS (QUERY): `/daily?location=str`
+PARAMS (QUERY): `/daily?location=str&units=str`
 
-- `location`: a location, a city, an address
+- `location`: a location, a city, an address (required)
+- `units`: metric or imperial, will give the temperature and wind speed in these (optional)
+  - if nothing given, will be in metric
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
 
@@ -95,18 +97,8 @@ OUTPUT:
   "days": [
     {
       "date": "epoch_time:int",
-      "temp": {
-        "c": "temp_celsius:int",
-        "f": "temp_fahrenheit:int",
-        "k": "temp_kelvin:int",
-      },
-      "feels_like": {
-        "temp": {
-          "c": "temp_celsius:int",
-          "f": "temp_fahrenheit:int",
-          "k": "temp_kelvin:int",
-        },
-      },
+      "temp": "temp:int",
+      "feels_like_temp": "temp:int",
       "pop": "pop:int",
       "humidity": "humidity:int",
       "weather_type": "weather_description:str",
@@ -120,9 +112,10 @@ OUTPUT:
 
 #### GET: /hourly
 
-PARAMS (QUERY): `/hourly?location=str`
+PARAMS (QUERY): `/hourly?location=str&units=str`
 
 - `location`: a location, a city, an address
+- `units`: metric or imperial, will give the temperature and wind speed in these
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
 
@@ -139,18 +132,8 @@ OUTPUT:
   "hours": [
     {
       "date": "epoch_time:int",
-      "temp": {
-        "c": "temp_celsius:int",
-        "f": "temp_fahrenheit:int",
-        "k": "temp_kelvin:int",
-      },
-      "feels_like": {
-        "temp": {
-          "c": "temp_celsius:int",
-          "f": "temp_fahrenheit:int",
-          "k": "temp_kelvin:int",
-        },
-      },
+      "temp": "temp:int",
+      "feels_like_temp": "temp:int",
       "pop": "pop:int",
       "humidity": "humidity:int",
       "weather_type": "weather_description:str",
@@ -246,7 +229,7 @@ OUTPUT:
       "location": "location:str"
     },
     {
-      "_comment": "array containing all the tasks for the user that requested them."
+      "__comment": "array containing all the tasks for the user that requested them."
     }
   ]
 }
