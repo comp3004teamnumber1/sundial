@@ -62,7 +62,7 @@ export default function WeeklyView(props) {
   return (
     <Container style={styles.container}>
       <List
-        horizontal={true}
+        horizontal
         dataArray={props.data}
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'

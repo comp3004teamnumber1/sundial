@@ -55,11 +55,11 @@ export default function HourlyView({ data }) {
   return (
     <Container style={styles.container}>
       <List
-        horizontal={true}
+        horizontal
         dataArray={data}
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'
-        keyExtractor={(item, index) => 'Hour' + index.toString()}
+        keyExtractor={(item, index) => `hour${index.toString()}`}
         renderRow={item => {
           let time = moment.unix(item.date);
           return (
@@ -75,7 +75,7 @@ export default function HourlyView({ data }) {
               {icon(item.weather_type)}
               <Text style={styles.tempPrimary}>{`${item.temp.c}°`}</Text>
             </Pressable>
-          )
+          );
         }}
       />
     </Container>
