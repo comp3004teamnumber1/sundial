@@ -1,0 +1,14 @@
+Deen Haque
+
+Discussion
+- Standup (1hr)
+- Discussed the WeatherScreen features & implementation with Vinh a lot (2hrs)
+
+Research
+- React Native Spinners, location auto-complete (can't be done for free), React Native drawers and stacks, FABs, etc (1hr)
+
+Development
+- Completed rough draft of Weather Navigation page (1hr)
+- Modified state and props of all files under (the newly made) weatherStack.js to use our async storage as the source of truth regarding which location to display (2hr)
+- Struggled with parsing server payload after making a GET request due to async react quirks (I don't even want to say how long this took LOL)
+- Looked over Bill's merge request after Vinh (1hr)
