@@ -10,7 +10,7 @@ import {
 } from './components/constants';
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
-import { icon } from './components/constants';
+import { icon, windDirection } from './components/constants';
 
 const styles = StyleSheet.create({
   content: {
@@ -129,22 +129,23 @@ export default class WeatherScreen extends Component {
               {this.state.location}
             </Text>
             <Text style={styles.locationDescription}>
-              Clear Skies
+              {hourly ? hourly[0].weather_type : 'Please wait...'}
+
             </Text>
           </Pressable>
           <View style={styles.locationView}>
             <Text style={styles.locationSummary}>
               {icon('Wind', 24)}
-                5.7 m/s
-                W
+              {/* TODO: {hourly ? `${hourly[0].wind_speed} m/s ${windDirection(134)}`} */}
+              {`5.7 m/s ${windDirection(134)}`}
             </Text>
             <Text style={styles.locationSummary}>
               {icon('Drizzle', 24)}
-              {'28%'}
+              {hourly ? ` ${hourly[0].pop}%` : 'Loading...'}
             </Text>
             <Text style={styles.locationSummary}>
               {icon('Drop', 24)}
-              43%
+              {hourly ? ` ${hourly[0].humidity}%` : 'Loading...'}
             </Text>
             <Text style={styles.locationSummary}>
               UV: Low
