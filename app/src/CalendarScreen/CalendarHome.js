@@ -19,6 +19,7 @@ import CalendarMonthView from './CalendarMonthView';
 
 const styles = StyleSheet.create({
   container: {
+    flexGrow: 1,
     backgroundColor: '#231F29',
     padding: 24,
   },
@@ -72,23 +73,31 @@ export default class CalendarHome extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     LogBox.ignoreLogs([
       'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release.',
       'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release.',
     ]);
 
-    this.updateTasks();
+    await this.updateTasks();
   }
 
-  setDate = newDate => {
+  setDate = async newDate => {
     this.setState({ date: moment(newDate).format('YYYY-MM-DD') });
-    this.updateTasks();
+    await this.updateTasks();
   };
 
   // eslint-disable-next-line react/destructuring-assignment
   updateTasks = async (date = this.state.date) => {
-    const res = await queryCalendar(date);
+    let res;
+    try {
+      res = await queryCalendar(date);
+    } catch (e) {
+      console.log('An error occurred while querying the server');
+      console.error(e);
+      return;
+    }
+
     if (res instanceof Error) {
       console.log('An error occurred while querying the Calendar');
       return;
@@ -134,7 +143,15 @@ export default class CalendarHome extends Component {
           />
           <CalendarMonthView date={date} setDate={this.setDate} />
           <Text style={styles.subtitle}>{moment(date).format('dddd')}</Text>
-          {renderTasks()}
+          {tasks.length > 0 ? (
+            renderTasks()
+          ) : (
+            <Card style={styles.cardContainer}>
+              <CardItem style={styles.cardItem} bordered>
+                <Text style={styles.text}>No tasks found!</Text>
+              </CardItem>
+            </Card>
+          )}
         </Content>
         <Fab
           active={fabOpen}

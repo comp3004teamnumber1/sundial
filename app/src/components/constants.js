@@ -32,15 +32,18 @@ export async function queryCalendar(date) {
             'Session-Key': key,
           },
         };
-        axios
-          .get(`${constants.SERVER_URL}/task?date=${date}`, config)
-          .then(res => {
+        axios.get(`${constants.SERVER_URL}/task?date=${date}`, config).then(
+          res => {
             if (res.data.status === 200) {
               resolve(res.data.tasks);
             } else {
-              reject(new Error('Error completing request'));
+              reject(new Error(res.data.error));
             }
-          });
+          },
+          err => {
+            reject(new Error('Error making calendar request'));
+          }
+        );
       })
       .catch(e => {
         reject(new Error('Error getting session key'));
