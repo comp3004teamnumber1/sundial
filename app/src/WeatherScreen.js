@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 import { Pressable, StatusBar, StyleSheet, View, ScrollView, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
-import axios from 'axios';
-import {
-  getStorageKey,
-  getSessionKey,
-  constants,
-  dummy,
-} from './components/constants';
+import { dummy } from './components/constants';
+import { queryHourlyWeekly } from './components/queryCalendar.js'
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
 import { icon, windDirection } from './components/constants';
@@ -96,18 +91,7 @@ export default class WeatherScreen extends Component {
     };
 
     // query data
-    let hourlyRes;
-    let weeklyRes;
-    try {
-      [hourlyRes, weeklyRes] = await Promise.all([
-        axios.get(`${constants.SERVER_URL}/hourly${queryString}`, config),
-        axios.get(`${constants.SERVER_URL}/daily${queryString}`, config),
-      ]);
-    } catch (e) {
-      console.log('An error occurred while fetching weather data.');
-      console.error(e);
-      return;
-    }
+    const HourlyWeeklyData = await queryHourlyWeekly();
 
     // set our state
     this.setState({

@@ -58,12 +58,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function WeeklyView(props) {
+export default function WeeklyView({ data }) {
+
   return (
     <Container style={styles.container}>
       <List
         horizontal
-        dataArray={props.data}
+        dataArray={data}
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'
         keyExtractor={(item, i) => `Day${i.toString()}`}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
-import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import { icon } from './../components/constants';
 
