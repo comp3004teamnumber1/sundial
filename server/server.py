@@ -85,12 +85,10 @@ def get_lat_long(location):
     return query[0], query[1]
 
 
-def get_weather_data(location):
+def get_weather_data(location, units="metric"):
     latlon = get_lat_long(location)
-    api_url = (
-        "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
-            latlon[0], latlon[1], config.OWM_API_KEY
-        )
+    api_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&appid={}".format(
+        latlon[0], latlon[1], units, config.OWM_API_KEY
     )
     return requests.get(api_url)
 
@@ -183,7 +181,9 @@ def daily():
         return {"status": 401, "error": "Missing session key."}, 200
     if not get_args["location"]:
         return {"status": 401, "error": "Missing location."}, 200
-    api_return = get_weather_data(get_args.get("location"))
+    api_return = get_weather_data(
+        get_args.get("location"), get_args.get("units", "metric")
+    )
     # convert to json
     weather_data = api_return.json()
     days = {"days": []}
@@ -191,19 +191,11 @@ def daily():
     for weather in weather_data["daily"]:
         day = {
             "date": weather["dt"],
-            "temp": {
-                "c": round(weather["temp"]["day"] - 273.15, 1),
-                "f": round((weather["temp"]["day"] - 273.15) * 9 / 5 + 32, 1),
-                "k": round(weather["temp"]["day"], 1),
-            },
-            "feels_like": {
-                "temp": {
-                    "c": round(weather["feels_like"]["day"] - 273.15, 1),
-                    "f": round((weather["feels_like"]["day"] - 273.15) * 9 / 5 + 32, 1),
-                    "k": round(weather["feels_like"]["day"], 1),
-                }
-            },
+            "temp": weather["temp"]["day"],
+            "feels_like_temp": weather["feels_like"]["day"],
             "pop": weather["pop"],
+            "wind_speed": weather["wind_speed"],
+            "wind_deg": weather["wind_deg"],
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
         }
@@ -227,7 +219,9 @@ def hourly():
         return {"status": 401, "error": "Missing session key."}, 200
     if not get_args["location"]:
         return {"status": 401, "error": "Missing location."}, 200
-    api_return = get_weather_data(get_args.get("location"))
+    api_return = get_weather_data(
+        get_args.get("location"), get_args.get("units", "metric")
+    )
     # convert to json
     weather_data = api_return.json()
     hours = {"hours": []}
@@ -237,19 +231,11 @@ def hourly():
             break
         hour = {
             "date": weather["dt"],
-            "temp": {
-                "c": round(weather["temp"] - 273.15, 1),
-                "f": round((weather["temp"] - 273.15) * 9 / 5 + 32, 1),
-                "k": round(weather["temp"], 1),
-            },
-            "feels_like": {
-                "temp": {
-                    "c": round(weather["feels_like"] - 273.15, 1),
-                    "f": round((weather["feels_like"] - 273.15) * 9 / 5 + 32, 1),
-                    "k": round(weather["feels_like"], 1),
-                }
-            },
+            "temp": weather["temp"],
+            "feels_like_temp": weather["feels_like"],
             "pop": weather["pop"],
+            "wind_speed": weather["wind_speed"],
+            "wind_deg": weather["wind_deg"],
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
         }
@@ -384,8 +370,9 @@ def get_task():
     if query:
         for task in query:
             if get_args.get("date", 0):
-                formatted_date = datetime.fromtimestamp(task[2]).strftime("%Y-%m-%d")
-                print(formatted_date, flush=True)
+                formatted_date = datetime.fromtimestamp(int(task[2])).strftime(
+                    "%Y-%m-%d"
+                )
                 if get_args.get("date") == formatted_date:
                     tasks.append(
                         {

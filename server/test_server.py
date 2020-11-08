@@ -25,7 +25,7 @@ def post_login():
 
 def get_hourly():
     hourly = requests.get(
-        "http://127.0.0.1:5000/hourly?location=Ottawa, Ontario",
+        "http://127.0.0.1:5000/hourly?location=Ottawa, Ontario&units=imperial",
         headers={"Session-Key": session_key},
     )
     return hourly.json()
@@ -94,7 +94,9 @@ def test_login():
 
 
 def test_hourly():
-    assert get_hourly().get("hours")
+    response = get_hourly()
+    print(response)
+    assert response.get("hours")
 
 
 def test_daily():
