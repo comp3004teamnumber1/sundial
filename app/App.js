@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Feather } from '@expo/vector-icons';
 import { getSessionKey, setStorageKey } from './src/components/constants';
 import MainStack from './src/MainStack';
 import LoginScreen from './src/LoginScreen';
+import LoadingComponent from './src/components/loadingComponent';
 
 export default class App extends Component {
   constructor(props) {
@@ -26,7 +26,6 @@ export default class App extends Component {
     });
 
     // use this line to clear the key (for testing)
-    // await setStorageKey('session_key', '');
     // check if logged in
     const res = await getSessionKey();
     if (res === null) {
@@ -50,7 +49,7 @@ export default class App extends Component {
   render() {
     const { isReady, loggedIn } = this.state;
     if (!isReady) {
-      return <AppLoading />;
+      return <LoadingComponent />;
     }
 
     return (

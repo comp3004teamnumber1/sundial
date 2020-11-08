@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import { Feather } from '@expo/vector-icons';
+import React from 'react';
 import axios from 'axios';
 
 export async function getStorageKey(key) {
@@ -15,6 +17,25 @@ export async function setStorageKey(key, value) {
     return true;
   } catch (e) {
     return false;
+  }
+}
+
+export function getWeatherIcon(weather) {
+  switch (weather) {
+    case 'Clear':
+      return <Feather name='sun' size={48} color='white' />;
+    case 'Clouds':
+      return <Feather name='cloud' size={48} color='white' />;
+    case 'Rain':
+      return <Feather name='cloud-rain' size={48} color='white' />;
+    case 'Drizzle':
+      return <Feather name='cloud-drizzle' size={48} color='white' />;
+    case 'Thunderstorm':
+      return <Feather name='cloud-lightning' size={48} color='white' />;
+    case 'Snow':
+      return <Feather name='cloud-snow' size={48} color='white' />;
+    default:
+      return <Feather name='help-circle' size={48} color='white' />;
   }
 }
 
