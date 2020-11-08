@@ -62,19 +62,20 @@ export default function HourlyView({ data }) {
         keyExtractor={(item, index) => 'Hour' + index.toString()}
         renderRow={item => {
           let time = moment.unix(item.date);
-          return now.hour() === time.hour() ? (
-            <Pressable style={styles.listItemActive} key={item.date}>
+          return (
+            <Pressable
+              style={
+                now.hour() === time.hour()
+                  ? styles.listItemActive
+                  : styles.listItem
+              }
+              key={item.date}
+            >
               <Text style={styles.text}>{time.format('h A')}</Text>
               {icon(item.weather_type)}
-              <Text style={styles.tempPrimary}>{item.temp.c + '°'}</Text>
+              <Text style={styles.tempPrimary}>{`${item.temp.c}°`}</Text>
             </Pressable>
-          ) : (
-              <Pressable style={styles.listItem} key={item.date}>
-                <Text style={styles.text}>{time.format('h A')}</Text>
-                {icon(item.weather_type)}
-                <Text style={styles.tempPrimary}>{item.temp.c + '°'}</Text>
-              </Pressable>
-            );
+          )
         }}
       />
     </Container>
