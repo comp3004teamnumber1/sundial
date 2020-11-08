@@ -112,7 +112,7 @@ export default class WeatherScreen extends Component {
     // set our state
     this.setState({
       hourly: hourlyRes.data.hours,
-      weekly: weeklyRes.data.days,
+      weekly: weeklyRes.data.days.slice(0, weeklyRes.data.days.length - 1),
     });
   }
 

@@ -17,8 +17,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   listItem: {
-    // flexDirection: 'column',
-    // justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#332E3C',
     height: 350,
@@ -27,8 +25,6 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   activeListItem: {
-    // flexDirection: 'column',
-    // justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#FF8C42',
     height: 350,
@@ -75,7 +71,7 @@ export default function WeeklyView(props) {
           return (
             <Pressable
               style={
-                moment().format('ddd') === item.date
+                moment().format('ddd') === moment.unix(item.date).format('ddd')
                   ? styles.activeListItem
                   : styles.listItem
               }
@@ -86,9 +82,12 @@ export default function WeeklyView(props) {
               {icon(item.weather_type)}
               <Text style={styles.textWeather}> {`${item.temp.c}°`} </Text>
               <Text style={styles.textPrecip}>
-                {`${item.pop}%`}
                 <Entypo name='drop' size={12} color='#6699CC' />
-                <Text style={styles.textHumidity}> {`${item.humidity}`}</Text>
+                {`${item.pop}% `}
+                <Text style={styles.textHumidity}>
+                  {icon('drizzle', 12)}
+                  {`${item.humidity}%`}
+                </Text>
               </Text>
             </Pressable>
           );
