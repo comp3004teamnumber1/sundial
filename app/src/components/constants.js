@@ -1,7 +1,7 @@
 import React from 'react';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-community/async-storage';
-import { exp } from 'react-native-reanimated';
+import axios from 'axios';
 
 export function icon(description = '', size = 48, color = 'white') {
   //The default size and colour were chosen due to those values being used for the Weekly and Hourly Views
@@ -49,6 +49,35 @@ export async function setStorageKey(key, value) {
 
 export async function getSessionKey() {
   return getStorageKey('session_key');
+}
+
+// Date string in format 'YYYY-MM-DD'
+export function queryCalendar(date) {
+  return new Promise((resolve, reject) => {
+    getSessionKey()
+      .then(key => {
+        const config = {
+          headers: {
+            'Session-Key': key,
+          },
+        };
+        axios.get(`${constants.SERVER_URL}/task?date=${date}`, config).then(
+          res => {
+            if (res.data.status === 200) {
+              resolve(res.data.tasks);
+            } else {
+              reject(new Error(res.data.error));
+            }
+          },
+          err => {
+            reject(new Error('Error making calendar request'));
+          }
+        );
+      })
+      .catch(e => {
+        reject(new Error('Error getting session key'));
+      });
+  });
 }
 
 export const constants = {
@@ -178,6 +207,36 @@ export const dummy = {
         k: 295.95,
       },
       weather: 'Clear',
+    },
+  ],
+  taskPayload: [
+    {
+      id: 1,
+      task: 'Eat lunch',
+      date: 1602104400,
+      ideal_weather: 'Clear',
+      location: 'Ottawa',
+    },
+    {
+      id: 2,
+      task: 'Eat Dinner',
+      date: 1602114400,
+      ideal_weather: 'Clouds',
+      location: 'Ottawa',
+    },
+    {
+      id: 3,
+      task: 'Eat Yourself',
+      date: 1602124400,
+      ideal_weather: 'Clear',
+      location: 'Ottawa',
+    },
+    {
+      id: 4,
+      task: 'Eat myself',
+      date: 1602134400,
+      ideal_weather: 'Rain',
+      location: 'Ottawa',
     },
   ],
 };
