@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StatusBar, StyleSheet, LogBox } from 'react-native';
+import { StatusBar, StyleSheet, LogBox, Alert } from 'react-native';
 import {
   Container,
   Text,
@@ -96,11 +96,13 @@ export default class CalendarHome extends Component {
     } catch (e) {
       console.log('An error occurred while querying the server');
       console.error(e);
+      Alert.alert('An error occurred', 'Please try again.');
       return;
     }
 
     if (res instanceof Error) {
       console.log('An error occurred while querying the Calendar');
+      Alert.alert('An error occurred', 'Please try again.');
       return;
     }
 

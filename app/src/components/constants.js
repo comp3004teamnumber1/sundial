@@ -23,7 +23,7 @@ export async function getSessionKey() {
 }
 
 // Date string in format 'YYYY-MM-DD'
-export async function queryCalendar(date) {
+export function queryCalendar(date) {
   return new Promise((resolve, reject) => {
     getSessionKey()
       .then(key => {
