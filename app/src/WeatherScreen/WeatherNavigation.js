@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
-import { Card, CardItem, Fab, List, Spinner, Text } from 'native-base';
+import { Button, Card, CardItem, Fab, Spinner, Text } from 'native-base';
 import axios from 'axios';
 import { Feather } from '@expo/vector-icons';
 import { constants, getSessionKey, icon, setStorageKey, getStorageKey } from './../components/constants';
@@ -17,7 +17,8 @@ export default class WeatherNavigation extends Component {
     super(props);
     this.state = {
       places: places.map(place => { return { [place]: null } }),
-      currentLocation: ''
+      currentLocation: '',
+      fabOpen: false
     }
   }
   async componentDidMount() {
@@ -101,6 +102,23 @@ export default class WeatherNavigation extends Component {
             );
           }
         )}
+        <Fab
+          active={this.state.fabOpen}
+          direction='up'
+          style={styles.fab}
+          position='bottomRight'
+          onPress={(() => {
+            this.setState({ fabOpen: !this.state.fabOpen });
+          })}
+        >
+          <Feather name='edit-3' size={24} color='white' />
+          <Button
+            style={{ backgroundColor: '#6699CC' }}
+            onPress={() => { this.props.navigation.navigate('AddWeatherLocation') }}
+          >
+            <Feather name='plus' size={24} color='white' />
+          </Button>
+        </Fab>
       </ScrollView>
     );
   }
