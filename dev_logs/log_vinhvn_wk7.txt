@@ -1,0 +1,4 @@
+- Redeployment and debugging of hosted backend server on VPS with new changes
+- Code review of frontend and backend pull requests
+- Collaborating and assisting with frontend development
+- Finished calendar screen's main stack and screens, including a month view, list of events, and an "Add Event" screen
