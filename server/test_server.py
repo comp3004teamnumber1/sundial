@@ -25,7 +25,7 @@ def post_login():
 
 def get_hourly():
     hourly = requests.get(
-        "http://127.0.0.1:5000/hourly?location=Ottawa, Ontario",
+        "http://127.0.0.1:5000/hourly?location=Ottawa, Ontario&units=imperial",
         headers={"Session-Key": session_key},
     )
     return hourly.json()
@@ -58,9 +58,8 @@ def post_task_update():
         "http://127.0.0.1:5000/task/{}".format(task_id),
         json={
             "task": "Read 3004 notes.",
-            "date": 1603152299,
+            "date": 1604694000,
             "ideal_weather": "Rainy",
-            "location": "Ottawa, Ontario",
         },
         headers={"Session-Key": session_key},
     )
@@ -77,7 +76,8 @@ def delete_task():
 
 def get_task():
     task = requests.get(
-        "http://127.0.0.1:5000/task", headers={"Session-Key": session_key}
+        "http://127.0.0.1:5000/task",
+        headers={"Session-Key": session_key},
     )
     return task.json()
 
@@ -94,7 +94,9 @@ def test_login():
 
 
 def test_hourly():
-    assert get_hourly().get("hours")
+    response = get_hourly()
+    print(response)
+    assert response.get("hours")
 
 
 def test_daily():
@@ -112,9 +114,11 @@ def test_task_update():
     assert post_task_update().get("status") == 200
 
 
+def test_get_task():
+    response = get_task()
+    print("\nGET: /task {}\n".format(response))
+    assert response.get("status") == 200
+
+
 def test_delete_task():
     assert delete_task().get("status") == 200
-
-
-def test_get_task():
-    assert get_task().get("status") == 200

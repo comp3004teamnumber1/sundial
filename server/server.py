@@ -3,7 +3,7 @@ import json
 import requests
 import config
 import uuid
-from datetime import datetime
+from datetime import datetime, date, time
 import sqlite3
 import os
 from geopy.geocoders import Nominatim
@@ -85,14 +85,30 @@ def get_lat_long(location):
     return query[0], query[1]
 
 
-def get_weather_data(location):
+def get_weather_data(location, units="metric"):
     latlon = get_lat_long(location)
-    api_url = (
-        "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&appid={}".format(
-            latlon[0], latlon[1], config.OWM_API_KEY
-        )
+    api_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&appid={}".format(
+        latlon[0], latlon[1], units, config.OWM_API_KEY
     )
     return requests.get(api_url)
+
+
+def build_insert_query(table, params):
+    query_string = "INSERT INTO {} ({}) VALUES ({})".format(
+        table,
+        ", ".join([col for col in params.keys() if params.get(col, 0)]),
+        ", ".join(["'{}'".format(val) for val in params.values() if val]),
+    )
+    return query_string
+
+
+def build_update_query(table, params, where):
+    query_string = "UPDATE {} SET {} WHERE {}".format(
+        table,
+        ", ".join(["{} = '{}'".format(col, val) for col, val in params.items() if val]),
+        where,
+    )
+    return query_string
 
 
 @app.route("/", methods=["GET"])
@@ -153,7 +169,8 @@ def login():
 
 # GET: /daily
 # DESC: gets the information related to the daily componenet
-# PARAMS: username:str, session_key:str
+# PARAMS: location
+# HEADERS: Session-Key
 # SENDS: JSON with 8 days of weather info
 @app.route("/daily", methods=["GET"])
 def daily():
@@ -164,7 +181,9 @@ def daily():
         return {"status": 401, "error": "Missing session key."}, 200
     if not get_args["location"]:
         return {"status": 401, "error": "Missing location."}, 200
-    api_return = get_weather_data(get_args.get("location"))
+    api_return = get_weather_data(
+        get_args.get("location"), get_args.get("units", "metric")
+    )
     # convert to json
     weather_data = api_return.json()
     days = {"days": []}
@@ -172,19 +191,11 @@ def daily():
     for weather in weather_data["daily"]:
         day = {
             "date": weather["dt"],
-            "temp": {
-                "c": round(weather["temp"]["day"] - 273.15, 1),
-                "f": round((weather["temp"]["day"] - 273.15) * 9 / 5 + 32, 1),
-                "k": round(weather["temp"]["day"], 1),
-            },
-            "feels_like": {
-                "temp": {
-                    "c": round(weather["feels_like"]["day"] - 273.15, 1),
-                    "f": round((weather["feels_like"]["day"] - 273.15) * 9 / 5 + 32, 1),
-                    "k": round(weather["feels_like"]["day"], 1),
-                }
-            },
+            "temp": weather["temp"]["day"],
+            "feels_like_temp": weather["feels_like"]["day"],
             "pop": weather["pop"],
+            "wind_speed": weather["wind_speed"],
+            "wind_deg": weather["wind_deg"],
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
         }
@@ -194,9 +205,10 @@ def daily():
     return days, 200
 
 
-# GET: /daily
-# DESC: gets the information related to the hourly componenet
-# PARAMS: username:str, session_key:str
+# GET: /hourly
+# DESC: gets the information related to the hourly component
+# PARAMS: location
+# HEADERS: Session-Key
 # SENDS: JSON with 24 hours of weather info
 @app.route("/hourly", methods=["GET"])
 def hourly():
@@ -207,7 +219,9 @@ def hourly():
         return {"status": 401, "error": "Missing session key."}, 200
     if not get_args["location"]:
         return {"status": 401, "error": "Missing location."}, 200
-    api_return = get_weather_data(get_args.get("location"))
+    api_return = get_weather_data(
+        get_args.get("location"), get_args.get("units", "metric")
+    )
     # convert to json
     weather_data = api_return.json()
     hours = {"hours": []}
@@ -217,19 +231,11 @@ def hourly():
             break
         hour = {
             "date": weather["dt"],
-            "temp": {
-                "c": round(weather["temp"] - 273.15, 1),
-                "f": round((weather["temp"] - 273.15) * 9 / 5 + 32, 1),
-                "k": round(weather["temp"], 1),
-            },
-            "feels_like": {
-                "temp": {
-                    "c": round(weather["feels_like"] - 273.15, 1),
-                    "f": round((weather["feels_like"] - 273.15) * 9 / 5 + 32, 1),
-                    "k": round(weather["feels_like"], 1),
-                }
-            },
+            "temp": weather["temp"],
+            "feels_like_temp": weather["feels_like"],
             "pop": weather["pop"],
+            "wind_speed": weather["wind_speed"],
+            "wind_deg": weather["wind_deg"],
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
         }
@@ -239,41 +245,44 @@ def hourly():
     return hours, 200
 
 
-# (username text, task text, date text, ideal_weather text, location text)
+# POST: /task
+# DESC: creates a new task
+# PARAMS: task:str, date:int, ideal_weather:str, location:str
+# HEADERS: Session-Key
+# SENDS: JSON with task id
 @app.route("/task", methods=["POST"])
 def create_task():
     post_args = flask.request.get_json()
     post_headers = flask.request.headers
     if not authenticate_route(post_headers):
         return {"status": 401, "error": "Missing session key."}, 200
-    if (
-        not post_args.get("task", 0)
-        or not post_args.get("date", 0)
-        or not post_args.get("ideal_weather", 0)
-        or not post_args.get("location", 0)
-    ):
+    if not post_args.get("task", 0):
         return {
             "status": 401,
-            "error": "Missing required field. (task, date, ideal weather, or location)",
+            "error": "Missing task.",
         }, 200
     task_id = str(uuid.uuid4())
+    task = {
+        "id": task_id,
+        "username": sessions.get(post_headers.get("Session-Key")),
+        "task": post_args.get("task", ""),
+        "date": post_args.get("date", ""),
+        "ideal_weather": post_args.get("ideal_weather", ""),
+        "location": post_args.get("location", ""),
+    }
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
-    c.execute(
-        "INSERT INTO tasks (id, username, task, date, ideal_weather, location) VALUES ('{}', '{}', '{}', '{}', '{}', '{}')".format(
-            task_id,
-            sessions.get(post_headers.get("Session-Key")),
-            post_args.get("task"),
-            post_args.get("date"),
-            post_args.get("ideal_weather"),
-            post_args.get("location"),
-        )
-    )
+    c.execute(build_insert_query("tasks", task))
     conn.commit()
     conn.close()
     return {"status": 200, "id": task_id}, 200
 
 
+# POST: /task/<task_id>
+# DESC: updates a task
+# PARAMS: task:str, date:int, ideal_weather:str, location:str
+# HEADERS: Session-Key
+# SENDS: JSON with status
 @app.route("/task/<task_id>", methods=["POST"])
 def update_task(task_id):
     post_args = flask.request.get_json()
@@ -284,14 +293,11 @@ def update_task(task_id):
         return {"status": 401, "error": "Missing task id."}, 200
     if (
         not post_args.get("task", 0)
-        or not post_args.get("date", 0)
-        or not post_args.get("ideal_weather", 0)
-        or not post_args.get("location", 0)
+        and not post_args.get("date")
+        and not post_args.get("ideal_weather")
+        and not post_args.get("location")
     ):
-        return {
-            "status": 401,
-            "error": "Missing required field. (task, date, ideal weather, or location)",
-        }, 200
+        return {"status": 401, "error": "All fields are empty."}, 200
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute("SELECT username FROM tasks WHERE id = '{}'".format(task_id))
@@ -299,20 +305,22 @@ def update_task(task_id):
     if query:
         if query[0] != sessions.get(post_headers.get("Session-Key")):
             return {"status": 401, "error": "This task does not belong to you."}, 401
-    c.execute(
-        "UPDATE tasks SET task = '{}', date = '{}', ideal_weather = '{}', location = '{}' WHERE id = '{}'".format(
-            post_args.get("task"),
-            post_args.get("date"),
-            post_args.get("ideal_weather"),
-            post_args.get("location"),
-            task_id,
-        )
-    )
+    task = {
+        "task": post_args.get("task", ""),
+        "date": post_args.get("date", ""),
+        "ideal_weather": post_args.get("ideal_weather", ""),
+        "location": post_args.get("location", ""),
+    }
+    c.execute(build_update_query("tasks", task, "id = '{}'".format(task_id)))
     conn.commit()
     conn.close()
     return {"status": 200}, 200
 
 
+# POST: /task/<task_id>
+# DESC: deletes a task
+# HEADERS: Session-Key
+# SENDS: JSON with status
 @app.route("/task/<task_id>", methods=["DELETE"])
 def delete_task(task_id):
     post_headers = flask.request.headers
@@ -333,8 +341,13 @@ def delete_task(task_id):
     return {"status": 200}, 200
 
 
+# GET: /task
+# DESC: sends a list of all tasks of a user
+# HEADERS: Session-Key
+# SENDS: JSON with tasks
 @app.route("/task", methods=["GET"])
 def get_task():
+    get_args = flask.request.args
     get_headers = flask.request.headers
     if not authenticate_route(get_headers):
         return {"status": 401, "error": "Missing session key."}, 200
@@ -346,21 +359,45 @@ def get_task():
         )
     )
     tasks = []
-    query = [list(row) for row in c.fetchall()]
-    print(query, flush=True)
+    if get_args.get("current", False):
+        query = [
+            list(row)
+            for row in c.fetchall()
+            if datetime.fromtimestamp(int(list(row)[2])) >= datetime.now()
+        ]
+    else:
+        query = [list(row) for row in c.fetchall()]
     if query:
         for task in query:
-            print(task, flush=True)
-            tasks.append(
-                {
-                    "id": task[0],
-                    "task": task[1],
-                    "date": task[2],
-                    "ideal_weather": task[3],
-                    "location": task[4],
-                }
-            )
-    return {"tasks": tasks, "status": 200}, 200
+            if get_args.get("date", 0):
+                formatted_date = datetime.fromtimestamp(int(task[2])).strftime(
+                    "%Y-%m-%d"
+                )
+                if get_args.get("date") == formatted_date:
+                    tasks.append(
+                        {
+                            "id": task[0],
+                            "task": task[1],
+                            "date": task[2],
+                            "ideal_weather": task[3],
+                            "location": task[4],
+                        }
+                    )
+            else:
+                tasks.append(
+                    {
+                        "id": task[0],
+                        "task": task[1],
+                        "date": task[2],
+                        "ideal_weather": task[3],
+                        "location": task[4],
+                    }
+                )
+
+    return {
+        "tasks": sorted(tasks, key=lambda task: task.get("date")),
+        "status": 200,
+    }, 200
 
 
 if args.https:

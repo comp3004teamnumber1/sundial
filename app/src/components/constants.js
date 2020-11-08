@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
+import axios from 'axios';
 
 export async function getStorageKey(key) {
   try {
@@ -40,6 +41,35 @@ export function getWeatherIcon(weather) {
 
 export async function getSessionKey() {
   return getStorageKey('session_key');
+}
+
+// Date string in format 'YYYY-MM-DD'
+export function queryCalendar(date) {
+  return new Promise((resolve, reject) => {
+    getSessionKey()
+      .then(key => {
+        const config = {
+          headers: {
+            'Session-Key': key,
+          },
+        };
+        axios.get(`${constants.SERVER_URL}/task?date=${date}`, config).then(
+          res => {
+            if (res.data.status === 200) {
+              resolve(res.data.tasks);
+            } else {
+              reject(new Error(res.data.error));
+            }
+          },
+          err => {
+            reject(new Error('Error making calendar request'));
+          }
+        );
+      })
+      .catch(e => {
+        reject(new Error('Error getting session key'));
+      });
+  });
 }
 
 export const constants = {
@@ -174,31 +204,31 @@ export const dummy = {
   taskPayload: [
     {
       id: 1,
-      task: "Eat lunch",
+      task: 'Eat lunch',
       date: 1602104400,
-      ideal_weather: "Clear",
-      location: "Ottawa"
+      ideal_weather: 'Clear',
+      location: 'Ottawa',
     },
     {
       id: 2,
-      task: "Eat Dinner",
+      task: 'Eat Dinner',
       date: 1602114400,
-      ideal_weather: "Clouds",
-      location: "Ottawa"
+      ideal_weather: 'Clouds',
+      location: 'Ottawa',
     },
     {
       id: 3,
-      task: "Eat Yourself",
+      task: 'Eat Yourself',
       date: 1602124400,
-      ideal_weather: "Clear",
-      location: "Ottawa"
+      ideal_weather: 'Clear',
+      location: 'Ottawa',
     },
     {
       id: 4,
-      task: "Eat myself",
+      task: 'Eat myself',
       date: 1602134400,
-      ideal_weather: "Rain",
-      location: "Ottawa"
+      ideal_weather: 'Rain',
+      location: 'Ottawa',
     },
-  ]
+  ],
 };

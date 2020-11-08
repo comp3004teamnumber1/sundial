@@ -13,8 +13,9 @@
     - pytest
 
 install the dependencies on Ubuntu 20.04 with the following command
-  - `sudo apt install python3 python3-pip`
-  - `sudo pip install pipenv`
+
+- `sudo apt install python3 python3-pip`
+- `sudo pip install pipenv`
 
 everything *should* work with these installed
 
@@ -33,6 +34,7 @@ run tests: `$ pytest`
 ### DOCUMENTATION
 
 ### SHORT USAGE GUIDE
+
 - make a POST request to /register that sends the username and password to the server, once registered
 - make a POST request to /login that sends a username and password to the server, you will be sent a session_key if it was successful
 - take the session_key you are sent and put it in the headers as `Session-Key` of the GET routes you want to use along, ie
@@ -74,11 +76,15 @@ OUTPUT:
 
 #### GET: /daily
 
-PARAMS (QUERY): `/daily?location=str`
-  - `location`: a location, a city, an address
+PARAMS (QUERY): `/daily?location=str&units=str`
+
+- `location`: a location, a city, an address (required)
+- `units`: metric or imperial, will give the temperature and wind speed in these (optional)
+  - if nothing given, will be in metric
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 EXAMPLE: `/daily?location=Ottawa, Ontario`
 
@@ -91,19 +97,11 @@ OUTPUT:
   "days": [
     {
       "date": "epoch_time:int",
-      "temp": {
-        "c": "temp_celsius:int",
-        "f": "temp_fahrenheit:int",
-        "k": "temp_kelvin:int",
-      },
-      "feels_like": {
-        "temp": {
-          "c": "temp_celsius:int",
-          "f": "temp_fahrenheit:int",
-          "k": "temp_kelvin:int",
-        },
-      },
+      "temp": "temp:int",
+      "feels_like_temp": "temp:int",
       "pop": "pop:int",
+      "wind_speed": "speed:float",
+      "wind_deg": "deg:int",
       "humidity": "humidity:int",
       "weather_type": "weather_description:str",
     },
@@ -116,11 +114,14 @@ OUTPUT:
 
 #### GET: /hourly
 
-PARAMS (QUERY): `/hourly?location=str`
-  - `location`: a location, a city, an address
+PARAMS (QUERY): `/hourly?location=str&units=str`
+
+- `location`: a location, a city, an address
+- `units`: metric or imperial, will give the temperature and wind speed in these
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 EXAMPLE: `/hourly?location=Ottawa, Ontario`
 
@@ -133,19 +134,11 @@ OUTPUT:
   "hours": [
     {
       "date": "epoch_time:int",
-      "temp": {
-        "c": "temp_celsius:int",
-        "f": "temp_fahrenheit:int",
-        "k": "temp_kelvin:int",
-      },
-      "feels_like": {
-        "temp": {
-          "c": "temp_celsius:int",
-          "f": "temp_fahrenheit:int",
-          "k": "temp_kelvin:int",
-        },
-      },
+      "temp": "temp:int",
+      "feels_like_temp": "temp:int",
       "pop": "pop:int",
+      "wind_speed": "speed:float",
+      "wind_deg": "deg:int",
       "humidity": "humidity:int",
       "weather_type": "weather_description:str",
     },
@@ -156,14 +149,15 @@ OUTPUT:
 }
 ```
 
-
 #### POST: /task
 
 PARAMS (JSON): `{"task": "description:str", "date": "epoch_time:int", "ideal_weather": "weather_description:str", "location": "location:str"}`
-  - `location`: a location, a city, an address
+
+- `location`: a location, a city, an address
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 EXAMPLE: `{"task": "Finish 3004", "date": 1604253175, "ideal_weather": "Clear", "location": "Ottawa, Ontario"}`
 
@@ -178,16 +172,17 @@ OUTPUT:
 }
 ```
 
-
 #### POST: /task/<task_id>
 
 NOTE: This will update the task with task_id as long as the Session-Key sent matches the username that created the task.
 
 PARAMS (JSON): `{"task": "description:str", "date": "epoch_time:int", "ideal_weather": "weather_description:str", "location": "location:str"}`
-  - `location`: a location, a city, an address
+
+- `location`: a location, a city, an address
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 EXAMPLE: `{"task": "Finish 3004", "date": 1604253175, "ideal_weather": "Clear", "location": "Ottawa, Ontario"}`
 
@@ -201,13 +196,13 @@ OUTPUT:
 }
 ```
 
-
 #### DELETE: /task/<task_id>
 
 NOTE: This will delete the task with the task_id if the Session-Key matches the username that created the taks.
 
 PARAMS (HEADERS): `{"Session-Key": "str"}`
-  - `Session-Key`: the authentication key given from `/login`
+
+- `Session-Key`: the authentication key given from `/login`
 
 SENDS: JSON
 
@@ -238,7 +233,7 @@ OUTPUT:
       "location": "location:str"
     },
     {
-      "_comment": "array containing all the tasks for the user that requested them."
+      "__comment": "array containing all the tasks for the user that requested them."
     }
   ]
 }
