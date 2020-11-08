@@ -1,0 +1,6 @@
+back end
+- added https support to back end
+- helped team member deploy back end with https support
+- bug fixes for get task
+- added testing for new features
+- built a deployment script for team
