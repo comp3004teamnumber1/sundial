@@ -1,0 +1,9 @@
+back end
+- updating testing
+- added output to some tests
+- added query features to get task routes
+    - date specific queries
+    - flag to get upcoming or current tasks
+- updated documentation for readability
+- debugged an issue with front-end team member
+- added a bugfix for timestamp conversions
