@@ -1,7 +1,72 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import { Feather } from '@expo/vector-icons';
 import React from 'react';
+import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
+
+export function windDirection(degree) {
+  degree = degree % 360;
+  if (348.75 <= degree || degree < 11.25)
+    return 'N';
+  else if (11.25 <= degree || degree < 33.75)
+    return 'NNE';
+  else if (33.75 <= degree || degree < 56.25)
+    return 'NE';
+  else if (56.25 <= degree || degree < 78.75)
+    return 'ENE';
+  else if (78.75 <= degree || degree < 101.25)
+    return 'E';
+  else if (101.25 <= degree || degree < 123.75)
+    return 'ESE';
+  else if (123.75 <= degree || degree < 146.25)
+    return 'SE';
+  else if (146.25 <= degree || degree < 168.75)
+    return 'SSE';
+  else if (168.25 <= degree || degree < 191.25)
+    return 'S';
+  else if (191.25 <= degree || degree < 213.75)
+    return 'SSW';
+  else if (213.25 <= degree || degree < 236.25)
+    return 'SW';
+  else if (236.25 <= degree || degree < 258.75)
+    return 'WSW';
+  else if (258.25 <= degree || degree < 281.25)
+    return 'W';
+  else if (281.25 <= degree || degree < 303.75)
+    return 'WNW';
+  else if (303.25 <= degree || degree < 326.25)
+    return 'NW';
+  else if (326.25 <= degree || degree < 348.75)
+    return 'NNW';
+  else
+    return 'Error';
+}
+
+export function icon(description = '', size = 48, color = 'white') {
+  //The default size and colour were chosen due to those values being used for the Weekly and Hourly Views
+  let name = description.toLowerCase();
+  switch (name) {
+    case 'wind':
+      return <Feather name='wind' size={size} color={color} />;
+    case 'drop':
+      return <Feather name='droplet' size={size} color={color} />;
+
+    case 'clear':
+      return <Feather name='sun' size={size} color={color} />;
+    case 'clouds':
+      return <Feather name='cloud' size={size} color={color} />;
+    case 'rain':
+      return <Feather name='cloud-rain' size={size} color={color} />;
+    case 'drizzle':
+      return <Feather name='cloud-drizzle' size={size} color={color} />;
+    case 'thunderstorm':
+      return <Feather name='cloud-lightning' size={size} color={color} />;
+    case 'snow':
+      return <Feather name='cloud-snow' size={size} color={color} />;
+
+    default:
+      return <Feather name='help-circle' size={size} color={color} />;
+  }
+};
 
 export async function getStorageKey(key) {
   try {
@@ -17,25 +82,6 @@ export async function setStorageKey(key, value) {
     return true;
   } catch (e) {
     return false;
-  }
-}
-
-export function getWeatherIcon(weather) {
-  switch (weather) {
-    case 'Clear':
-      return <Feather name='sun' size={48} color='white' />;
-    case 'Clouds':
-      return <Feather name='cloud' size={48} color='white' />;
-    case 'Rain':
-      return <Feather name='cloud-rain' size={48} color='white' />;
-    case 'Drizzle':
-      return <Feather name='cloud-drizzle' size={48} color='white' />;
-    case 'Thunderstorm':
-      return <Feather name='cloud-lightning' size={48} color='white' />;
-    case 'Snow':
-      return <Feather name='cloud-snow' size={48} color='white' />;
-    default:
-      return <Feather name='help-circle' size={48} color='white' />;
   }
 }
 
@@ -81,7 +127,7 @@ export const dummy = {
     {
       date: 1602960464,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -103,7 +149,7 @@ export const dummy = {
     {
       date: 1603133264,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -114,7 +160,7 @@ export const dummy = {
     {
       date: 1602097200,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -125,7 +171,7 @@ export const dummy = {
     {
       date: 1603392464,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -136,7 +182,7 @@ export const dummy = {
     {
       date: 1603478864,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -149,7 +195,7 @@ export const dummy = {
     {
       date: 1602086400,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -158,7 +204,7 @@ export const dummy = {
     {
       date: 1602090000,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -167,7 +213,7 @@ export const dummy = {
     {
       date: 1602093600,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -176,7 +222,7 @@ export const dummy = {
     {
       date: 1602097200,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -185,7 +231,7 @@ export const dummy = {
     {
       date: 1602100800,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },
@@ -194,7 +240,7 @@ export const dummy = {
     {
       date: 1602104400,
       temp: {
-        c: 21.8,
+        c: 'loading',
         f: 71.2,
         k: 295.95,
       },

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { StatusBar, StyleSheet, LogBox } from 'react-native';
+import { Pressable, StatusBar, StyleSheet, View, ScrollView, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
-import { dummy } from './components/constants';
+import { dummy, icon, windDirection, getSessionKey, getStorageKey } from './components/constants';
 import { queryHourlyWeekly } from './components/queryCalendar.js'
 import HourlyView from './WeatherScreen/HourlyView';
 import WeeklyView from './WeatherScreen/WeeklyView';
@@ -29,6 +29,31 @@ const styles = StyleSheet.create({
     fontSize: 24,
     paddingVertical: 12,
   },
+  locationView: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    minHeight: 60,
+    maxHeight: 60,
+  },
+  locationTitle: {
+    color: '#ffffff',
+    textAlign: 'center'
+  },
+  locationDescription: {
+    textAlign: 'justify',
+    color: '#ffffff',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    fontSize: 24
+  },
+  locationSummary: {
+    color: '#ffffff',
+    textAlign: 'center',
+    width: '50%',
+    fontSize: 24,
+  },
 });
 
 export default class WeatherScreen extends Component {
@@ -37,11 +62,32 @@ export default class WeatherScreen extends Component {
     this.state = {
       hourly: null,
       weekly: null,
+      location: null
     };
   }
 
   async componentDidMount() {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+    // get relevant info for request
+    const [session_key, location] = await Promise.all([
+      getSessionKey(),
+      getStorageKey('current_location'),
+    ]);
+
+    this.setState({ location: location });
+
+    // build query
+    const queryParams = {
+      location: location || 'Ottawa, Ontario',
+    };
+    const queryString = `?${Object.entries(queryParams)
+      .map(([k, v], i) => `${k}=${v}`)
+      .join('&')}`;
+    const config = {
+      headers: {
+        'Session-Key': session_key,
+      },
+    };
 
     // query data
     const HourlyWeeklyData = await queryHourlyWeekly();
@@ -49,18 +95,45 @@ export default class WeatherScreen extends Component {
     // set our state
     this.setState({
       hourly: HourlyWeeklyData.hourly.data.hours,
-      weekly: HourlyWeeklyData.weekly.data.days,
+      weekly: HourlyWeeklyData.weekly.data.days.slice(0, HourlyWeeklyData.weekly.data.days.length - 1),
     });
   }
 
   render() {
     const { hourly, weekly } = this.state;
-
     return (
-      <Container style={styles.container}>
+      <ScrollView style={styles.container}>
         <StatusBar />
         <Content contentContainerStyle={styles.content}>
-          <Text style={styles.title}>Weather</Text>
+          <Pressable
+            onPress={() => this.props.navigation.navigate('WeatherNavigation')}
+          >
+            <Text style={styles.title}>
+              {this.state.location}
+            </Text>
+            <Text style={styles.locationDescription}>
+              {hourly ? hourly[0].weather_type : 'Please wait...'}
+
+            </Text>
+          </Pressable>
+          <View style={styles.locationView}>
+            <Text style={styles.locationSummary}>
+              {icon('Wind', 24)}
+              {/* TODO: {hourly ? `${hourly[0].wind_speed} m/s ${windDirection(134)}`} */}
+              {`5.7 m/s ${windDirection(134)}`}
+            </Text>
+            <Text style={styles.locationSummary}>
+              {icon('Drizzle', 24)}
+              {hourly ? ` ${hourly[0].pop}%` : 'Loading...'}
+            </Text>
+            <Text style={styles.locationSummary}>
+              {icon('Drop', 24)}
+              {hourly ? ` ${hourly[0].humidity}%` : 'Loading...'}
+            </Text>
+            <Text style={styles.locationSummary}>
+              UV: Low
+            </Text>
+          </View>
           <Container style={styles.view}>
             <Text style={styles.subtitle}>Hourly</Text>
             <HourlyView data={hourly || dummy.hourlyViewTestPayload} />
@@ -68,7 +141,7 @@ export default class WeatherScreen extends Component {
             <WeeklyView data={weekly || dummy.weeklyViewTestPayload} />
           </Container>
         </Content>
-      </Container>
+      </ScrollView>
     );
   }
 }

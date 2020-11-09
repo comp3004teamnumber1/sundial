@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { SafeAreaView, FlatList, StyleSheet, View, Text } from "react-native";
-import { getWeatherIcon } from '../components/constants.js';
+import { icon } from '../components/constants.js';
 
 const Item = ({ task }) => {
     return (
@@ -10,7 +10,7 @@ const Item = ({ task }) => {
         <View style={[styles.weather, {
             transform: [{ scale: 0.5 }]
         }]}>
-            {getWeatherIcon(task.ideal_weather)}
+            {icon(task.ideal_weather)}
         </View>
         <Text style={styles.date}>{displayTime(task.date)}</Text>
     </View>

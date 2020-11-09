@@ -3,11 +3,11 @@ import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
 import { Entypo } from '@expo/vector-icons';
 import moment from 'moment';
-import { getWeatherIcon } from '../components/constants.js';
+import { icon } from './../components/constants';
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: 220,
+    maxHeight: 240,
     borderColor: '#332E3C',
     borderLeftWidth: 10,
     borderRightWidth: 10,
@@ -17,21 +17,17 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   listItem: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#332E3C',
-    height: 220,
+    height: 350,
     width: 85,
     paddingVertical: 18,
     zIndex: 0,
   },
   activeListItem: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#FF8C42',
-    height: 220,
+    height: 350,
     width: 85,
     paddingVertical: 18,
     zIndex: 0,
@@ -40,12 +36,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 18,
+    marginBottom: 35
   },
   textWeather: {
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 23,
     fontWeight: 'bold',
+    marginTop: 40,
+    marginBottom: 20
   },
   textPrecip: {
     textAlign: 'center',
@@ -73,7 +72,7 @@ export default function WeeklyView({ data }) {
           return (
             <Pressable
               style={
-                moment().format('ddd') === item.date
+                moment().format('ddd') === moment.unix(item.date).format('ddd')
                   ? styles.activeListItem
                   : styles.listItem
               }
@@ -81,12 +80,15 @@ export default function WeeklyView({ data }) {
               <Text style={styles.textDate}>
                 {moment.unix(item.date).format('ddd')}
               </Text>
-              {getWeatherIcon(item.weather_type)}
+              {icon(item.weather_type)}
               <Text style={styles.textWeather}> {`${item.temp.c}°`} </Text>
               <Text style={styles.textPrecip}>
-                {`${item.pop}%`}
                 <Entypo name='drop' size={12} color='#6699CC' />
-                <Text style={styles.textHumidity}> {`${item.humidity}`}</Text>
+                {`${item.pop}% `}
+                <Text style={styles.textHumidity}>
+                  {icon('drizzle', 12)}
+                  {`${item.humidity}%`}
+                </Text>
               </Text>
             </Pressable>
           );

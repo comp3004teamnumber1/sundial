@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
 import moment from 'moment';
-import { getWeatherIcon } from '../components/constants.js';
+import { icon } from './../components/constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,25 +38,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 18,
+    marginBottom: 35
   },
   tempPrimary: {
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  tempSecondary: {
-    textAlign: 'center',
-    color: '#6699CC',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+    marginTop: 40
+  }
 });
 
 export default function HourlyView({ data }) {
-
   const now = moment();
-
   return (
     <Container style={styles.container}>
       <List
@@ -64,7 +58,7 @@ export default function HourlyView({ data }) {
         dataArray={data}
         showsHorizontalScrollIndicator={false}
         overScrollMode='never'
-        keyExtractor={(item, index) => `Hour${index.toString()}`}
+        keyExtractor={(item, index) => `hour${index.toString()}`}
         renderRow={item => {
           let time = moment.unix(item.date);
           return (
@@ -77,7 +71,7 @@ export default function HourlyView({ data }) {
               key={item.date}
             >
               <Text style={styles.text}>{time.format('h A')}</Text>
-              {getWeatherIcon(item.weather_type)}
+              {icon(item.weather_type)}
               <Text style={styles.tempPrimary}>{`${item.temp.c}°`}</Text>
             </Pressable>
           );
