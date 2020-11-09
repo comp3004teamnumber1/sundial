@@ -1,0 +1,7 @@
+Student: Bill Zhang #101106261
+Date: November 2 2020 - November 8 2020
+
+(2 HR) Refactoring and cleaning up my changes for home screen
+(1 HR) Learning about react hooks
+(4 HR) Researching push notifications in expo and trying to implement them
+(1 HR) Debugging with project mates 
