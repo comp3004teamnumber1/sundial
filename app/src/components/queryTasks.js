@@ -15,7 +15,7 @@ export async function queryTasks() {
     // build query
     const queryParams = {
         username,
-        // current: "true",
+        current: "true",
     };
     const queryString = `?${Object.entries(queryParams)
         .map(([k, v], i) => `${k}=${v}`)

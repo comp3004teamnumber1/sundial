@@ -26,7 +26,6 @@ export default function UpNext({ data }) {
     const renderItem = ({ item }) => (
         <Item task={item} />
     )
-    // console.log(data)
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
