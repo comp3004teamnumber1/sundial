@@ -130,31 +130,38 @@ export default class WeatherNavigation extends Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#332E3C',
+    flex: 1,
   },
   header: {
     color: '#FFFFFF',
     fontSize: 48,
     textAlign: 'center',
-    paddingVertical: 15
+    paddingVertical: 15,
   },
   card: {
-    borderColor: '#231F29'
+    flex: 1,
+    flexShrink: 0,
+    minHeight: 140,
+    borderColor: '#231F29',
+    backgroundColor: '#332E3C',
   },
   cardItem: {
+    borderColor: '#231F29',
     paddingLeft: 15,
     backgroundColor: '#332E3C',
-    height: 120,
+    height: '100%',
     width: '100%',
     flexDirection: 'row',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   currentCardItem: {
+    borderColor: '#231F29',
     paddingLeft: 15,
     backgroundColor: '#FF8C42',
-    height: 120,
+    height: '100%',
     width: '100%',
     flexDirection: 'row',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   locationText: {
     color: '#FFFFFF',
@@ -163,14 +170,14 @@ const styles = StyleSheet.create({
   },
   locationInfo: {
     color: '#FFFFFF',
-    fontSize: 24
+    fontSize: 24,
   },
   fab: {
-    backgroundColor: '#FF8C42'
+    backgroundColor: '#FF8C42',
   },
   weatherInformation: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between'
-  }
+    justifyContent: 'space-between',
+  },
 });
