@@ -130,7 +130,6 @@ export default class WeatherNavigation extends Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#332E3C',
-    flex: 1,
   },
   header: {
     color: '#FFFFFF',
