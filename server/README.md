@@ -104,6 +104,7 @@ OUTPUT:
       "wind_deg": "deg:int",
       "humidity": "humidity:int",
       "weather_type": "weather_description:str",
+      "uvi": "uv_index:float",
     },
     {
       "__comment": "array contains 7 more consecutive days with the same info, first one being today"
@@ -141,6 +142,7 @@ OUTPUT:
       "wind_deg": "deg:int",
       "humidity": "humidity:int",
       "weather_type": "weather_description:str",
+      "uvi": "uv_index:float",
     },
     {
       "__comment": "array contains 23 more consecutive hours with the same info, first one being the current hour"
