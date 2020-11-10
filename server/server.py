@@ -198,6 +198,7 @@ def daily():
             "wind_deg": weather["wind_deg"],
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
+            "uvi": weather["uvi"],
         }
         days.get("days").append(day)
     # return the json
@@ -238,6 +239,7 @@ def hourly():
             "wind_deg": weather["wind_deg"],
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
+            "uvi": weather_data["daily"][0]["uvi"],
         }
         hours.get("hours").append(hour)
     # return the json
