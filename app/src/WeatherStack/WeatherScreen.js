@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Pressable, StatusBar, StyleSheet, View, ScrollView, LogBox } from 'react-native';
 import { Container, Text, Content } from 'native-base';
-import { dummy, icon, windDirection, getSessionKey, getStorageKey } from './components/constants';
-import { queryHourlyWeekly } from './components/queryCalendar.js'
-import HourlyView from './WeatherScreen/HourlyView';
-import WeeklyView from './WeatherScreen/WeeklyView';
+import { dummy, icon, windDirection, getSessionKey, getStorageKey } from '../components/constants';
+import { queryHourlyWeekly } from '../components/queryCalendar.js'
+import HourlyView from './HourlyView';
+import WeeklyView from './WeeklyView';
 
 const styles = StyleSheet.create({
   content: {
