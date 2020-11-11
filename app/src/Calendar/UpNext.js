@@ -1,4 +1,5 @@
 import React from 'react';
+import { Container } from 'native-base';
 import moment from 'moment';
 import { SafeAreaView, FlatList, StyleSheet, View, Text } from "react-native";
 import { icon } from '../components/constants.js';
@@ -26,6 +27,15 @@ export default function UpNext({ data }) {
     const renderItem = ({ item }) => (
         <Item task={item} />
     )
+    if (data.length < 1) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <Container style={styles.noTasksContainer}>
+                    <Text style={styles.noTasksText}>There are currently no upcoming tasks</Text>
+                </Container>
+            </SafeAreaView>
+        )
+    }
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
@@ -64,6 +74,14 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
         fontSize: 15,
     },
-    weather: {
+    noTasksContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#332E3C',
+    },
+    noTasksText: {
+        color: "#CDCDCD",
+        fontSize: 20,
+        textAlign: "center"
     }
 });
