@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Button, Card, CardItem, Fab, Spinner, Text, View } from 'native-base';
 import axios from 'axios';
 import { Feather } from '@expo/vector-icons';
-import { constants, getSessionKey, icon, setStorageKey, getStorageKey } from './../components/constants';
+import { constants, getSessionKey, icon, setStorageKey, getStorageKey, getUnits } from './../components/constants';
 
 let places = [ //TODO: Make it so that places is a query from our asyncStorage
   'London',
@@ -19,7 +19,8 @@ export default class WeatherNavigation extends Component {
     this.state = {
       places: places.map(place => { return { [place]: null } }),
       currentLocation: '',
-      fabOpen: false
+      fabOpen: false,
+      units: ''
     }
   }
   async componentDidMount() {
@@ -29,6 +30,7 @@ export default class WeatherNavigation extends Component {
 
     if (places.length === 0) return;
 
+    this.setState({ units: await getStorageKey('units') });
     let sessionKey = await getSessionKey();
     const headers = {
       headers: {
@@ -95,7 +97,7 @@ export default class WeatherNavigation extends Component {
                       </Text>
                         <Text style={styles.locationInfo}>
                           {icon(data.weather_type)}
-                          {' ' + data.temp.c + '°'}
+                          {` ${data.temp.toFixed(1)}${getUnits(this.state.units).temp}`}
                         </Text>
                       </View>
                     </CardItem>

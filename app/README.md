@@ -100,6 +100,7 @@ async () => {
   "session_key": "string",
   "username": "string",
   "current_location": "string",
+  "units": "string"
 }
 ```
 
