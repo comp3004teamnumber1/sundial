@@ -97,7 +97,10 @@ export default class WeatherScreen extends Component {
           <Pressable
             onPress={() => this.props.navigation.navigate('WeatherNavigation')}
           >
-            <Text style={styles.title}>
+            <Text style={styles.title}
+              adjustsFontSizeToFit
+              numberOfLines={1}
+            >
               {this.state.location}
             </Text>
             <Text style={styles.locationDescription}>
