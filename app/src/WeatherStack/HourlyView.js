@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
 import moment from 'moment';
-import { icon } from './../components/constants';
+import { icon, getUnits } from './../components/constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function HourlyView({ data }) {
+export default function HourlyView({ data, units }) {
   const now = moment();
   return (
     <Container style={styles.container}>
@@ -72,7 +72,9 @@ export default function HourlyView({ data }) {
             >
               <Text style={styles.text}>{time.format('h A')}</Text>
               {icon(item.weather_type)}
-              <Text style={styles.tempPrimary}>{`${item.temp.c}°`}</Text>
+              <Text style={styles.tempPrimary}>
+                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${getUnits(units).temp}`}
+              </Text>
             </Pressable>
           );
         }}

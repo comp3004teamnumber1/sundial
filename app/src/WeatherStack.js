@@ -3,10 +3,10 @@ import {
   CardStyleInterpolators,
   createStackNavigator,
 } from '@react-navigation/stack';
-import WeatherScreen from '../WeatherScreen';
-import WeatherNavigation from './WeatherNavigation';
-import AddWeatherLocation from './AddWeatherLocation';
-import { getStorageKey } from '../components/constants';
+import WeatherScreen from './WeatherStack/WeatherScreen';
+import WeatherNavigation from './WeatherStack/WeatherNavigation';
+import AddWeatherLocation from './WeatherStack/AddWeatherLocation';
+import { getStorageKey } from './components/constants';
 
 const weatherStack = createStackNavigator();
 

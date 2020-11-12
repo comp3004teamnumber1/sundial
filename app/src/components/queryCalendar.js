@@ -6,14 +6,16 @@ import {
 import axios from 'axios';
 
 export async function queryHourlyWeekly() {
-    const [session_key, location] = await Promise.all([
+    const [session_key, location, units] = await Promise.all([
         getSessionKey(),
         getStorageKey('current_location'),
+        getStorageKey('units')
     ]);
-  
+
     // build query
     const queryParams = {
         location: location || 'Ottawa, Ontario',
+        units: units
     };
     const queryString = `?${Object.entries(queryParams)
         .map(([k, v], i) => `${k}=${v}`)
@@ -32,5 +34,6 @@ export async function queryHourlyWeekly() {
     return await {
         hourly: hourlyRes,
         weekly: weeklyRes,
+        units: units
     };
 }

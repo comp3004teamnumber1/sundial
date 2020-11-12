@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { BackHandler, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Button, Card, CardItem, Fab, Spinner, Text, View } from 'native-base';
 import axios from 'axios';
 import { Feather } from '@expo/vector-icons';
-import { constants, getSessionKey, icon, setStorageKey, getStorageKey } from './../components/constants';
+import { constants, getSessionKey, icon, setStorageKey, getStorageKey, getUnits } from './../components/constants';
+import Modal from 'react-native-modal';
+import AddWeatherLocation from './AddWeatherLocation'
 
 let places = [ //TODO: Make it so that places is a query from our asyncStorage
   'London',
@@ -19,7 +21,9 @@ export default class WeatherNavigation extends Component {
     this.state = {
       places: places.map(place => { return { [place]: null } }),
       currentLocation: '',
-      fabOpen: false
+      units: '',
+      fabOpen: false,
+      modalVisible: true
     }
   }
   async componentDidMount() {
@@ -29,6 +33,7 @@ export default class WeatherNavigation extends Component {
 
     if (places.length === 0) return;
 
+    this.setState({ units: await getStorageKey('units') });
     let sessionKey = await getSessionKey();
     const headers = {
       headers: {
@@ -67,7 +72,12 @@ export default class WeatherNavigation extends Component {
                     <CardItem
                       style={styles.cardItem}
                       bordered>
-                      <Text style={styles.locationText}>
+                      <Text style={styles.locationText}
+                        adjustsFontSizeToFit
+                        numberOfLines={1}
+                        allowFontScaling
+                        minimumFontScale={0}
+                      >
                         <Feather name={'map-pin'} size={24} color='white' />
                         {place}
                       </Text>
@@ -95,7 +105,7 @@ export default class WeatherNavigation extends Component {
                       </Text>
                         <Text style={styles.locationInfo}>
                           {icon(data.weather_type)}
-                          {' ' + data.temp.c + '°'}
+                          {` ${data.temp.toFixed(1)}${getUnits(this.state.units).temp}`}
                         </Text>
                       </View>
                     </CardItem>
@@ -117,11 +127,23 @@ export default class WeatherNavigation extends Component {
           <Feather name='edit-3' size={24} color='white' />
           <Button
             style={{ backgroundColor: '#6699CC' }}
-            onPress={() => { this.props.navigation.navigate('AddWeatherLocation') }}
+            // onPress={() => { this.props.navigation.navigate('AddWeatherLocation') }}
+            onPress={() => this.setState({ modalVisible: true })}
           >
             <Feather name='plus' size={24} color='white' />
           </Button>
         </Fab>
+        <Modal
+          style={styles.modal}
+          isVisible={this.state.modalVisible}
+          onBackdropPress={(() => this.setState({ modalVisible: false }))}
+          onSwipeDirection='down'
+          onSwipeComplete={(() => this.setState({ modalVisible: false }))}
+          animationIn='slideInDown'
+          animationOut='slideOutUp'
+        >
+          <AddWeatherLocation />
+        </Modal>
       </View>
     );
   }
@@ -166,6 +188,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 48,
     width: '100%',
+    // flex: 0
   },
   locationInfo: {
     color: '#FFFFFF',
@@ -179,4 +202,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  modal: {
+    justifyContent: 'flex-start',
+    margin: 10
+  },
+  modalView: {
+    backgroundColor: '#FFFFFF',
+    height: '20%',
+    width: '100%'
+  }
 });
