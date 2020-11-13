@@ -62,6 +62,13 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     backgroundColor: '#231F29',
+  },
+  upNextText: {
+    flex: 0,
+    margin: 0,
+    color: '#FFFFFF',
+    fontSize: 20,
+    marginLeft: 7,
   }
 });
 
@@ -75,6 +82,13 @@ export default class HomeScreen extends Component {
   }
 
   async componentDidMount() {
+    const {navigation} = this.props;
+    navigation.addListener ('focus', async () => {
+      await this.getVitalData()
+    });
+  }
+
+  async getVitalData() {
     // query data
     this.setState({ units: await getStorageKey('units') });
     const HourlyWeeklyData = await queryHourlyWeekly();
@@ -120,9 +134,11 @@ export default class HomeScreen extends Component {
               <Text style={styles.dateText}>{now}</Text>
             </View>
             <Container style={styles.padded}>
-              <UpNext style={styles.padded} data={tasks || dummy.taskPayload} />
+              <Text style={styles.upNextText}>Up Next:</Text>
+              <UpNext style={styles.padded} data={tasks || dummy.taskPayload}/>
             </Container>
             <Container style={styles.padded}>
+              <Text style={styles.upNextText}>Hourly:</Text>
               <HourlyView style={styles.padded} data={hourly} units={this.state.units} />
             </Container>
           </Container>
