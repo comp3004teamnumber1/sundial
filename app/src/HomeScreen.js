@@ -64,12 +64,10 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     backgroundColor: '#231F29',
   },
-  upNextText: {
-    flex: 0,
-    margin: 0,
-    color: '#FFFFFF',
-    fontSize: 20,
-    marginLeft: 7,
+  subtitle: {
+    color: '#ffffff',
+    fontSize: 24,
+    padding: 8,
   },
 });
 
@@ -147,11 +145,11 @@ export default class HomeScreen extends Component {
               <Text style={styles.dateText}>{now}</Text>
             </View>
             <Container style={styles.padded}>
-              <Text style={styles.upNextText}>Up Next:</Text>
+              <Text style={styles.subtitle}>Up Next:</Text>
               <UpNext style={styles.padded} data={tasks || dummy.taskPayload} />
             </Container>
             <Container style={styles.padded}>
-              <Text style={styles.upNextText}>Hourly:</Text>
+              <Text style={styles.subtitle}>Hourly:</Text>
               <HourlyView style={styles.padded} data={hourly} units={units} />
             </Container>
           </Container>
