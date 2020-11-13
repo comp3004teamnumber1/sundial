@@ -2,10 +2,11 @@ import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
 import moment from 'moment';
-import { icon, getUnits } from './../components/constants';
+import { getIcon, getUnits } from '../util/Util';
 
 const styles = StyleSheet.create({
   container: {
+    minHeight: 220,
     maxHeight: 220,
     borderColor: '#332E3C',
     borderLeftWidth: 10,
@@ -38,15 +39,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 18,
-    marginBottom: 35
+    marginBottom: 35,
   },
   tempPrimary: {
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 40
-  }
+    marginTop: 40,
+  },
 });
 
 export default function HourlyView({ data, units }) {
@@ -71,9 +72,11 @@ export default function HourlyView({ data, units }) {
               key={item.date}
             >
               <Text style={styles.text}>{time.format('h A')}</Text>
-              {icon(item.weather_type)}
+              {getIcon(item.weather_type)}
               <Text style={styles.tempPrimary}>
-                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${getUnits(units).temp}`}
+                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${
+                  getUnits(units).temp
+                }`}
               </Text>
             </Pressable>
           );

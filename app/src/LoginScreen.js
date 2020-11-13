@@ -10,9 +10,9 @@ import {
   Label,
   Button,
 } from 'native-base';
-import axios from 'axios';
 import { Feather } from '@expo/vector-icons';
-import { constants } from './components/constants';
+import constants from './data/constants';
+import query from './util/SundialAPI';
 
 const styles = StyleSheet.create({
   content: {
@@ -75,12 +75,14 @@ export default class LoginScreen extends Component {
   checkInputs = () => {
     const { username, password } = this.state;
     let verified = true;
+    // check username
     if (!username) {
       this.setState({ alertUsername: true });
       verified = false;
     } else {
       this.setState({ alertUsername: false });
     }
+    // check password
     if (!password) {
       this.setState({ alertPassword: true });
       verified = false;
@@ -90,56 +92,47 @@ export default class LoginScreen extends Component {
     return verified;
   };
 
-  handleLogin = () => {
+  handleLogin = async () => {
     if (!this.checkInputs()) {
       this.setState({ errorMsg: 'Please check your username/password.' });
       return;
     }
     const { username, password } = this.state;
     const { login } = this.props;
-    axios
-      .post(`${constants.SERVER_URL}/login`, {
-        username,
-        password,
-      })
-      .then(
-        res => {
-          const { session_key } = res.data;
-          login(username, session_key);
-        },
-        e => {
-          this.setState({
-            errorMsg: 'An error occurred. Please try again.',
-          });
-          console.log('Error occured while logging in.');
-          // console.error(e);
-        }
-      );
+    // query
+    const res = await query('login', 'post', { username, password });
+    // check response
+    if (res === null) {
+      this.setState({
+        errorMsg: 'An error occurred. Please try again.',
+      });
+      console.log('Error occured while logging in.');
+    } else if (res.status !== 200) {
+      this.setState({
+        errorMsg: 'Incorrect username/password. Please try again.',
+      });
+    } else {
+      const { session_key } = res;
+      login(username, session_key);
+    }
   };
 
-  handleRegister = () => {
+  handleRegister = async () => {
     if (!this.checkInputs()) {
       this.setState({ errorMsg: 'Please check your username/password.' });
       return;
     }
     const { username, password } = this.state;
-    axios
-      .post(`${constants.SERVER_URL}/register`, {
-        username,
-        password,
-      })
-      .then(
-        res => {
-          this.handleLogin();
-        },
-        e => {
-          this.setState({
-            errorMsg: 'An error occurred. Please try again.',
-          });
-          console.log('Error occured while registering.');
-          // console.error(e);
-        }
-      );
+    const res = await query('register', 'post', { username, password });
+    // check response
+    if (res === null) {
+      this.setState({
+        errorMsg: 'An error occurred. Please try again.',
+      });
+      console.log('Error occured while registering.');
+    } else {
+      this.handleLogin();
+    }
   };
 
   render() {

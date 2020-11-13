@@ -3,38 +3,45 @@ import {
   CardStyleInterpolators,
   createStackNavigator,
 } from '@react-navigation/stack';
-import WeatherScreen from './WeatherStack/WeatherScreen';
-import WeatherNavigation from './WeatherStack/WeatherNavigation';
-import AddWeatherLocation from './WeatherStack/AddWeatherLocation';
-import { getStorageKey } from './components/constants';
+import WeatherScreen from './Weather/WeatherScreen';
+import WeatherNavigation from './Weather/WeatherNavigation';
+import AddWeatherLocation from './Weather/AddWeatherLocation';
+import { getStorageKey } from './util/Storage';
 
-const weatherStack = createStackNavigator();
+const Stack = createStackNavigator();
 
 export default class WeatherStack extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      location: ''
-    }
+      location: '',
+    };
   }
+
   async componentDidMount() {
     this.setState({
-      location: await getStorageKey('current_location')
+      location: await getStorageKey('current_location'),
     });
   }
+
   render() {
+    const { location } = this.state;
+
     return (
-      <weatherStack.Navigator
-        initialRouteName={this.location ? 'WeatherView' : 'WeatherNavigation'}
+      <Stack.Navigator
+        initialRouteName={location ? 'WeatherView' : 'WeatherNavigation'}
         screenOptions={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       >
-        <weatherStack.Screen name='WeatherView' component={WeatherScreen} />
-        <weatherStack.Screen name='WeatherNavigation' component={WeatherNavigation} />
-        <weatherStack.Screen name='AddWeatherLocation' component={AddWeatherLocation} />
-      </weatherStack.Navigator>
+        <Stack.Screen name='WeatherView' component={WeatherScreen} />
+        <Stack.Screen name='WeatherNavigation' component={WeatherNavigation} />
+        <Stack.Screen
+          name='AddWeatherLocation'
+          component={AddWeatherLocation}
+        />
+      </Stack.Navigator>
     );
   }
 }
