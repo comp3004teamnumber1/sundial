@@ -3,9 +3,9 @@ import { StatusBar, StyleSheet } from 'react-native';
 import { Container, Text, View } from 'native-base';
 import { queryHourlyWeekly } from './components/queryCalendar.js'
 import { EvilIcons } from 'react-native-vector-icons';
-import { dummy, setStorageKey } from './components/constants';
+import { dummy, getStorageKey, setStorageKey } from './components/constants';
 import moment from 'moment';
-import HourlyView from './WeatherScreen/HourlyView';
+import HourlyView from './WeatherStack/HourlyView';
 import UpNext from './Calendar/UpNext'
 import * as Location from 'expo-location';
 import LoadingComponent from './components/loadingComponent';
@@ -72,13 +72,12 @@ const styles = StyleSheet.create({
   }
 });
 
-
-
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ready: false
+      ready: false,
+      units: ''
     };
   }
 
@@ -90,6 +89,8 @@ export default class HomeScreen extends Component {
   }
 
   async getVitalData() {
+    // query data
+    this.setState({ units: await getStorageKey('units') });
     const HourlyWeeklyData = await queryHourlyWeekly();
     const tasks = await queryTasks();
 
@@ -101,8 +102,8 @@ export default class HomeScreen extends Component {
     let location = await Location.getCurrentPositionAsync({});
 
     let city = await Location.reverseGeocodeAsync({
-      latitude : location.coords.latitude,
-      longitude : location.coords.longitude
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude
     });
     setStorageKey("current_location", city[0].city);
 
@@ -126,7 +127,7 @@ export default class HomeScreen extends Component {
           <Container style={styles.wrapper}>
             <StatusBar />
             <View style={styles.locationView}>
-              <EvilIcons name='location' numberOfLines={1} size={50} color='white' style={{marginTop: 7}}/>
+              <EvilIcons name='location' numberOfLines={1} size={50} color='white' style={{ marginTop: 7 }} />
               <Text style={styles.locationText}>{currCity[0].city}</Text>
             </View>
             <View style={styles.dateView}>
@@ -138,15 +139,15 @@ export default class HomeScreen extends Component {
             </Container>
             <Container style={styles.padded}>
               <Text style={styles.upNextText}>Hourly:</Text>
-              <HourlyView style={styles.padded} data={hourly} />
+              <HourlyView style={styles.padded} data={hourly} units={this.state.units} />
             </Container>
           </Container>
         </Container>
       );
     } else {
       return (
-        <LoadingComponent/>
+        <LoadingComponent />
       )
-    }    
+    }
   }
 }

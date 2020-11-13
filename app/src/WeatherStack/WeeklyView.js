@@ -3,7 +3,7 @@ import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
 import { Entypo } from '@expo/vector-icons';
 import moment from 'moment';
-import { icon } from './../components/constants';
+import { getUnits, icon } from './../components/constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function WeeklyView({ data }) {
+export default function WeeklyView({ data, units }) {
 
   return (
     <Container style={styles.container}>
@@ -81,7 +81,9 @@ export default function WeeklyView({ data }) {
                 {moment.unix(item.date).format('ddd')}
               </Text>
               {icon(item.weather_type)}
-              <Text style={styles.textWeather}> {`${item.temp.c}°`} </Text>
+              <Text style={styles.textWeather}>
+                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${getUnits(units).temp}`}
+              </Text>
               <Text style={styles.textPrecip}>
                 <Entypo name='drop' size={12} color='#6699CC' />
                 {`${item.pop}% `}

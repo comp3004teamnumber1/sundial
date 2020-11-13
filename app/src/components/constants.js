@@ -5,7 +5,9 @@ import axios from 'axios';
 
 export function windDirection(degree) {
   degree = degree % 360;
-  if (348.75 <= degree || degree < 11.25)
+  if (degree === NaN)
+    return '';
+  else if (348.75 <= degree || degree < 11.25)
     return 'N';
   else if (11.25 <= degree || degree < 33.75)
     return 'NNE';
@@ -38,7 +40,7 @@ export function windDirection(degree) {
   else if (326.25 <= degree || degree < 348.75)
     return 'NNW';
   else
-    return 'Error';
+    return '';
 }
 
 export function icon(description = '', size = 48, color = 'white') {
@@ -122,129 +124,139 @@ export const constants = {
   SERVER_URL: 'https://sundial.vinhnguyen.ca' || 'http://10.0.2.2:5000',
 };
 
+export function getUnits(preference) {
+  switch (preference) {
+    case 'metric':
+      return {
+        temp: '°C',
+        wind: 'm/s'
+      }
+    case 'imperial':
+      return {
+        temp: '°F',
+        wind: 'mi/h'
+      }
+    default:
+      return {
+        temp: '',
+        wind: ''
+      }
+  }
+}
+
 export const dummy = {
   weeklyViewTestPayload: [
     {
       date: 1602960464,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clouds',
-      pop: 32,
-      humidity: 12,
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
+      //TODO: Add UV here
     },
     {
       date: 1603046864,
-      temp: {
-        c: 2.8,
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12,
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
     {
       date: 1603133264,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12,
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
     {
       date: 1602097200,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12,
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
     {
       date: 1603392464,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12,
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
     {
       date: 1603478864,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather_type: 'Clear',
-      pop: 32,
-      humidity: 12,
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
   ],
   hourlyViewTestPayload: [
     {
       date: 1602086400,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather: 'Clear',
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
+      //TODO: Add UV here
     },
     {
       date: 1602090000,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather: 'Clear',
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
     {
       date: 1602093600,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather: 'Clear',
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
     {
       date: 1602097200,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather: 'Clear',
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
     {
       date: 1602100800,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather: 'Clear',
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
     {
       date: 1602104400,
-      temp: {
-        c: 'loading',
-        f: 71.2,
-        k: 295.95,
-      },
-      weather: 'Clear',
+      temp: 'Loading...',
+      weather_type: 'Please wait...',
+      wind_speed: 'Please wait...',
+      wind_deg: '',
+      pop: 'Loading...',
+      humidity: 'Loading...'
     },
   ],
   taskPayload: [
