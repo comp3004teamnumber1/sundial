@@ -11,10 +11,10 @@ import {
   Button,
 } from 'native-base';
 import { Feather } from '@expo/vector-icons';
-import axios from 'axios';
 import moment from 'moment';
 // Components
-import { constants, queryCalendar, dummy } from '../components/constants';
+import constants, { dummy } from '../data/constants';
+import query from '../util/SundialAPI';
 import CalendarMonthView from './CalendarMonthView';
 
 const styles = StyleSheet.create({
@@ -90,23 +90,12 @@ export default class CalendarHome extends Component {
 
   // eslint-disable-next-line react/destructuring-assignment
   updateTasks = async (date = this.state.date) => {
-    let res;
-    try {
-      res = await queryCalendar(date);
-    } catch (e) {
-      console.log('An error occurred while querying the server');
-      console.error(e);
+    const res = await query('task', 'get', { date });
+    if (res === null) {
       Alert.alert('An error occurred', 'Please try again.');
-      return;
     }
 
-    if (res instanceof Error) {
-      console.log('An error occurred while querying the Calendar');
-      Alert.alert('An error occurred', 'Please try again.');
-      return;
-    }
-
-    this.setState({ tasks: res });
+    this.setState({ tasks: res.tasks });
   };
 
   render() {

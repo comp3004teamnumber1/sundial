@@ -3,10 +3,11 @@ import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
 import { Entypo } from '@expo/vector-icons';
 import moment from 'moment';
-import { getUnits, icon } from './../components/constants';
+import { getUnits, getIcon } from '../util/Util';
 
 const styles = StyleSheet.create({
   container: {
+    minHeight: 240,
     maxHeight: 240,
     borderColor: '#332E3C',
     borderLeftWidth: 10,
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
     fontSize: 18,
-    marginBottom: 35
+    marginBottom: 35,
   },
   textWeather: {
     textAlign: 'center',
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
     fontSize: 23,
     fontWeight: 'bold',
     marginTop: 40,
-    marginBottom: 20
+    marginBottom: 20,
   },
   textPrecip: {
     textAlign: 'center',
@@ -59,7 +60,6 @@ const styles = StyleSheet.create({
 });
 
 export default function WeeklyView({ data, units }) {
-
   return (
     <Container style={styles.container}>
       <List
@@ -80,15 +80,17 @@ export default function WeeklyView({ data, units }) {
               <Text style={styles.textDate}>
                 {moment.unix(item.date).format('ddd')}
               </Text>
-              {icon(item.weather_type)}
+              {getIcon(item.weather_type)}
               <Text style={styles.textWeather}>
-                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${getUnits(units).temp}`}
+                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${
+                  getUnits(units).temp
+                }`}
               </Text>
               <Text style={styles.textPrecip}>
                 <Entypo name='drop' size={12} color='#6699CC' />
                 {`${item.pop}% `}
                 <Text style={styles.textHumidity}>
-                  {icon('drizzle', 12)}
+                  {getIcon('drizzle', 12)}
                   {`${item.humidity}%`}
                 </Text>
               </Text>

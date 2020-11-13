@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
   Container,
   Text,
-  Content,
   Form,
   Item,
   Input,
@@ -12,15 +11,12 @@ import {
   DatePicker,
   Picker,
 } from 'native-base';
-import axios from 'axios';
 import moment from 'moment';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import {
-  constants,
-  getSessionKey,
-  getStorageKey,
-} from '../components/constants';
+import constants from '../data/constants';
+import { getSessionKey, getStorageKey } from '../util/Storage';
+import query from '../util/SundialAPI';
 
 const styles = StyleSheet.create({
   container: {
@@ -114,20 +110,14 @@ export default class AddEvent extends Component {
       return;
     }
     const { task, date, ideal_weather, location } = this.state;
-    const session_key = await getSessionKey();
-    const config = {
-      headers: {
-        'Session-Key': session_key,
-      },
-    };
     const data = {
       task,
       date: moment(date).unix(),
       ideal_weather,
       location,
     };
-    const res = await axios.post(`${constants.SERVER_URL}/task`, data, config);
-    if (res.status !== 200) {
+    const res = await query('task', 'post', data);
+    if (res === null) {
       this.setState({ errorMsg: 'An error occurred. Please try again.' });
       return;
     }
@@ -187,9 +177,7 @@ export default class AddEvent extends Component {
                 <Picker.Item label='Thunderstorm' value='Thunderstorm' />
               </Picker>
             </Item>
-            {errorMsg ? (
-              <Text style={styles.textError}>{errorMsg}</Text>
-            ) : undefined}
+            {errorMsg ? <Text style={styles.textError}>{errorMsg}</Text> : null}
           </Form>
           <Container style={styles.footer}>
             <Button block style={styles.btn} onPress={this.handleSubmit}>

@@ -2,9 +2,9 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather } from '@expo/vector-icons';
 import HomeScreen from './HomeScreen';
-import CalendarScreen from './CalendarScreen';
+import CalendarStack from './CalendarStack';
 import WeatherStack from './WeatherStack';
-import AccountScreen from './AccountScreen';
+import AccountStack from './AccountStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,9 +38,9 @@ export default function MainStack() {
       }}
     >
       <Tab.Screen name='Home' component={HomeScreen} />
-      <Tab.Screen name='Calendar' component={CalendarScreen} />
+      <Tab.Screen name='Calendar' component={CalendarStack} />
       <Tab.Screen name='Weather' component={WeatherStack} />
-      <Tab.Screen name='Account' component={AccountScreen} />
+      <Tab.Screen name='Account' component={AccountStack} />
     </Tab.Navigator>
   );
 }
