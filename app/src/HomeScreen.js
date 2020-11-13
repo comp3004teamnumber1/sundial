@@ -64,6 +64,13 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     backgroundColor: '#231F29',
   },
+  upNextText: {
+    flex: 0,
+    margin: 0,
+    color: '#FFFFFF',
+    fontSize: 20,
+    marginLeft: 7,
+  },
 });
 
 export default class HomeScreen extends Component {
@@ -76,6 +83,13 @@ export default class HomeScreen extends Component {
   }
 
   async componentDidMount() {
+    const { navigation } = this.props;
+    navigation.addListener('focus', async () => {
+      await this.getVitalData();
+    });
+  }
+
+  async getVitalData() {
     let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
       setErrorMsg('Permission to access location was denied');
@@ -133,9 +147,11 @@ export default class HomeScreen extends Component {
               <Text style={styles.dateText}>{now}</Text>
             </View>
             <Container style={styles.padded}>
+              <Text style={styles.upNextText}>Up Next:</Text>
               <UpNext style={styles.padded} data={tasks || dummy.taskPayload} />
             </Container>
             <Container style={styles.padded}>
+              <Text style={styles.upNextText}>Hourly:</Text>
               <HourlyView style={styles.padded} data={hourly} units={units} />
             </Container>
           </Container>
