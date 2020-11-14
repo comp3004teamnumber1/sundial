@@ -43,6 +43,7 @@ if not os.path.isfile("db.db"):
 # global vars
 config = config.Config()
 sessions = {}
+cached_weather_data = {}
 
 
 # authenticates if the user account exists
@@ -86,11 +87,22 @@ def get_lat_long(location):
 
 
 def get_weather_data(location, units="metric"):
-    latlon = get_lat_long(location)
-    api_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&appid={}".format(
-        latlon[0], latlon[1], units, config.OWM_API_KEY
-    )
-    return requests.get(api_url)
+    current_time = datetime.now().timestamp()
+    if not cached_weather_data.get(location, 0):
+        latlon = get_lat_long(location)
+        api_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&appid={}".format(
+            latlon[0], latlon[1], units, config.OWM_API_KEY
+        )
+        cached_weather_data.update(
+            {location: {"time": current_time, "data": requests.get(api_url)}}
+        )
+        return cached_weather_data.get(location).get("data")
+    else:
+        if current_time - cached_weather_data.get(location).get("time") > 3600:
+            cached_weather_data.pop(location)
+            return get_weather_data(location, units)
+        else:
+            return cached_weather_data.get(location).get("data")
 
 
 def build_insert_query(table, params):
@@ -109,6 +121,10 @@ def build_update_query(table, params, where):
         where,
     )
     return query_string
+
+
+def notification():
+    return
 
 
 @app.route("/", methods=["GET"])
@@ -370,9 +386,9 @@ def get_task():
     if query:
         for task in query:
             if get_args.get("date", 0):
-                formatted_date = datetime.fromtimestamp(int(task[2])).strftime(
-                    "%Y-%m-%d"
-                )
+                formatted_date = datetime.fromtimestamp(
+                    int(task[2]) - (5 * 3600)
+                ).strftime("%Y-%m-%d")
                 if get_args.get("date") == formatted_date:
                     tasks.append(
                         {
