@@ -193,7 +193,7 @@ export default class CalendarHome extends Component {
           </Text>
           <CalendarMonthView date={date} setDate={this.setDate} />
           <Text style={styles.subtitle}>{moment(date).format('dddd')}</Text>
-          {tasks.length > 0 ? (
+          {tasks && tasks.length > 0 ? (
             renderTasks()
           ) : (
             <Card style={styles.cardContainer}>
