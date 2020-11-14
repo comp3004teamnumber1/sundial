@@ -376,9 +376,9 @@ def get_task():
         if offset_match.groups():
             groups = offset_match.groups()
             if groups[0] == "+":
-                offset = int(groups[1])
+                offset = int(groups[1]) * 60
             else:
-                offset = -1 * int(groups[1])
+                offset = -1 * int(groups[1]) * 60
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute(
