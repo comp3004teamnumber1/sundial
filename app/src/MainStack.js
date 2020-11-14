@@ -12,6 +12,7 @@ export default function MainStack() {
   return (
     <Tab.Navigator
       initialRouteName='Home'
+      lazy='false'
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let icon;

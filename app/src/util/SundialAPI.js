@@ -5,7 +5,7 @@ import constants from '../data/constants';
 const NAME = 'API';
 
 // the ultimate function to beat them all
-export default async function query(route, method = 'get', data) {
+export default async function query(route, method = 'get', data = {}) {
   // basic checks
   if (!route) {
     console.log(`${NAME}: No route provided`);

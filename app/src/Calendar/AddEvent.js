@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import {
   Container,
   Text,
@@ -8,14 +8,13 @@ import {
   Input,
   Label,
   Button,
-  DatePicker,
   Picker,
 } from 'native-base';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import constants from '../data/constants';
-import { getSessionKey, getStorageKey } from '../util/Storage';
+import { getStorageKey } from '../util/Storage';
 import query from '../util/SundialAPI';
 
 const styles = StyleSheet.create({
@@ -55,9 +54,11 @@ const styles = StyleSheet.create({
   textDark: {
     color: '#000000',
   },
-  textDate: {
+  textDateTime: {
     color: '#ffffff',
     fontSize: 16,
+    marginLeft: 4,
+    paddingVertical: 12,
   },
   textError: {
     color: '#ffffff',
@@ -74,9 +75,20 @@ const styles = StyleSheet.create({
 export default class AddEvent extends Component {
   constructor(props) {
     super(props);
+    let date;
+    if (props.route.params.date) {
+      const [year, month, day] = props.route.params.date.split('-');
+      date = moment()
+        .set({ year, month: month - 1, date: day })
+        .toDate();
+    } else {
+      date = new Date();
+    }
     this.state = {
       task: '',
-      date: moment().format('YYYY-MM-DD'),
+      date,
+      mode: 'date',
+      pickerOpen: false,
       ideal_weather: 'Clear',
       location: 'Ottawa, Ontario',
       errorMsg: '',
@@ -91,12 +103,25 @@ export default class AddEvent extends Component {
     this.setState({ location: current_location });
   }
 
+  handleDateChange = (event, newDate) => {
+    const { date } = this.state;
+    const currDate = newDate || date;
+    if (Platform.OS === 'android') {
+      this.setState({ pickerOpen: false });
+    }
+    this.setDate(currDate);
+  };
+
   setDate = newDate => {
-    this.setState({ date: moment(newDate).format('YYYY-MM-DD') });
+    this.setState({ date: newDate });
   };
 
   setWeather = newWeather => {
     this.setState({ ideal_weather: newWeather });
+  };
+
+  showMode = newMode => {
+    this.setState({ pickerOpen: true, mode: newMode });
   };
 
   validateInputs = () => {
@@ -110,9 +135,10 @@ export default class AddEvent extends Component {
       return;
     }
     const { task, date, ideal_weather, location } = this.state;
+    console.log(moment(date).format('YYYY-MM-DD h:mm a'));
     const data = {
       task,
-      date: moment(date).unix(),
+      date: moment(date).format('X'),
       ideal_weather,
       location,
     };
@@ -121,12 +147,13 @@ export default class AddEvent extends Component {
       this.setState({ errorMsg: 'An error occurred. Please try again.' });
       return;
     }
+
     const { navigation } = this.props;
     navigation.goBack();
   };
 
   render() {
-    const { date, ideal_weather, errorMsg } = this.state;
+    const { date, ideal_weather, errorMsg, mode, pickerOpen } = this.state;
 
     return (
       <Container style={styles.container}>
@@ -147,17 +174,29 @@ export default class AddEvent extends Component {
                 }}
               />
             </Item>
-            <Item>
+            <Item
+              onPress={() => {
+                this.showMode('date');
+              }}
+            >
+              <Label style={styles.textLight}>
+                <Feather name='calendar' size={24} color='white' />
+              </Label>
+              <Text style={styles.textDateTime}>
+                {moment(date).format('YYYY-MM-DD')}
+              </Text>
+            </Item>
+            <Item
+              onPress={() => {
+                this.showMode('time');
+              }}
+            >
               <Label style={styles.textLight}>
                 <Feather name='clock' size={24} color='white' />
               </Label>
-              <DatePicker
-                defaultDate={moment(date).toDate()}
-                locale='en'
-                formatChosenDate={d => moment(d).format('YYYY-MM-DD')}
-                onDateChange={this.setDate}
-                textStyle={styles.textDate}
-              />
+              <Text style={styles.textDateTime}>
+                {moment(date).format('h:mm a')}
+              </Text>
             </Item>
             <Item>
               <Label style={styles.textLight}>
@@ -185,6 +224,14 @@ export default class AddEvent extends Component {
             </Button>
           </Container>
         </Container>
+        {pickerOpen ? (
+          <DateTimePicker
+            value={date}
+            mode={mode}
+            display='default'
+            onChange={this.handleDateChange}
+          />
+        ) : null}
       </Container>
     );
   }
