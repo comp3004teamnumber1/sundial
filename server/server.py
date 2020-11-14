@@ -372,7 +372,7 @@ def get_task():
         return {"status": 401, "error": "Missing session key."}, 200
     offset = 0
     if get_args.get("offset", 0):
-        offset_match = re.search(r"(+|-)(\d+)", get_args.get("offset"))
+        offset_match = re.search(r"(\+|\-)(\d+)", get_args.get("offset"))
         if offset_match.groups():
             groups = offset_match.groups()
             if groups[0] == "+":
