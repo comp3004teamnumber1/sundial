@@ -58,7 +58,7 @@ def post_task_update():
         "http://127.0.0.1:5000/task/{}".format(task_id),
         json={
             "task": "Read 3004 notes.",
-            "date": 1604694000,
+            "date": 1605489639,
             "ideal_weather": "Rainy",
         },
         headers={"Session-Key": session_key},
@@ -76,7 +76,7 @@ def delete_task():
 
 def get_task():
     task = requests.get(
-        "http://127.0.0.1:5000/task",
+        "http://127.0.0.1:5000/task?date=2020-11-15&offset=-300",
         headers={"Session-Key": session_key},
     )
     return task.json()
