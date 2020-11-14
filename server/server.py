@@ -8,6 +8,7 @@ import sqlite3
 import os
 from geopy.geocoders import Nominatim
 import argparse
+import re
 
 from encryption import encrypt_password, check_encrypted_password
 
@@ -369,6 +370,15 @@ def get_task():
     get_headers = flask.request.headers
     if not authenticate_route(get_headers):
         return {"status": 401, "error": "Missing session key."}, 200
+    offset = 0
+    if get_args.get("offset", 0):
+        offset_match = re.search(r"(+|-)(\d+)", get_args.get("offset"))
+        if offset_match.groups():
+            groups = offset_match.groups()
+            if groups[0] == "+":
+                offset = int(groups[1])
+            else:
+                offset = -1 * int(groups[1])
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute(
@@ -388,9 +398,9 @@ def get_task():
     if query:
         for task in query:
             if get_args.get("date", 0):
-                formatted_date = datetime.fromtimestamp(
-                    int(task[2]) - (5 * 3600)
-                ).strftime("%Y-%m-%d")
+                formatted_date = datetime.fromtimestamp(int(task[2]) - offset).strftime(
+                    "%Y-%m-%d"
+                )
                 if get_args.get("date") == formatted_date:
                     tasks.append(
                         {
