@@ -398,7 +398,7 @@ def get_task():
     if query:
         for task in query:
             if get_args.get("date", 0):
-                formatted_date = datetime.fromtimestamp(int(task[2]) - offset).strftime(
+                formatted_date = datetime.fromtimestamp(int(task[2]) + offset).strftime(
                     "%Y-%m-%d"
                 )
                 if get_args.get("date") == formatted_date:
