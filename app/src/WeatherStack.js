@@ -29,13 +29,13 @@ export default class WeatherStack extends Component {
 
     return (
       <Stack.Navigator
-        initialRouteName={location ? 'WeatherView' : 'WeatherNavigation'}
+        initialRouteName={location ? 'WeatherScreen' : 'WeatherNavigation'}
         screenOptions={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       >
-        <Stack.Screen name='WeatherView' component={WeatherScreen} />
+        <Stack.Screen name='WeatherScreen' component={WeatherScreen} />
         <Stack.Screen name='WeatherNavigation' component={WeatherNavigation} />
         <Stack.Screen
           name='AddWeatherLocation'

@@ -49,16 +49,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginTop: 5,
   },
-  spinnerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  spinner: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 10,
-  },
   padded: {
     paddingTop: 10,
     paddingBottom: 10,

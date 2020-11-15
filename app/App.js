@@ -34,8 +34,9 @@ export default class App extends Component {
       setStorageKey('units', 'metric');
     }
 
-    // use this line to clear the key (for testing)
+    // use these lines to clear keys (for testing)
     // await setStorageKey('session_key', '');
+    await setStorageKey('saved_locations', '');
 
     // check if logged in
     const res = await getSessionKey();
