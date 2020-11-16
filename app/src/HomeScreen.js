@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { Container, Text, View } from 'native-base';
-import { queryHourlyWeekly } from './components/queryCalendar.js'
 import { EvilIcons } from 'react-native-vector-icons';
-import { dummy, getStorageKey, setStorageKey } from './components/constants';
-import moment from 'moment';
-import HourlyView from './WeatherStack/HourlyView';
-import UpNext from './Calendar/UpNext'
 import * as Location from 'expo-location';
-import LoadingComponent from './components/loadingComponent';
-import { queryTasks } from './components/queryTasks'
+import moment from 'moment';
+import { dummy } from './data/constants';
+import { getStorageKey, setStorageKey } from './util/Storage';
 import { registerForPushNotificationsAsync, sendPushNotification } from './Notifications/pushNotifications.js';
+import query from './util/SundialAPI';
+// components
+import HourlyView from './Weather/HourlyView';
+import UpNext from './Calendar/UpNext';
+import Loading from './components/Loading';
 
 const styles = StyleSheet.create({
   content: {
@@ -51,26 +52,24 @@ const styles = StyleSheet.create({
   },
   spinnerContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     alignItems: 'center',
   },
   spinner: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
   },
   padded: {
     paddingTop: 10,
     paddingBottom: 10,
     backgroundColor: '#231F29',
   },
-  upNextText: {
-    flex: 0,
-    margin: 0,
-    color: '#FFFFFF',
-    fontSize: 20,
-    marginLeft: 7,
-  }
+  subtitle: {
+    color: '#ffffff',
+    fontSize: 24,
+    padding: 8,
+  },
 });
 
 export default class HomeScreen extends Component {
@@ -78,14 +77,14 @@ export default class HomeScreen extends Component {
     super(props);
     this.state = {
       ready: false,
-      units: ''
+      units: '',
     };
   }
 
   async componentDidMount() {
-    const {navigation} = this.props;
-    navigation.addListener ('focus', async () => {
-      await this.getVitalData()
+    const { navigation } = this.props;
+    navigation.addListener('focus', async () => {
+      await this.getVitalData();
     });
     expoPushToken = await registerForPushNotificationsAsync();
     sendPushNotification(expoPushToken);
@@ -94,37 +93,43 @@ export default class HomeScreen extends Component {
   }
 
   async getVitalData() {
-    // query data
-    this.setState({ units: await getStorageKey('units') });
-    const HourlyWeeklyData = await queryHourlyWeekly();
-    const tasks = await queryTasks();
-
     let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
       setErrorMsg('Permission to access location was denied');
     }
-
     let location = await Location.getCurrentPositionAsync({});
-
     let city = await Location.reverseGeocodeAsync({
       latitude: location.coords.latitude,
-      longitude: location.coords.longitude
+      longitude: location.coords.longitude,
     });
-    setStorageKey("current_location", city[0].city);
 
-    await this.setState({
-      hourly: HourlyWeeklyData.hourly.data.hours,
-      currLocation: location,
+    const units = await getStorageKey('units');
+    await setStorageKey('current_location', city[0].city);
+
+    // query
+    const hourly = await query('hourly', 'get', {
+      location: city[0].city,
+      units,
+    });
+    const tasks = await query('task', 'get', { current: 'true' });
+    if (!hourly || !tasks || hourly.status !== 200 || tasks.status !== 200) {
+      console.log('An error occurred while querying hourly/tasks');
+      // Bill, I'll leave it up to you what to do here
+    }
+
+    this.setState({
+      units,
+      hourly: hourly.hours,
       currCity: city,
       ready: true,
-      tasks: tasks.tasks
+      tasks: tasks.tasks,
     });
   }
 
   render() {
     let { ready } = this.state;
     if (ready) {
-      const { hourly, currCity, tasks } = this.state;
+      const { hourly, currCity, tasks, units } = this.state;
       const now = moment().format('MMM DD h:mm A');
 
       return (
@@ -132,27 +137,30 @@ export default class HomeScreen extends Component {
           <Container style={styles.wrapper}>
             <StatusBar />
             <View style={styles.locationView}>
-              <EvilIcons name='location' numberOfLines={1} size={50} color='white' style={{ marginTop: 7 }} />
+              <EvilIcons
+                name='location'
+                numberOfLines={1}
+                size={50}
+                color='white'
+                style={{ marginTop: 7 }}
+              />
               <Text style={styles.locationText}>{currCity[0].city}</Text>
             </View>
             <View style={styles.dateView}>
               <Text style={styles.dateText}>{now}</Text>
             </View>
             <Container style={styles.padded}>
-              <Text style={styles.upNextText}>Up Next:</Text>
-              <UpNext style={styles.padded} data={tasks || dummy.taskPayload}/>
+              <Text style={styles.subtitle}>Up Next:</Text>
+              <UpNext style={styles.padded} data={tasks || dummy.taskPayload} />
             </Container>
             <Container style={styles.padded}>
-              <Text style={styles.upNextText}>Hourly:</Text>
-              <HourlyView style={styles.padded} data={hourly} units={this.state.units} />
+              <Text style={styles.subtitle}>Hourly:</Text>
+              <HourlyView style={styles.padded} data={hourly} units={units} />
             </Container>
           </Container>
         </Container>
       );
-    } else {
-      return (
-        <LoadingComponent />
-      )
     }
+    return <Loading />;
   }
 }

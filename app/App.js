@@ -3,10 +3,14 @@ import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import { Feather } from '@expo/vector-icons';
-import { getSessionKey, getStorageKey, setStorageKey } from './src/components/constants';
+import {
+  getSessionKey,
+  getStorageKey,
+  setStorageKey,
+} from './src/util/Storage';
 import MainStack from './src/MainStack';
 import LoginScreen from './src/LoginScreen';
-import LoadingComponent from './src/components/loadingComponent';
+import Loading from './src/components/Loading';
 
 export default class App extends Component {
   constructor(props) {
@@ -25,13 +29,15 @@ export default class App extends Component {
       ...Feather.font,
     });
 
-    //Default metric units
+    // Default metric units
     if (!(await getStorageKey('units'))) {
       setStorageKey('units', 'metric');
     }
+
     // use this line to clear the key (for testing)
+    // await setStorageKey('session_key', '');
+
     // check if logged in
-    await setStorageKey('session_key', '');
     const res = await getSessionKey();
     if (res === null) {
       console.log('No session key found.');
@@ -54,7 +60,7 @@ export default class App extends Component {
   render() {
     const { isReady, loggedIn } = this.state;
     if (!isReady) {
-      return <LoadingComponent />;
+      return <Loading />;
     }
 
     return (
