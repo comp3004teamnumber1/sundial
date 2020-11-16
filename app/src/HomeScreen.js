@@ -10,6 +10,7 @@ import UpNext from './Calendar/UpNext'
 import * as Location from 'expo-location';
 import LoadingComponent from './components/loadingComponent';
 import { queryTasks } from './components/queryTasks'
+import { registerForPushNotificationsAsync, sendPushNotification } from './Notifications/pushNotifications.js';
 
 const styles = StyleSheet.create({
   content: {
@@ -86,6 +87,10 @@ export default class HomeScreen extends Component {
     navigation.addListener ('focus', async () => {
       await this.getVitalData()
     });
+    expoPushToken = await registerForPushNotificationsAsync();
+    sendPushNotification(expoPushToken);
+    
+    this.setState({expoPushToken});
   }
 
   async getVitalData() {
