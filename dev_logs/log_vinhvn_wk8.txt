@@ -1,0 +1,5 @@
+- Completed a major refactoring of the frontend app so we can implement features more quickly and seamlessly without messing eachother up
+- Finished all main event handlers in the Calendar screen
+- Did a code review for the Weather screen
+- Started deliverable 3 with team, including initial write up of the system design portion
+- Researched architectural styles and system design patterns for deliverable 3
