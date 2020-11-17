@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as Notifications from 'expo-notifications';
+import query from '../util/SundialAPI';
 
 export async function registerForPushNotificationsAsync() {
   expoPushToken = null
@@ -34,6 +35,10 @@ export async function registerForPushNotificationsAsync() {
   return expoPushToken;
 }
 
+export async function sendPushToken(expoPushToken) {
+  await query('token', 'post', { token: expoPushToken });
+}
+
 export async function sendPushNotification(expoPushToken) {
   const message = {
     to: expoPushToken,
@@ -43,7 +48,6 @@ export async function sendPushNotification(expoPushToken) {
     data: { data: 'goes here' },
   };
 
-  console.log("sending push notification now")
   await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
     headers: {

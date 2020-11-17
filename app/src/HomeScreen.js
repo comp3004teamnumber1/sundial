@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import moment from 'moment';
 import { dummy } from './data/constants';
 import { getStorageKey, setStorageKey } from './util/Storage';
-import { registerForPushNotificationsAsync, sendPushNotification } from './Notifications/pushNotifications.js';
+import { registerForPushNotificationsAsync, sendPushNotification, sendPushToken } from './Notifications/pushNotifications.js';
 import query from './util/SundialAPI';
 // components
 import HourlyView from './Weather/HourlyView';
@@ -87,9 +87,8 @@ export default class HomeScreen extends Component {
       await this.getVitalData();
     });
     expoPushToken = await registerForPushNotificationsAsync();
-    sendPushNotification(expoPushToken);
-    
-    this.setState({expoPushToken});
+    sendPushNotification(expoPushToken); // For testing
+    sendPushToken(expoPushToken);
   }
 
   async getVitalData() {
@@ -114,7 +113,7 @@ export default class HomeScreen extends Component {
     const tasks = await query('task', 'get', { current: 'true' });
     if (!hourly || !tasks || hourly.status !== 200 || tasks.status !== 200) {
       console.log('An error occurred while querying hourly/tasks');
-      // Bill, I'll leave it up to you what to do here
+      alert('Contact naek.ca for errors.');
     }
 
     this.setState({
