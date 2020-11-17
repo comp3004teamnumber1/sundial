@@ -1,0 +1,8 @@
+Student: Bill Zhang #101106261
+Date: November 9 2020 - November 15 2020
+
+(1 HR) Refactoring for Home Screen
+(1 HR) Added labels for sections of home screen
+(3 HR) Registering, and sending for push notifications on client app
+(1 HR) Setting up firebase for push notifications
+(2 HR) Researched architecture styles and design patterns for our app
