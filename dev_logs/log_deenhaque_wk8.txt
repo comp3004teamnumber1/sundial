@@ -1,0 +1,12 @@
+Deen Haque
+
+Discussion
+- Standup (1hr)
+- Discussed the implementation for deleting saved locations under WeatherNavigation.js with Bill (1hr)
+
+Development
+- Fixed bugs which emerged from merges (hehe) done this week under WeatherNavigation (2hrs)
+- Implemented adding saved weather locations and deleting saved weather locations (4hrs)
+
+Code Review
+- Reviewed Pull Requests from Bill and Vinh regarding code overhaul and minor home bug fixes (2hrs)
