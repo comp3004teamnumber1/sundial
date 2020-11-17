@@ -1,0 +1,5 @@
+- implemented weather data caching to reduce calls to the external api
+- implemented timezone fixes for tasks
+- implemented more testing
+- fixed bugs
+- added uv index to daily/hourly data
