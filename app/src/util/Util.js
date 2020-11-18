@@ -3,36 +3,36 @@ import { Feather } from '@expo/vector-icons';
 
 export function getWindDirection(degree) {
   const deg = degree % 360;
-  switch (deg) {
-    case degree >= 348.75 || degree < 11.25:
+  switch (true) {
+    case deg >= 348.75 || deg < 11.25:
       return 'NNE';
-    case degree >= 33.75 || degree < 56.25:
+    case deg >= 33.75 || deg < 56.25:
       return 'NE';
-    case degree >= 56.25 || degree < 78.75:
+    case deg >= 56.25 || deg < 78.75:
       return 'ENE';
-    case degree >= 78.75 || degree < 101.25:
+    case deg >= 78.75 || deg < 101.25:
       return 'E';
-    case degree >= 101.25 || degree < 123.75:
+    case deg >= 101.25 || deg < 123.75:
       return 'ESE';
-    case degree >= 123.75 || degree < 146.25:
+    case deg >= 123.75 || deg < 146.25:
       return 'SE';
-    case degree >= 146.25 || degree < 168.75:
+    case deg >= 146.25 || deg < 168.75:
       return 'SSE';
-    case degree >= 168.25 || degree < 191.25:
+    case deg >= 168.25 || deg < 191.25:
       return 'S';
-    case degree >= 191.25 || degree < 213.75:
+    case deg >= 191.25 || deg < 213.75:
       return 'SSW';
-    case degree >= 213.25 || degree < 236.25:
+    case deg >= 213.25 || deg < 236.25:
       return 'SW';
-    case degree >= 236.25 || degree < 258.75:
+    case deg >= 236.25 || deg < 258.75:
       return 'WSW';
-    case degree >= 258.25 || degree < 281.25:
+    case deg >= 258.25 || deg < 281.25:
       return 'W';
-    case degree >= 281.25 || degree < 303.75:
+    case deg >= 281.25 || deg < 303.75:
       return 'WNW';
-    case degree >= 303.25 || degree < 326.25:
+    case deg >= 303.25 || deg < 326.25:
       return 'NW';
-    case degree >= 326.25 || degree < 348.75:
+    case deg >= 326.25 || deg < 348.75:
       return 'NNW';
     case Number.isNaN(deg):
     default:

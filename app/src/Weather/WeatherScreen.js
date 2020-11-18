@@ -119,7 +119,7 @@ export default class WeatherScreen extends Component {
           </Text>
           <Text style={styles.locationSummary}>
             {/* TODO: Read UV from hourly */}
-            UV: Low
+            {`UV: ${hourly[0].uvi}`}
           </Text>
         </View>
         <Text style={styles.subtitle}>Hourly</Text>

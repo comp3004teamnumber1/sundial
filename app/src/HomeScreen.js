@@ -49,16 +49,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     marginTop: 5,
   },
-  spinnerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  spinner: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 10,
-  },
   padded: {
     paddingTop: 10,
     paddingBottom: 10,
@@ -100,7 +90,22 @@ export default class HomeScreen extends Component {
 
     const units = await getStorageKey('units');
     await setStorageKey('current_location', city[0].city);
+    const savedLocations = await getStorageKey('saved_locations');
+    console.log('savedLocations before');
+    console.log(savedLocations);
+    if (!savedLocations) {
+      await setStorageKey('saved_locations', `{"${city[0].city}":null}`)
+    }
+    else {
+      let locations = savedLocations.split('|')
+        .map(place => JSON.parse(place))
+        .map(json => Object.keys(json)[0]);
 
+      if (!locations.includes(city[0].city)) {
+        await setStorageKey('saved_locations', `${savedLocations}|{"${city[0].city}":null}`)
+      }
+    }
+    console.log(await getStorageKey('saved_locations'));
     // query
     const hourly = await query('hourly', 'get', {
       location: city[0].city,

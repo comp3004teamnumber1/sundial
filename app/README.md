@@ -100,7 +100,8 @@ async () => {
   "session_key": "string",
   "username": "string",
   "current_location": "string",
-  "units": "string"
+  "units": "string",
+  "saved_locations": "string in the following format: {\"place1\":null}|{\"place2\":null}|{\"place3\":null}|{\"place4\":null}|{\"place5\":null}"
 }
 ```
 
