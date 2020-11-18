@@ -102,8 +102,9 @@ export default class CalendarHome extends Component {
 
   // eslint-disable-next-line react/destructuring-assignment
   updateTasks = async (date = this.state.date) => {
-    const formattedDate = moment(date).format('YYYY-MM-DD');
-    const offset = moment(date).utcOffset();
+    const momentDate = moment(date);
+    const formattedDate = momentDate.format('YYYY-MM-DD');
+    const offset = momentDate.utcOffset();
     const res = await query('task', 'get', { date: formattedDate, offset });
     if (res === null) {
       Alert.alert('An error occurred', 'Please try again.');
