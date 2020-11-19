@@ -9,6 +9,8 @@ import {
   Label,
   Button,
   Picker,
+  CheckBox,
+  Right,
 } from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
@@ -54,10 +56,10 @@ const styles = StyleSheet.create({
   textDark: {
     color: '#000000',
   },
-  textDateTime: {
+  textInput: {
     color: '#ffffff',
     fontSize: 16,
-    marginLeft: 4,
+    marginLeft: 8,
     paddingVertical: 12,
   },
   textError: {
@@ -69,6 +71,9 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     marginTop: 16,
     backgroundColor: '#ff8c42',
+  },
+  checkBox: {
+    marginRight: 20,
   },
 });
 
@@ -87,11 +92,12 @@ export default class AddEvent extends Component {
     this.state = {
       task: '',
       date,
-      mode: 'date',
-      pickerOpen: false,
       ideal_weather: 'Clear',
+      tracking: true,
       location: 'Ottawa, Ontario',
       errorMsg: '',
+      mode: 'date',
+      pickerOpen: false,
     };
   }
 
@@ -134,13 +140,16 @@ export default class AddEvent extends Component {
       this.setState({ errorMsg: 'Please fill in all fields.' });
       return;
     }
-    const { task, date, ideal_weather, location } = this.state;
-    console.log(moment(date).format('YYYY-MM-DD h:mm a'));
+    const { task, date, ideal_weather, location, tracking } = this.state;
+    const momentDate = moment(date);
+    const offset = momentDate.utcOffset();
     const data = {
       task,
-      date: moment(date).format('X'),
+      date: momentDate.format('X'),
       ideal_weather,
       location,
+      tracking,
+      offset,
     };
     const res = await query('task', 'post', data);
     if (res === null) {
@@ -153,7 +162,14 @@ export default class AddEvent extends Component {
   };
 
   render() {
-    const { date, ideal_weather, errorMsg, mode, pickerOpen } = this.state;
+    const {
+      date,
+      ideal_weather,
+      errorMsg,
+      mode,
+      pickerOpen,
+      tracking,
+    } = this.state;
 
     return (
       <Container style={styles.container}>
@@ -163,7 +179,7 @@ export default class AddEvent extends Component {
           <Form style={styles.containerForm}>
             <Item>
               <Label style={styles.textLight}>
-                <Feather name='message-circle' size={24} color='white' />
+                <Feather name='type' size={24} color='white' />
               </Label>
               <Input
                 style={styles.textLight}
@@ -182,7 +198,7 @@ export default class AddEvent extends Component {
               <Label style={styles.textLight}>
                 <Feather name='calendar' size={24} color='white' />
               </Label>
-              <Text style={styles.textDateTime}>
+              <Text style={styles.textInput}>
                 {moment(date).format('YYYY-MM-DD')}
               </Text>
             </Item>
@@ -194,7 +210,7 @@ export default class AddEvent extends Component {
               <Label style={styles.textLight}>
                 <Feather name='clock' size={24} color='white' />
               </Label>
-              <Text style={styles.textDateTime}>
+              <Text style={styles.textInput}>
                 {moment(date).format('h:mm a')}
               </Text>
             </Item>
@@ -215,6 +231,28 @@ export default class AddEvent extends Component {
                 <Picker.Item label='Snow' value='Snow' />
                 <Picker.Item label='Thunderstorm' value='Thunderstorm' />
               </Picker>
+            </Item>
+            <Item>
+              <Label style={styles.textLight}>
+                <Feather name='bell' size={24} color='white' />
+              </Label>
+              <Text
+                style={styles.textInput}
+                onPress={() => {
+                  this.setState({ tracking: !tracking });
+                }}
+              >
+                Notifications
+              </Text>
+              <Right>
+                <CheckBox
+                  style={styles.checkBox}
+                  checked={tracking}
+                  onPress={() => {
+                    this.setState({ tracking: !tracking });
+                  }}
+                />
+              </Right>
             </Item>
             {errorMsg ? <Text style={styles.textError}>{errorMsg}</Text> : null}
           </Form>
