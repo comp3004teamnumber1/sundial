@@ -29,9 +29,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#231F29',
     padding: 24,
   },
-  cards: {
-    flexGrow: 1,
-  },
   cardContainer: {
     borderColor: '#231F29',
     backgroundColor: '#231F29',
