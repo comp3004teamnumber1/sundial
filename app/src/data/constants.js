@@ -147,4 +147,42 @@ export const dummy = {
       location: 'Ottawa',
     },
   ],
+  notificationsPayload: [
+    {
+      id: 1,
+      date: 1602104400,
+      ideal_weather: 'Clear',
+      location: 'Ottawa',
+    },
+    {
+      id: 2,
+      date: 1602224400,
+      ideal_weather: 'Clear',
+      location: 'Toronto',
+    },
+    {
+      id: 3,
+      date: 1602334400,
+      ideal_weather: 'Clouds',
+      location: 'Montreal',
+    },
+    {
+      id: 4,
+      date: 1603104400,
+      ideal_weather: 'Clear',
+      location: 'Montreal',
+    },
+    {
+      id: 5,
+      date: 1603224400,
+      ideal_weather: 'Rain',
+      location: 'Montreal',
+    },
+    {
+      id: 6,
+      date: 1603334400,
+      ideal_weather: 'Clouds',
+      location: 'Ottawa, ON',
+    },
+  ],
 };
