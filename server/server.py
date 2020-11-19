@@ -124,8 +124,61 @@ def build_update_query(table, params, where):
     return query_string
 
 
-def notification():
-    return
+@app.route("/taskSuggestion/<username>")
+def check_task_weather_changes(username):
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    curr_t = datetime.now().timestamp()
+    formatted_date = lambda date: datetime.fromtimestamp(int(date)).strftime(
+        "%Y-%m-%d-%H-%M"
+    )
+    c.execute(
+        "SELECT id, task, date, location, ideal_weather FROM tasks WHERE username = '{}' AND date > {} AND date < {}".format(
+            username, curr_t, curr_t + (86400 * 15)
+        )
+    )
+    tasks = c.fetchall()
+    task_suggestions = {}
+    for task in tasks:
+        weather_data = get_weather_data(task[3]).json()
+        task_str_date = formatted_date(task[2])
+        found_task = False
+        task_ok = False
+        suggested_date = 0
+        for day in weather_data.get("daily"):
+            if (
+                formatted_date(day.get("dt")).split("-")[:3]
+                == task_str_date.split("-")[:3]
+            ):
+                found_task = True
+                if task[4] == day["weather"][0]["main"]:
+                    print(
+                        "{} = {}".format(task[4], day["weather"][0]["main"]), flush=True
+                    )
+                    task_ok = True
+                continue
+            if task_ok:
+                break
+            if found_task:
+                if day["weather"][0]["main"] == task[4]:
+                    suggested_date = formatted_date(day.get("dt"))
+                    break
+        if suggested_date:
+            suggested_date = suggested_date.split("-")
+            task_str_date = task_str_date.split("-")
+            task_suggestions.update(
+                {
+                    task[0]: datetime(
+                        int(suggested_date[0]),
+                        int(suggested_date[1]),
+                        int(suggested_date[2]),
+                        int(task_str_date[3]),
+                        int(task_str_date[4]),
+                    ).timestamp()
+                }
+            )
+
+    return {"suggestions": task_suggestions, "status": 200}, 200
 
 
 @app.route("/", methods=["GET"])
