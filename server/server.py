@@ -44,6 +44,7 @@ if not os.path.isfile("db.db"):
 # global vars
 config = config.Config()
 sessions = {}
+tokens = {}
 cached_weather_data = {}
 
 
@@ -235,6 +236,75 @@ def login():
         sessions.update({str(session_key): username})
         return {"status": 200, "session_key": session_key}, 200
     return {"status": 401, "error": "Incorrect password."}, 200
+
+
+@app.route("/token", methods=["POST"])
+def add_token():
+    post_args = flask.request.get_json()
+    post_headers = flask.request.headers
+    if not authenticate_route(post_headers):
+        return {"status": 401, "error": "Missing session key."}, 200
+    tokens.update(
+        {sessions.get(post_headers.get("Session-Key")): post_args.get("token")}
+    )
+    return {"status": 200}, 200
+
+
+# ! THIS MAY OR MAY NOT WORK, I'LL TEST LATER
+def send_notification(username):
+    # token = "ExponentPushToken[n63_cAKPSVK1btgwRLLeCv]"
+    token = tokens.get("username")
+    notification = {
+        "to": token,
+        "sound": "default",
+        "title": "Event weather has changed.",
+        "body": "Event weather has changed!",
+        "data": {"id": 12345, "new_date": 1283192},
+    }
+    push = requests.post(
+        "https://exp.host/--/api/v2/push/send",
+        data=json.dumps(notification),
+        headers={
+            "Accept": "application/json",
+            "Accept-encoding": "gzip, deflate",
+            "Content-Type": "application/json",
+        },
+    )
+    return push
+
+
+# ! THIS MAY OR MAY NOT WORK, I'LL TEST LATER
+@app.route("/password", methods=["POST"])
+def change_password():
+    post_args = flask.request.get_json()
+    post_headers = flask.request.headers
+    if not authenticate_route(post_headers):
+        return {"status": 401, "error": "Missing session key."}, 200
+    username = sessions.get(post_headers.get("Session-Key"))
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute("SELECT password FROM users WHERE username = '{}'".format(username))
+
+    old_password = post_args.get("old_password")
+    old_hashed_password = c.fetchone()[0]
+    new_password = post_args.get("new_password")
+
+    if check_encrypted_password(old_password, old_hashed_password):
+        c.execute(
+            "UPDATE task SET password = '{}' WHERE username = '{}'".format(
+                encrypt_password(new_password), username
+            )
+        )
+        conn.close()
+        conn.commit()
+        return {"status": 200}
+    else:
+        conn.close()
+        conn.commit()
+        return {
+            "error": "Your password does not match your current password.",
+            "status": 401,
+        }, 401
 
 
 # GET: /daily
