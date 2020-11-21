@@ -273,3 +273,27 @@ OUTPUT:
   "status": 200
 }
 ```
+
+#### GET: /notification/day
+
+PARAMS (HEADERS): `{"Session-Key": "str"}
+
+SENDS: JSON
+
+OUTPUT:
+
+```json
+{
+  "notification_day_id": [
+    {
+      "id": "uuid:str",
+      "date": "epoch_time:int",
+      "ideal_weather": "weather_description:str",
+      "location": "location:str"
+    },
+    {
+      "__comment": "more notification days in this array"
+    }
+  ]
+}
+```
