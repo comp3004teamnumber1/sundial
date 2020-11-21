@@ -56,7 +56,11 @@ def authenticate_login(username, password):
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute("SELECT password FROM users WHERE username = '{}'".format(username))
-    hashed_password = c.fetchone()[0]
+    if c.fetchone():
+        hashed_password = c.fetchone()[0]
+    else:
+        conn.close()
+        return False
     conn.close()
     return check_encrypted_password(password, hashed_password)
 
