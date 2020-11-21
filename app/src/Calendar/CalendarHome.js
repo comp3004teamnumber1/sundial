@@ -222,6 +222,7 @@ export default class CalendarHome extends Component {
             onPress={() => {
               navigation.navigate('AddEvent', {
                 date: moment(date).format('YYYY-MM-DD'),
+                onAdd: this.updateTasks,
               });
               this.setState({ fabOpen: false });
             }}

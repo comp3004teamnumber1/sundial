@@ -18,7 +18,6 @@ import {
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import { getIcon } from '../../util/Util';
-import { dummy } from '../../data/constants';
 import query from '../../util/SundialAPI';
 import Header from '../../components/Header';
 
@@ -93,10 +92,14 @@ export default class NotificationBuilder extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      notifications: dummy.notificationsPayload,
+      notifications: [],
       refreshing: false,
       fabOpen: false,
     };
+  }
+
+  componentDidMount() {
+    this.updateNotifications();
   }
 
   handleDeleteNotification = id => {
@@ -128,8 +131,16 @@ export default class NotificationBuilder extends Component {
 
   handleRefresh = async () => {
     this.setState({ refreshing: true });
-    // await this.updateTasks();
+    await this.updateNotifications();
     this.setState({ refreshing: false });
+  };
+
+  updateNotifications = async () => {
+    const res = await query('notification/day', 'get');
+    if (res === null) {
+      Alert.alert('An error occurred', 'Please try again.');
+    }
+    this.setState({ notifications: res.notification_days || [] });
   };
 
   render() {
@@ -203,7 +214,9 @@ export default class NotificationBuilder extends Component {
           <Button
             style={{ backgroundColor: '#6699CC' }}
             onPress={() => {
-              navigation.navigate('AddNotification');
+              navigation.navigate('AddNotification', {
+                onAdd: this.updateNotifications,
+              });
               this.setState({ fabOpen: false });
             }}
           >

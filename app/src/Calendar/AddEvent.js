@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
 export default class AddEvent extends Component {
   constructor(props) {
     super(props);
-    let date;
     if (props.route.params.date) {
       const [year, month, day] = props.route.params.date.split('-');
       date = moment()
@@ -157,8 +156,9 @@ export default class AddEvent extends Component {
       return;
     }
 
-    const { navigation } = this.props;
+    const { navigation, route } = this.props;
     navigation.goBack();
+    route.params.onAdd();
   };
 
   render() {

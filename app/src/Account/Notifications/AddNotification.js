@@ -124,7 +124,7 @@ export default class AddNotification extends Component {
       this.setState({ errorMsg: 'Please fill in all fields.' });
       return;
     }
-    const { date, ideal_weather, location, tracking } = this.state;
+    const { date, ideal_weather, location } = this.state;
     const momentDate = moment(date);
     const offset = momentDate.utcOffset();
     const data = {
@@ -138,8 +138,9 @@ export default class AddNotification extends Component {
       this.setState({ errorMsg: 'An error occurred. Please try again.' });
       return;
     }
-    const { navigation } = this.props;
+    const { navigation, route } = this.props;
     navigation.goBack();
+    route.params.onAdd();
   };
 
   render() {
@@ -157,7 +158,7 @@ export default class AddNotification extends Component {
               </Label>
               <Input
                 style={styles.textLight}
-                placeholder={location}
+                placeholder='Ottawa, ON'
                 placeholderTextColor='#aaaaaa'
                 onChangeText={val => {
                   this.setState({ location: val });
