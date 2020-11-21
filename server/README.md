@@ -247,10 +247,27 @@ Changes the users password.
 
 PARAMS (HEADERS): `{"Session-Key": "str"}
 
-PARAMS (BODY): `{"old_password": "str", "new_password": "str"}`
+PARAMS (JSON): `{"old_password": "str", "new_password": "str"}`
+
+SENDS: JSON
 
 OUTPUT:
 
 ```json
 {"status": 200}
+```
+
+PARAMS (HEADERS): `{"Session-Key": "str"}`
+
+PARAMS (JSON): `{"date": "epoch_time:int", "ideal_weather": "ideal_weather:str", "location": "location:str", "offset": "offset:str"}`
+
+SENDS: JSON
+
+OUTPUT:
+
+```json
+{
+  "notification_day_id": "uuid:str",
+  "status": 200
+}
 ```
