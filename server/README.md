@@ -284,7 +284,7 @@ OUTPUT:
 
 ```json
 {
-  "notification_day_id": [
+  "notification_days": [
     {
       "id": "uuid:str",
       "date": "epoch_time:int",
@@ -294,7 +294,8 @@ OUTPUT:
     {
       "__comment": "more notification days in this array"
     }
-  ]
+  ],
+  "status": 200
 }
 ```
 
@@ -308,12 +309,12 @@ PARAMS(JSON):
 {
   "notification_day_id": "uuid:str"
 }
-``
+```
 
 SENDS: JSON
 
 OUTPUT:
 
 ```json
-{"status": 200}:
+{"status": 200}
 ```
