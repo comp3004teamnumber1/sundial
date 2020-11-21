@@ -3,6 +3,7 @@ import sys
 
 session_key = ""
 task_id = ""
+notification_day_id = ""
 username = "naek"
 password = "naek_password"
 
@@ -58,8 +59,8 @@ def post_task_update():
         "http://127.0.0.1:5000/task/{}".format(task_id),
         json={
             "task": "Read 3004 notes.",
-            "date": 1605489639,
-            "ideal_weather": "Rainy",
+            "date": 1605888000,
+            "ideal_weather": "Clear",
         },
         headers={"Session-Key": session_key},
     )
@@ -82,6 +83,44 @@ def get_task():
     return task.json()
 
 
+def suggest_task():
+    task = requests.get(
+        "http://127.0.0.1:5000/taskSuggestion/naek",
+        headers={"Session-Key": session_key},
+    )
+    return task.json()
+
+
+def post_notification_day():
+    notif = requests.post(
+        "http://127.0.0.1:5000/notification/day",
+        json={
+            "date": 1605888000,
+            "ideal_weather": "Clear",
+            "location": "Ottawa, Ontario",
+            "offset": "-300",
+        },
+        headers={"Session-Key": session_key},
+    )
+    return notif.json()
+
+
+def get_notification_day():
+    notif = requests.get(
+        "http://127.0.0.1:5000/notification/day", headers={"Session-Key": session_key}
+    )
+    return notif.json()
+
+
+def delete_notification_day():
+    notif = requests.get(
+        "http://127.0.0.1:5000/notification/day",
+        json={"notification_day_id": notification_day_id},
+        headers={"Session-Key": session_key},
+    )
+    return notif.json()
+
+
 def test_register():
     assert post_register().get("status") == 200
 
@@ -95,12 +134,13 @@ def test_login():
 
 def test_hourly():
     response = get_hourly()
-    print(response)
     assert response.get("hours")
 
 
 def test_daily():
-    assert get_daily().get("days")
+    response = get_daily()
+    print(response)
+    assert response.get("days")
 
 
 def test_task_create():
@@ -120,5 +160,23 @@ def test_get_task():
     assert response.get("status") == 200
 
 
+def test_suggest_task():
+    response = suggest_task()
+    print(response)
+    assert response.get("status") == 200
+
+
 def test_delete_task():
     assert delete_task().get("status") == 200
+
+
+def test_post_notification_day():
+    response = post_notification_day()
+    notification_day_id = response.get("notification_day_id")
+    assert notification_day_id != 0
+
+
+def test_get_notification_day():
+    response = get_notification_day()
+    print(response)
+    assert len(response.get("notification_days", [])) != 0
