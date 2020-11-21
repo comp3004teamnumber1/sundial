@@ -297,3 +297,23 @@ OUTPUT:
   ]
 }
 ```
+
+#### DELETE: /notification/day
+
+PARAMS (HEADERS): `{"Session-Key": "str"}`
+
+PARAMS(JSON): 
+
+```json
+{
+  "notification_day_id": "uuid:str"
+}
+``
+
+SENDS: JSON
+
+OUTPUT:
+
+```json
+{"status": 200}:
+```
