@@ -3,7 +3,7 @@ import json
 import requests
 import config
 import uuid
-from datetime import datetime, date, time
+from datetime import datetime, time
 import sqlite3
 import os
 from geopy.geocoders import Nominatim
@@ -130,9 +130,10 @@ def check_task_weather_changes(username):
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     curr_t = datetime.now().timestamp()
-    formatted_date = lambda date: datetime.fromtimestamp(int(date)).strftime(
-        "%Y-%m-%d-%H-%M"
-    )
+
+    def formatted_date(date):
+        return datetime.fromtimestamp(int(date)).strftime("%Y-%m-%d-%H-%M")
+
     c.execute(
         "SELECT id, task, date, location, ideal_weather FROM tasks WHERE username = '{}' AND date > {} AND date < {}".format(
             username, curr_t, curr_t + (86400 * 15)
@@ -238,6 +239,7 @@ def login():
     return {"status": 401, "error": "Incorrect password."}, 200
 
 
+# saves a token to a user
 @app.route("/token", methods=["POST"])
 def add_token():
     post_args = flask.request.get_json()
