@@ -56,9 +56,9 @@ def authenticate_login(username, password):
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute("SELECT password FROM users WHERE username = '{}'".format(username))
-    if c.fetchone():
+    try:
         hashed_password = c.fetchone()[0]
-    else:
+    except:
         conn.close()
         return False
     conn.close()
