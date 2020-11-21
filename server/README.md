@@ -240,3 +240,17 @@ OUTPUT:
   ]
 }
 ```
+
+#### POST: /password
+
+Changes the users password.
+
+PARAMS (HEADERS): `{"Session-Key": "str"}
+
+PARAMS (BODY): `{"old_password": "str", "new_password": "str"}`
+
+OUTPUT:
+
+```json
+{"status": 200}
+```
