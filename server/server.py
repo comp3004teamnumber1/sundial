@@ -33,6 +33,9 @@ def init_db():
         """CREATE TABLE tasks (id PRIMARY KEY, username text, task text, date integer, ideal_weather text, location text)"""
     )
     c.execute("""CREATE TABLE cached_locations (location text, lat text, lon text)""")
+    c.execute(
+        """CREATE TABLE notification_days (id text, date int, ideal_weather text, location text, offset text, username text)"""
+    )
     conn.commit()
     conn.close()
 
@@ -181,6 +184,103 @@ def check_task_weather_changes(username):
             )
 
     return {"suggestions": task_suggestions, "status": 200}, 200
+
+
+@app.route("/notification/day", methods=["POST"])
+def post_day_notification():
+    post_args = flask.request.get_json()
+    post_headers = flask.request.headers
+
+    if not authenticate_route(post_headers):
+        return {"status": 401, "error": "Missing session key."}, 200
+
+    if not post_args.get("date", 0):
+        return {"status": 401, "error": "Missing date."}, 200
+
+    if not post_args.get("ideal_weather", 0):
+        return {"status": 401, "error": "Missing ideal weather."}, 200
+
+    if not post_args.get("location", 0):
+        return {"status": 401, "error": "Missing location."}, 200
+
+    if not post_args.get("offset", 0):
+        return {"status": 401, "error": "Missing offset."}, 200
+
+    notification_day_id = uuid.uuid4()
+
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        """INSERT INTO notification_days (id, date, ideal_weather, location, offset, username) VALUES ('{}', '{}', '{}', '{}', '{}', '{}')""".format(
+            notification_day_id,
+            post_args.get("date"),
+            post_args.get("ideal_weather"),
+            post_args.get("location"),
+            post_args.get("offset"),
+            sessions.get(post_headers.get("Session-Key")),
+        )
+    )
+    conn.commit()
+    conn.close()
+
+    return {"notification_day_id": notification_day_id, "status": 200}, 200
+
+
+@app.route("/notification/day", methods=["DELETE"])
+def delete_day_notification():
+    post_args = flask.request.get_json()
+    post_headers = flask.request.headers
+
+    if not authenticate_route(post_headers):
+        return {"status": 401, "error": "Missing session key."}, 200
+
+    if not post_args.get("notification_day_id", 0):
+        return {"status": 401, "error": "Missing notification day id."}, 200
+
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        """DELETE FROM notification_days WHERE id = '{}'""".format(
+            post_args.get("notification_day_id"),
+        )
+    )
+    conn.commit()
+    conn.close()
+
+    return {"status": 200}, 200
+
+
+@app.route("/notification/day", methods=["GET"])
+def get_day_notification():
+    get_headers = flask.request.headers
+
+    if not authenticate_route(get_headers):
+        return {"status": 401, "error": "Missing session key."}, 200
+
+    username = sessions.get(get_headers.get("Session-Key"))
+
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        """SELECT id, date, ideal_weather, location FROM notification_days WHERE username = '{}'""".format(
+            username
+        )
+    )
+    notification_days = c.fetchall()
+    conn.close()
+
+    users_notification_days = []
+
+    for notification_day in notification_days:
+        users_notification_day = {
+            "id": notification_day[0],
+            "date": notification_day[1],
+            "ideal_weather": notification_day[2],
+            "location": notification_day[3],
+        }
+        users_notification_days.append(users_notification_day)
+
+    return {"notification_days": users_notification_days, "status": 200}, 200
 
 
 @app.route("/", methods=["GET"])
