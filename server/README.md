@@ -257,6 +257,8 @@ OUTPUT:
 {"status": 200}
 ```
 
+#### POST: /notification/day
+
 PARAMS (HEADERS): `{"Session-Key": "str"}`
 
 PARAMS (JSON): `{"date": "epoch_time:int", "ideal_weather": "ideal_weather:str", "location": "location:str", "offset": "offset:str"}`
