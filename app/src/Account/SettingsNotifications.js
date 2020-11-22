@@ -1,30 +1,27 @@
 import React from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
-import { Container, Text, Content } from 'native-base';
-import Header from '../components/Header';
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from '@react-navigation/stack';
+import NotificationBuilder from './Notifications/NotificationBuilder';
+import AddNotification from './Notifications/AddNotification';
 
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    backgroundColor: '#231F29',
-  },
-  text: {
-    color: '#ffffff',
-  },
-});
+const Stack = createStackNavigator();
 
-export default function SettingsNotifications() {
+export default function AccountStack() {
   return (
-    <Container style={styles.container}>
-      <StatusBar />
-      <Header />
-      <Content contentContainerStyle={styles.content}>
-        <Text style={styles.text}>Notification Settings</Text>
-      </Content>
-    </Container>
+    <Stack.Navigator
+      initialRouteName='NotificationBuilder'
+      screenOptions={{
+        headerShown: false,
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      }}
+    >
+      <Stack.Screen
+        name='NotificationBuilder'
+        component={NotificationBuilder}
+      />
+      <Stack.Screen name='AddNotification' component={AddNotification} />
+    </Stack.Navigator>
   );
 }

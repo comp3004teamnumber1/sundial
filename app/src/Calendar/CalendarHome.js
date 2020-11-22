@@ -4,6 +4,7 @@ import {
   Alert,
   TouchableOpacity,
   RefreshControl,
+  LogBox,
 } from 'react-native';
 import {
   Container,
@@ -28,9 +29,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#231F29',
     padding: 24,
-  },
-  cards: {
-    flexGrow: 1,
   },
   cardContainer: {
     borderColor: '#231F29',
@@ -83,6 +81,9 @@ export default class CalendarHome extends Component {
   }
 
   componentDidMount() {
+    LogBox.ignoreLogs([
+      'Non-serializable values were found in the navigation state',
+    ]);
     this.updateTasks();
   }
 
@@ -225,6 +226,7 @@ export default class CalendarHome extends Component {
             onPress={() => {
               navigation.navigate('AddEvent', {
                 date: moment(date).format('YYYY-MM-DD'),
+                onAdd: this.updateTasks,
               });
               this.setState({ fabOpen: false });
             }}
