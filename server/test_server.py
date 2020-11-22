@@ -120,6 +120,15 @@ def delete_notification_day():
     return notif.json()
 
 
+def post_password():
+    response = requests.post(
+        "http://127.0.0.1:5000/password",
+        headers={"Session-Key": session_key},
+        json={"old_password": password, "new_password": password},
+    )
+    return response.json()
+
+
 def test_register():
     assert post_register().get("status") == 200
 
@@ -183,4 +192,9 @@ def test_get_notification_day():
 
 def test_delete_notification_day():
     response = delete_notification_day()
+    assert response.get("status", 0) == 200
+
+
+def test_post_password():
+    response = post_password()
     assert response.get("status", 0) == 200
