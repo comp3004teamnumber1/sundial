@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Alert,
+  LogBox,
 } from 'react-native';
 import {
   Container,
@@ -99,6 +100,9 @@ export default class NotificationBuilder extends Component {
   }
 
   componentDidMount() {
+    LogBox.ignoreLogs([
+      'Non-serializable values were found in the navigation state',
+    ]);
     this.updateNotifications();
   }
 
