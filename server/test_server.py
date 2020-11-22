@@ -113,9 +113,8 @@ def get_notification_day():
 
 
 def delete_notification_day():
-    notif = requests.get(
-        "http://127.0.0.1:5000/notification/day",
-        json={"notification_day_id": notification_day_id},
+    notif = requests.delete(
+        "http://127.0.0.1:5000/notification/day/{}".format(notification_day_id),
         headers={"Session-Key": session_key},
     )
     return notif.json()
@@ -171,6 +170,7 @@ def test_delete_task():
 
 
 def test_post_notification_day():
+    global notification_day_id
     response = post_notification_day()
     notification_day_id = response.get("notification_day_id")
     assert notification_day_id != 0
@@ -178,5 +178,9 @@ def test_post_notification_day():
 
 def test_get_notification_day():
     response = get_notification_day()
-    print(response)
     assert len(response.get("notification_days", [])) != 0
+
+
+def test_delete_notification_day():
+    response = delete_notification_day()
+    assert response.get("status", 0) == 200
