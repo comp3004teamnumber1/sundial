@@ -230,22 +230,21 @@ def post_day_notification():
     return {"notification_day_id": notification_day_id, "status": 200}, 200
 
 
-@app.route("/notification/day", methods=["DELETE"])
-def delete_day_notification():
-    post_args = flask.request.get_json()
+@app.route("/notification/day/<notification_day_id>", methods=["DELETE"])
+def delete_day_notification(notification_day_id):
     post_headers = flask.request.headers
 
     if not authenticate_route(post_headers):
         return {"status": 401, "error": "Missing session key."}, 200
 
-    if not post_args.get("notification_day_id", 0):
+    if not notification_day_id:
         return {"status": 401, "error": "Missing notification day id."}, 200
 
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute(
         """DELETE FROM notification_days WHERE id = '{}'""".format(
-            post_args.get("notification_day_id"),
+            notification_day_id,
         )
     )
     conn.commit()
