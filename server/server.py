@@ -396,16 +396,16 @@ def change_password():
 
     if check_encrypted_password(old_password, old_hashed_password):
         c.execute(
-            "UPDATE task SET password = '{}' WHERE username = '{}'".format(
+            "UPDATE users SET password = '{}' WHERE username = '{}'".format(
                 encrypt_password(new_password), username
             )
         )
-        conn.close()
         conn.commit()
+        conn.close()
         return {"status": 200}
     else:
-        conn.close()
         conn.commit()
+        conn.close()
         return {
             "error": "Your password does not match your current password.",
             "status": 401,
