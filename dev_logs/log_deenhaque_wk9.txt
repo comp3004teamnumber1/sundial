@@ -1,0 +1,16 @@
+Deen Haque
+
+Discussion
+- Standup/discuss what work is left to do on Sundial (2hr)
+- Discussed other features to add to account/settings (users are now gonna be able to change what type of weather information they see in their Home screen) with Vinh and Bill (1hr)
+- Discussed implementation of changing units in Settings with Vinh and Bill seperately (2hrs)
+
+Development
+- Styled stuff under settings/accounts (2hrs) 
+- Users can now change their preferred units (this is still buggy) and passwords (1hr)
+- Tested password change requests with nick (1hr)
+
+Deliverable
+- Worked on D3 (4hrs)
+- Worked on UML diagram (2hrs)
+- Proofread D3 (1hr)
