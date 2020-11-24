@@ -87,7 +87,6 @@ export default class HomeScreen extends Component {
       await this.getVitalData();
     });
     expoPushToken = await registerForPushNotificationsAsync();
-    sendPushNotification(expoPushToken); // For testing
     sendPushToken(expoPushToken);
   }
 
