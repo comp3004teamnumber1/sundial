@@ -1,0 +1,8 @@
+Student: Bill Zhang #101106261
+Date: November 16 2020 - November 22 2020
+
+(7 HR) Working on deliverable 3: diagrams, architecture styles
+    (3 HR) Architecture styles of client-server, and pipe and filter
+    (2 HR) Diagrams for the architectural styles
+    (2 HR) Editting and discussion
+(2 HR) Work with Nick to get push notifications sent from the server
