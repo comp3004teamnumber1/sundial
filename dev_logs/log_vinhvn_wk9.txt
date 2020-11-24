@@ -1,3 +1,4 @@
 - Worked on deliverable 3: research, writing, UML diagram, editing
 - Notification builder component on the frontend
 - Updated older components to use refresh component
+- Added extra options to add event form
