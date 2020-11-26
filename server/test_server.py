@@ -81,6 +81,12 @@ def get_task():
     )
     return task.json()
 
+def get_consecutive_days():
+    days = requests.get(
+        "http://127.0.0.1:5000/consecutive?location=Ottawa&weather=Clouds&time=1",
+        headers={"Session-Key": session_key},
+    )
+    return days.json()
 
 def test_register():
     assert post_register().get("status") == 200
@@ -122,3 +128,8 @@ def test_get_task():
 
 def test_delete_task():
     assert delete_task().get("status") == 200
+
+def test_consecutive_days():
+    response = get_consecutive_days()
+    print(response)
+    assert response.get("status") == 200

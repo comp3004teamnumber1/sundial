@@ -401,6 +401,62 @@ def get_task():
         "status": 200,
     }, 200
 
+# GET: /consecutive
+# DESC: sends a list of all tasks of a user
+# PARAMS: location, weather, time
+# HEADERS: Session-Key
+# SENDS: JSON with starting day
+@app.route("/consecutive", methods=["GET"])
+def get_consecutive_days():
+    get_args = flask.request.args
+    get_headers = flask.request.headers
+    if not authenticate_route(get_headers):
+        return {"status": 401, "error": "Missing session key."}, 200
+    if not get_args["location"]:
+        return {"status": 401, "error": "Missing location."}, 200
+    if not get_args["weather"]:
+        return {"status": 401, "error": "Missing ideal weather."}, 200
+    if not get_args["time"]:
+        return {"status": 401, "error": "Missing time."}, 200
+    api_return = get_weather_data(
+        get_args.get("location"), get_args.get("units", "metric")
+    )
+    # convert to json
+    weather_data = api_return.json()
+    days = {"days": []}
+    weather_counter = 0
+    last_day = -1
+    for weatherIndex in range(len(weather_data["daily"])):
+        weather_day = weather_data["daily"][weatherIndex]
+        if weather_day["weather"][0]["main"] == get_args["weather"]:
+            weather_counter += 1
+        else:
+            weather_counter = 0
+        if weather_counter == int(get_args["time"]):
+            last_day = weatherIndex
+            break
+    days = {"days": []}
+    days.update({"status": 200})
+    if last_day == -1:
+        days.update({"status": 204})
+        return days, 204
+    weather_start = last_day-int(get_args["time"])
+    for weather_index in range(int(get_args["time"])):
+        weather = weather_data["daily"][weather_start + weather_index]
+        day = {
+            "date": weather["dt"],
+            "temp": weather["temp"]["day"],
+            "feels_like_temp": weather["feels_like"]["day"],
+            "pop": weather["pop"],
+            "wind_speed": weather["wind_speed"],
+            "wind_deg": weather["wind_deg"],
+            "humidity": weather["humidity"],
+            "weather_type": weather["weather"][0]["main"],
+            "uvi": weather["uvi"],
+        }
+        days.get("days").append(day)
+    days.update({"start_date": days.get("days")[0].get("date")})
+    return days, 200
 
 if args.https:
     app.run(
