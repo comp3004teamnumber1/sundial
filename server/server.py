@@ -198,7 +198,7 @@ def daily():
             "wind_deg": weather["wind_deg"],
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
-            "uvi": weather["uvi"],
+            "uvi": weather.get("uvi", -1)
         }
         days.get("days").append(day)
     # return the json
@@ -412,11 +412,11 @@ def get_consecutive_days():
     get_headers = flask.request.headers
     if not authenticate_route(get_headers):
         return {"status": 401, "error": "Missing session key."}, 200
-    if not get_args["location"]:
+    if not get_args.get("location", 0):
         return {"status": 401, "error": "Missing location."}, 200
-    if not get_args["weather"]:
+    if not get_args.get("weather", 0):
         return {"status": 401, "error": "Missing ideal weather."}, 200
-    if not get_args["time"]:
+    if not get_args.get("time", 0):
         return {"status": 401, "error": "Missing time."}, 200
     api_return = get_weather_data(
         get_args.get("location"), get_args.get("units", "metric")
@@ -428,20 +428,18 @@ def get_consecutive_days():
     last_day = -1
     for weatherIndex in range(len(weather_data["daily"])):
         weather_day = weather_data["daily"][weatherIndex]
-        if weather_day["weather"][0]["main"] == get_args["weather"]:
+        if weather_day["weather"][0]["main"].lower() == get_args.get("weather").lower():
             weather_counter += 1
         else:
             weather_counter = 0
-        if weather_counter == int(get_args["time"]):
+        if weather_counter == int(get_args.get("time")):
             last_day = weatherIndex
             break
-    days = {"days": []}
-    days.update({"status": 200})
+    days = []
     if last_day == -1:
-        days.update({"status": 204})
-        return days, 204
-    weather_start = last_day-int(get_args["time"])
-    for weather_index in range(int(get_args["time"])):
+        return {"days": days, "status": 204}, 200
+    weather_start = last_day-int(get_args.get("time"))
+    for weather_index in range(int(get_args.get("time"))):
         weather = weather_data["daily"][weather_start + weather_index]
         day = {
             "date": weather["dt"],
@@ -452,11 +450,10 @@ def get_consecutive_days():
             "wind_deg": weather["wind_deg"],
             "humidity": weather["humidity"],
             "weather_type": weather["weather"][0]["main"],
-            "uvi": weather["uvi"],
+            "uvi": weather.get("uvi", -1)
         }
-        days.get("days").append(day)
-    days.update({"start_date": days.get("days")[0].get("date")})
-    return days, 200
+        days.append(day)
+    return {"days": days, "start_date": days[0].get("date"), "status": 200}, 200
 
 if args.https:
     app.run(

@@ -83,7 +83,7 @@ def get_task():
 
 def get_consecutive_days():
     days = requests.get(
-        "http://127.0.0.1:5000/consecutive?location=Ottawa&weather=Clouds&time=1",
+        "http://127.0.0.1:5000/consecutive?location=Ottawa&weather=Rain&time=0",
         headers={"Session-Key": session_key},
     )
     return days.json()
