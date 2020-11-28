@@ -286,6 +286,37 @@ def get_day_notification():
     return {"notification_days": users_notification_days, "status": 200}, 200
 
 
+def check_day_notifications(username):
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        """SELECT date, ideal_weather, location FROM notification_days WHERE username = '{}'""".format(
+            username
+        )
+    )
+
+    notification_days = c.fetchall()
+    if not notification_days:
+        return -1
+
+    weather_matches = {}
+
+    for notification_day in notification_days:
+        weather_data = get_weather_data(notification_day[2])
+        date_of_notif = datetime.fromtimestamp(notification_day[0]).strftime("%Y-%m-%d")
+
+        for day in weather_data:
+            date_of_day = datetime.fromtimestamp(day).strftime("%Y-%m-%d")
+            if date_of_day == date_of_notif:
+                if day.get("daily")[0].get("main") == weather_data[1]:
+                    weather_matches.update(
+                        {"day": date_of_notif, "weather": weather_data[1]}
+                    )
+                    continue
+
+    return weather_matches
+
+
 @app.route("/", methods=["GET"])
 def credits():
     return '<h1>Developed by <a href="https://naek.ca">NAEK</a></h1>'
