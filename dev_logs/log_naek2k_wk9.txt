@@ -1,0 +1,7 @@
+- added logic for alternate day suggestions for tasks
+- password change feature
+- added infrastructure to support expo push tokens
+- built a route to get expo tokens and save them to the user
+- documentation updates
+- added edge case fixes to accounts
+- converted routes to follow rest guidelines
