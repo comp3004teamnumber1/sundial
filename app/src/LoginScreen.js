@@ -64,7 +64,7 @@ export default class LoginScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
+      username: props.username || '',
       password: '',
       alertUsername: false,
       alertPassword: false,
@@ -136,7 +136,7 @@ export default class LoginScreen extends Component {
   };
 
   render() {
-    const { alertUsername, alertPassword, errorMsg } = this.state;
+    const { username, alertUsername, alertPassword, errorMsg } = this.state;
 
     return (
       <Container style={styles.container}>
@@ -152,6 +152,7 @@ export default class LoginScreen extends Component {
               <Input
                 style={styles.textLight}
                 placeholder='Username'
+                defaultValue={username}
                 onChangeText={val => {
                   this.setState({ username: val });
                 }}
