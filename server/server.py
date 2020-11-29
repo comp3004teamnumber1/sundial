@@ -4,7 +4,6 @@ import os
 
 from helpers import init_db
 import global_vars
-from encryption import encrypt_password, check_encrypted_password
 
 # argparse
 parser = argparse.ArgumentParser(
