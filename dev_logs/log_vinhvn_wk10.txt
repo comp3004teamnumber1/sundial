@@ -1,0 +1,6 @@
+- Preparing for oral portion of deliverable 3; practicing demo
+- Work on slideshow to present to TA during deliverable 3
+- Implemented functionality on LoginScreen to auto-populate the username field if the user has previously logged in before
+- Together with Bill, implemented and styled the search tool and its functionality within the Calendar screen
+- Completed code reviews for Nick's server and Deen's settings screen changes
+- Debugged small issues on the frontend and backend along with Deen and Nick
