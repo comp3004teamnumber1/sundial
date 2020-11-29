@@ -84,24 +84,25 @@ def get_lat_long(location):
 
 def get_weather_data(location, units="metric"):
     current_time = datetime.now().timestamp()
-    if not global_vars.cached_weather_data.get(location, 0):
+    if not global_vars.cached_weather_data.get(units, 0).get(location, 0):
         latlon = get_lat_long(location)
         api_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&appid={}".format(
             latlon[0], latlon[1], units, global_vars.config.OWM_API_KEY
         )
-        global_vars.cached_weather_data.update(
+        global_vars.cached_weather_data.get(units).update(
             {location: {"time": current_time, "data": requests.get(api_url)}}
         )
-        return global_vars.cached_weather_data.get(location).get("data")
+        return global_vars.cached_weather_data.get(units).get(location).get("data")
     else:
         if (
-            current_time - global_vars.cached_weather_data.get(location).get("time")
+            current_time
+            - global_vars.cached_weather_data.get(units).get(location).get("time")
             > 3600
         ):
-            global_vars.cached_weather_data.pop(location)
+            global_vars.cached_weather_data.get(units).pop(location)
             return get_weather_data(location, units)
         else:
-            return global_vars.cached_weather_data.get(location).get("data")
+            return global_vars.cached_weather_data.get(units).get(location).get("data")
 
 
 def build_insert_query(table, params):
