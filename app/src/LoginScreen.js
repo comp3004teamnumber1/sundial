@@ -11,7 +11,6 @@ import {
   Button,
 } from 'native-base';
 import { Feather } from '@expo/vector-icons';
-import constants from './data/constants';
 import query from './util/SundialAPI';
 
 const styles = StyleSheet.create({

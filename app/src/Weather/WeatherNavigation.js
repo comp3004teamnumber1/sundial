@@ -40,6 +40,13 @@ export default class WeatherNavigation extends Component {
   }
 
   async componentDidMount() {
+    const { navigation } = this.props;
+    navigation.addListener('focus', async () => {
+      await this.getVitalData();
+    });
+  }
+
+  async getVitalData() {
     let savedLocations = await getStorageKey('saved_locations');
     let places = savedLocations ? savedLocations.split('|') : undefined;
     if (!places) {
@@ -71,9 +78,11 @@ export default class WeatherNavigation extends Component {
     // TODO: I feel like this could be done a better way, but I'm not sure how
     // componentDidUpdate will force componentDidMount to be called again so this component re-renders appropriately
     let savedLocations = await getStorageKey('saved_locations');
-    if (prevState.savedLocations !== savedLocations) {
-      this.setState({ savedLocations });
-      this.componentDidMount();
+    let units = await getStorageKey('units');
+
+    if (prevState.savedLocations !== savedLocations || prevState.units !== units) {
+      this.setState({ savedLocations, units });
+      this.getVitalData();
     }
   }
 

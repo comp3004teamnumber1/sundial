@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#332E3C',
     height: 350,
-    width: 85,
+    width: 100,
     paddingVertical: 18,
     zIndex: 0,
   },
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FF8C42',
     height: 350,
-    width: 85,
+    width: 100,
     paddingVertical: 18,
     zIndex: 0,
   },
@@ -82,9 +82,8 @@ export default function WeeklyView({ data, units }) {
               </Text>
               {getIcon(item.weather_type)}
               <Text style={styles.textWeather}>
-                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${
-                  getUnits(units).temp
-                }`}
+                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${getUnits(units).temp
+                  }`}
               </Text>
               <Text style={styles.textPrecip}>
                 <Entypo name='drop' size={12} color='#6699CC' />

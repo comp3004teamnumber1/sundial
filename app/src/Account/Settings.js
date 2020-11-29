@@ -10,16 +10,6 @@ const options = [
     label: 'Account',
   },
   {
-    icon: 'cloud',
-    dest: 'SettingsWeather',
-    label: 'Weather',
-  },
-  {
-    icon: 'calendar',
-    dest: 'SettingsCalendar',
-    label: 'Calendar',
-  },
-  {
     icon: 'bell',
     dest: 'SettingsNotifications',
     label: 'Notifications',
@@ -31,7 +21,7 @@ const options = [
   },
 ];
 
-export default function Settings({ navigation }) {
+export default function Settings({ navigation, logout }) {
   return (
     <Container style={styles.content}>
       <Text style={styles.title}>Settings</Text>
@@ -58,6 +48,21 @@ export default function Settings({ navigation }) {
           </ListItem>
         )}
       />
+
+      <ListItem
+        // button
+        onPress={() =>
+          logout()
+        }
+        style={{
+          ...styles.listItem,
+        }}
+      >
+        <Feather name='log-out' size={32} color='#FF8C42' />
+        <Body>
+          <Text style={{ ...styles.text, color: '#FF8C42' }}>Log Out</Text>
+        </Body>
+      </ListItem>
       <Text style={styles.footerText}>Developed by comp3004teamnumber1</Text>
     </Container>
   );
@@ -80,6 +85,7 @@ const styles = StyleSheet.create({
   },
   listItem: {
     marginVertical: 8,
+    width: '100%'
   },
   text: {
     color: '#ffffff',

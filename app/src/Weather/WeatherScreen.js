@@ -62,6 +62,13 @@ export default class WeatherScreen extends Component {
   }
 
   async componentDidMount() {
+    const { navigation } = this.props;
+    navigation.addListener('focus', async () => {
+      await this.getVitalData();
+    });
+  }
+
+  async getVitalData() {
     // get relevant info for request
     const [location, units] = await Promise.all([
       getStorageKey('current_location'),
@@ -84,10 +91,10 @@ export default class WeatherScreen extends Component {
 
     // set our state
     this.setState({
-      location,
-      units,
-      hourly: hourly.hours,
-      weekly: weekly.days.slice(0, weekly.days.length - 1),
+      location: location || this.state.location,
+      units: units || this.state.units,
+      hourly: hourly.hours || this.state.hourly,
+      weekly: weekly.days.slice(0, weekly.days.length - 1) || this.state.weekly,
     });
   }
 

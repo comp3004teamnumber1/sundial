@@ -9,8 +9,10 @@ import { getStorageKey, setStorageKey } from './util/Storage';
 import query from './util/SundialAPI';
 // components
 import HourlyView from './Weather/HourlyView';
+import WeeklyView from './Weather/WeeklyView';
 import UpNext from './Calendar/UpNext';
 import Loading from './components/Loading';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   content: {
@@ -67,6 +69,8 @@ export default class HomeScreen extends Component {
     this.state = {
       ready: false,
       units: '',
+      displayHourlyView: false, // if true is passed in, homescreen displays hourly info. If false, weekly info.
+      weather: null,
     };
   }
 
@@ -90,9 +94,8 @@ export default class HomeScreen extends Component {
 
     const units = await getStorageKey('units');
     await setStorageKey('current_location', city[0].city);
+    // get saved locations
     const savedLocations = await getStorageKey('saved_locations');
-    console.log('savedLocations before');
-    console.log(savedLocations);
     if (!savedLocations) {
       await setStorageKey('saved_locations', `{"${city[0].city}":null}`)
     }
@@ -102,24 +105,26 @@ export default class HomeScreen extends Component {
         .map(json => Object.keys(json)[0]);
 
       if (!locations.includes(city[0].city)) {
-        await setStorageKey('saved_locations', `${savedLocations}|{"${city[0].city}":null}`)
+        await setStorageKey('saved_locations', `${savedLocations}|{"${city[0].city}":null}`);
       }
     }
-    console.log(await getStorageKey('saved_locations'));
+
+    const displayHourlyView = JSON.parse(await getStorageKey('home_screen_displays_hourly_view'));
     // query
-    const hourly = await query('hourly', 'get', {
+    const weather = await query(displayHourlyView ? 'hourly' : 'daily', 'get', {
       location: city[0].city,
       units,
     });
     const tasks = await query('task', 'get', { current: 'true' });
-    if (!hourly || !tasks || hourly.status !== 200 || tasks.status !== 200) {
+    if (!weather || !tasks || weather.status !== 200 || tasks.status !== 200) {
       console.log('An error occurred while querying hourly/tasks');
       // Bill, I'll leave it up to you what to do here
     }
 
     this.setState({
       units,
-      hourly: hourly.hours,
+      displayHourlyView,
+      weather: displayHourlyView ? weather.hours : weather.days.slice(0, weather.days.length - 1),
       currCity: city,
       ready: true,
       tasks: tasks.tasks,
@@ -129,11 +134,11 @@ export default class HomeScreen extends Component {
   render() {
     let { ready } = this.state;
     if (ready) {
-      const { hourly, currCity, tasks, units } = this.state;
+      const { weather, currCity, tasks, units, displayHourlyView } = this.state;
       const now = moment().format('MMM DD h:mm A');
 
       return (
-        <Container style={styles.container}>
+        <ScrollView style={styles.container}>
           <Container style={styles.wrapper}>
             <StatusBar />
             <View style={styles.locationView}>
@@ -154,11 +159,17 @@ export default class HomeScreen extends Component {
               <UpNext style={styles.padded} data={tasks || dummy.taskPayload} />
             </Container>
             <Container style={styles.padded}>
-              <Text style={styles.subtitle}>Hourly:</Text>
-              <HourlyView style={styles.padded} data={hourly} units={units} />
+              <Text style={styles.subtitle}>
+                {`${displayHourlyView ? 'Hourly' : 'Weekly'}:`}
+              </Text>
+              {
+                displayHourlyView ?
+                  <HourlyView style={styles.padded} data={weather} units={units} /> :
+                  <WeeklyView style={styles.padded} data={weather} units={units} />
+              }
             </Container>
           </Container>
-        </Container>
+        </ScrollView>
       );
     }
     return <Loading />;

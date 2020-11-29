@@ -35,8 +35,8 @@ export default class App extends Component {
     }
 
     // use these lines to clear keys (for testing)
-    // await setStorageKey('session_key', '');
-    await setStorageKey('saved_locations', '');
+    await setStorageKey('session_key', '');
+    // await setStorageKey('saved_locations', '');
 
     // check if logged in
     const res = await getSessionKey();
@@ -47,6 +47,12 @@ export default class App extends Component {
       this.setState({ isReady: true, loggedIn: true });
     }
   }
+
+  logOut = () => {
+    // TODO: query the "logout route"
+    setStorageKey('session_key', '');
+    this.setState({ loggedIn: false });
+  };
 
   handleLogin = async (username, session_key) => {
     const res1 = await setStorageKey('username', username);
@@ -66,7 +72,7 @@ export default class App extends Component {
 
     return (
       <NavigationContainer>
-        {loggedIn && <MainStack />}
+        {loggedIn && <MainStack logout={this.logOut} />}
         {!loggedIn && <LoginScreen login={this.handleLogin} />}
       </NavigationContainer>
     );
