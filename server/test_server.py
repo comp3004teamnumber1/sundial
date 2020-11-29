@@ -132,4 +132,4 @@ def test_delete_task():
 def test_consecutive_days():
     response = get_consecutive_days()
     print(response)
-    assert response.get("status") == 200
+    assert response.get("status") == 204
