@@ -5,6 +5,7 @@ import {
 } from '@react-navigation/stack';
 import CalendarHome from './Calendar/CalendarHome';
 import AddEvent from './Calendar/AddEvent';
+import Search from './Calendar/Search';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,7 @@ export default function CalendarStack() {
     >
       <Stack.Screen name='CalendarHome' component={CalendarHome} />
       <Stack.Screen name='AddEvent' component={AddEvent} />
+      <Stack.Screen name='Search' component={Search} />
     </Stack.Navigator>
   );
 }

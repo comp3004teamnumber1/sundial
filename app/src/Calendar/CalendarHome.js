@@ -233,6 +233,15 @@ export default class CalendarHome extends Component {
           >
             <Feather name='plus' size={24} color='white' />
           </Button>
+          <Button
+            style={{ backgroundColor: '#6699CC' }}
+            onPress={() => {
+              navigation.navigate('Search');
+              this.setState({ fabOpen: false });
+            }}
+          >
+            <Feather name='search' size={18} color='white' />
+          </Button>
         </Fab>
       </Container>
     );
