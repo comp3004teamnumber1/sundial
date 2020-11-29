@@ -414,7 +414,7 @@ def get_consecutive_days():
         return {"status": 401, "error": "Missing session key."}, 200
     if not get_args.get("location", 0):
         return {"status": 401, "error": "Missing location."}, 200
-    if not get_args.get("weather", 0):
+    if not get_args.get("ideal_weather", 0):
         return {"status": 401, "error": "Missing ideal weather."}, 200
     if not get_args.get("time", 0):
         return {"status": 401, "error": "Missing time."}, 200
@@ -428,7 +428,7 @@ def get_consecutive_days():
     last_day = -1
     for weatherIndex in range(len(weather_data["daily"])):
         weather_day = weather_data["daily"][weatherIndex]
-        if weather_day["weather"][0]["main"].lower() == get_args.get("weather").lower():
+        if weather_day["weather"][0]["main"].lower() == get_args.get("ideal_weather").lower():
             weather_counter += 1
         else:
             weather_counter = 0
