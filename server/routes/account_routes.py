@@ -103,11 +103,11 @@ def change_password():
         )
         conn.commit()
         conn.close()
-        return {"status": 200}
+        return {"status": 200}, 200
     else:
         conn.commit()
         conn.close()
         return {
             "error": "Your password does not match your current password.",
             "status": 401,
-        }, 401
+        }, 200
