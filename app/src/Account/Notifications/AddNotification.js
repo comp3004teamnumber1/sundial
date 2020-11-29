@@ -15,9 +15,9 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { Feather } from '@expo/vector-icons';
-import Header from '../components/Header';
-import { getStorageKey } from '../util/Storage';
-import query from '../util/SundialAPI';
+import Header from '../../components/Header';
+import { getStorageKey } from '../../util/Storage';
+import query from '../../util/SundialAPI';
 
 const styles = StyleSheet.create({
   container: {
@@ -77,25 +77,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class AddEvent extends Component {
+export default class AddNotification extends Component {
   constructor(props) {
     super(props);
-    if (props.route.params.date) {
-      const [year, month, day] = props.route.params.date.split('-');
-      date = moment()
-        .set({ year, month: month - 1, date: day })
-        .toDate();
-    } else {
-      date = new Date();
-    }
     this.state = {
-      task: '',
-      date,
+      date: new Date(),
       ideal_weather: 'Clear',
-      tracking: true,
-      location: 'Ottawa, Ontario',
+      location: '',
       errorMsg: '',
-      mode: 'date',
       pickerOpen: false,
     };
   }
@@ -125,13 +114,9 @@ export default class AddEvent extends Component {
     this.setState({ ideal_weather: newWeather });
   };
 
-  showMode = newMode => {
-    this.setState({ pickerOpen: true, mode: newMode });
-  };
-
   validateInputs = () => {
-    const { task, date, ideal_weather, location } = this.state;
-    return task && date && ideal_weather && location;
+    const { date, ideal_weather, location } = this.state;
+    return date && ideal_weather && location;
   };
 
   handleSubmit = async () => {
@@ -139,60 +124,50 @@ export default class AddEvent extends Component {
       this.setState({ errorMsg: 'Please fill in all fields.' });
       return;
     }
-    const { task, date, ideal_weather, location, tracking } = this.state;
+    const { date, ideal_weather, location } = this.state;
     const momentDate = moment(date);
     const offset = momentDate.utcOffset();
     const data = {
-      task,
       date: momentDate.format('X'),
       ideal_weather,
       location,
-      tracking,
       offset,
     };
-    const res = await query('task', 'post', data);
+    const res = await query('notification/day', 'post', data);
     if (res === null) {
       this.setState({ errorMsg: 'An error occurred. Please try again.' });
       return;
     }
-
     const { navigation, route } = this.props;
     navigation.goBack();
     route.params.onAdd();
   };
 
   render() {
-    const {
-      date,
-      ideal_weather,
-      errorMsg,
-      mode,
-      pickerOpen,
-      tracking,
-    } = this.state;
+    const { date, ideal_weather, errorMsg, pickerOpen, location } = this.state;
 
     return (
       <Container style={styles.container}>
         <Header />
         <Container style={styles.content}>
-          <Text style={styles.title}>Add an Event</Text>
+          <Text style={styles.title}>Add a Notification</Text>
           <Form style={styles.containerForm}>
             <Item>
               <Label style={styles.textLight}>
-                <Feather name='type' size={24} color='white' />
+                <Feather name='map-pin' size={24} color='white' />
               </Label>
               <Input
                 style={styles.textLight}
-                placeholder='Event'
+                placeholder='Ottawa, ON'
                 placeholderTextColor='#aaaaaa'
                 onChangeText={val => {
-                  this.setState({ task: val });
+                  this.setState({ location: val });
                 }}
               />
             </Item>
             <Item
               onPress={() => {
-                this.showMode('date');
+                this.setState({ pickerOpen: true });
               }}
             >
               <Label style={styles.textLight}>
@@ -200,18 +175,6 @@ export default class AddEvent extends Component {
               </Label>
               <Text style={styles.textInput}>
                 {moment(date).format('YYYY-MM-DD')}
-              </Text>
-            </Item>
-            <Item
-              onPress={() => {
-                this.showMode('time');
-              }}
-            >
-              <Label style={styles.textLight}>
-                <Feather name='clock' size={24} color='white' />
-              </Label>
-              <Text style={styles.textInput}>
-                {moment(date).format('h:mm a')}
               </Text>
             </Item>
             <Item>
@@ -232,40 +195,18 @@ export default class AddEvent extends Component {
                 <Picker.Item label='Thunderstorm' value='Thunderstorm' />
               </Picker>
             </Item>
-            <Item>
-              <Label style={styles.textLight}>
-                <Feather name='bell' size={24} color='white' />
-              </Label>
-              <Text
-                style={styles.textInput}
-                onPress={() => {
-                  this.setState({ tracking: !tracking });
-                }}
-              >
-                Notifications
-              </Text>
-              <Right>
-                <CheckBox
-                  style={styles.checkBox}
-                  checked={tracking}
-                  onPress={() => {
-                    this.setState({ tracking: !tracking });
-                  }}
-                />
-              </Right>
-            </Item>
             {errorMsg ? <Text style={styles.textError}>{errorMsg}</Text> : null}
           </Form>
           <Container style={styles.footer}>
             <Button block style={styles.btn} onPress={this.handleSubmit}>
-              <Text style={styles.textDark}>Add Event</Text>
+              <Text style={styles.textDark}>Add Notification</Text>
             </Button>
           </Container>
         </Container>
         {pickerOpen ? (
           <DateTimePicker
             value={date}
-            mode={mode}
+            mode='date'
             display='default'
             onChange={this.handleDateChange}
           />

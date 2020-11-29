@@ -35,7 +35,7 @@ export default class App extends Component {
     }
 
     // use these lines to clear keys (for testing)
-    await setStorageKey('session_key', '');
+    // await setStorageKey('session_key', '');
     // await setStorageKey('saved_locations', '');
 
     // check if logged in

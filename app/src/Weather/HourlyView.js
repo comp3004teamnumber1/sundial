@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#332E3C',
     height: 220,
-    width: 85,
+    width: 100,
     paddingVertical: 18,
     zIndex: 0,
   },
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FF8C42',
     height: 220,
-    width: 85,
+    width: 100,
     paddingVertical: 18,
     zIndex: 0,
   },
@@ -74,9 +74,8 @@ export default function HourlyView({ data, units }) {
               <Text style={styles.text}>{time.format('h A')}</Text>
               {getIcon(item.weather_type)}
               <Text style={styles.tempPrimary}>
-                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${
-                  getUnits(units).temp
-                }`}
+                {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${getUnits(units).temp
+                  }`}
               </Text>
             </Pressable>
           );
