@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import moment from 'moment';
 import { dummy } from './data/constants';
 import { getStorageKey, setStorageKey } from './util/Storage';
-import { registerForPushNotificationsAsync, sendPushNotification, sendPushToken } from './Notifications/pushNotifications.js';
+import { registerForPushNotificationsAsync, sendPushNotification, sendPushToken } from './Account/Notifications/pushNotifications';
 import query from './util/SundialAPI';
 // components
 import HourlyView from './Weather/HourlyView';
