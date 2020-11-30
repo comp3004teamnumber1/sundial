@@ -105,7 +105,7 @@ def get_consecutive_days():
     days = {"days": []}
     # convert to json
     weather_data = api_return.json()
-    if int(get_args.get("time")) <= 0 or hasattr(weather_data, 'daily'):
+    if int(get_args.get("time")) <= 0 or weather_data.get('daily'):
         return {"days": days, "status": 204}, 200
     weather_counter = 0
     last_day = -1
