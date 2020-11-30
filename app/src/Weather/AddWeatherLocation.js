@@ -2,59 +2,83 @@ import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Input, Item, Spinner, Text } from 'native-base';
 import { Feather } from '@expo/vector-icons';
+import query from './../util/SundialAPI';
+import { getStorageKey, setStorageKey } from '../util/Storage';
 
 export default class AddWeatherLocation extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isBadLocation: undefined,
+      isDuplicateLocation: undefined,
       isLoading: false,
+      input: ''
     };
   }
 
-  validateRequest = async () => {
-    const config = {
-      headers: {
-        'Session-Key': key,
-      },
-    };
+  validateRequest = async location => {
+    this.setState({ isLoading: true });
+    let res = await query('hourly', 'get', { location, units: await getStorageKey('units') });
+    if (res.hours === undefined) {
+      this.setState({ isBadLocation: true, isLoading: false, input: '' });
+      console.log('a bad location!');
+      console.log(location);
+      console.log(res);
+      return;
+    }
+
+    let savedLocations = await getStorageKey('saved_locations');
+    if (savedLocations === null) {
+      this.setState({ isBadLocation: false, isDuplicateLocation: false, isLoading: false, input: '' });
+      await setStorageKey('saved_locations', `{"${location}":null}`);
+      return;
+    }
+
+    let locations = savedLocations.split('|')
+      .map(place => JSON.parse(place))
+      .map(json => Object.keys(json)[0]);
+
+    if (locations.includes(location)) {
+      this.setState({ isDuplicateLocation: true, isLoading: false, input: '' });
+      return;
+    }
+
+    this.setState({ isBadLocation: false, isDuplicateLocation: false, isLoading: false, input: '' });
+    await setStorageKey('saved_locations', `${savedLocations}|{"${location}":null}`);
   };
 
   render() {
-    const { isLoading, isBadLocation } = this.state;
+    const { isLoading, isBadLocation, isDuplicateLocation, input } = this.state;
+    let descriptionColor = isBadLocation || isDuplicateLocation ? 'red' : 'green';
     return (
       <View style={styles.container}>
         <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
           Add Location (Still WIP)
         </Text>
-        {/* <TextInput
-          style={styles.textInput}
-          onChangeText={(text => this.setState({ text: text }))}
-          // onKeyPress={(key => console.log('key', key))}
-          value={this.state.text}
-          enablesReturnKeyAutomatically={true}
-          defaultValue='Please enter a location you want to keep track of'
-        /> */}
         <Item>
           <Input
+            style={styles.textInput}
+            value={input}
+            autoFocus
             placeholder='Please enter your location here'
-            onChangeText={this.validateRequest}
+            onSubmitEditing={(event) => (this.validateRequest(event.nativeEvent.text))}
+            onChangeText={e => { this.setState({ input: e.replace('|', '') }) }}
           />
           {/* Undefined is false */}
-          {!isLoading && isBadLocation == false && (
-            <Feather name='check-circle' color='#FFFFFF' size={20} />
+          {!isLoading && (isBadLocation == false && isDuplicateLocation == false) && (
+            <Feather name='check-circle' color='green' size={20} />
           )}
-          {!isLoading && isBadLocation == true && (
-            <Feather name='x-circle' color='#FFFFFF' size={20} />
+          {!isLoading && (isBadLocation == true || isDuplicateLocation == true) && (
+            <Feather name='x-circle' color='red' size={20} />
           )}
           {isLoading && <Spinner color='#FF8C42' size={20} />}
         </Item>
 
-        {isBadLocation && (
-          <Text style={styles.description}>
-            Sorry, we couldn&apos;t find that location. Please try again.
-          </Text>
-        )}
+        <Text style={{ ...styles.description, color: descriptionColor }}>
+          {isBadLocation && 'Sorry, we couldn\'t find that location. Please try again.'}
+          {isDuplicateLocation && 'It looks like this location has already been saved.'}
+          {isBadLocation == false && isDuplicateLocation == false && 'Location added successfully!'}
+        </Text>
       </View>
     );
   }
@@ -63,7 +87,6 @@ export default class AddWeatherLocation extends Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#231F29',
-    // backgroundColor: 'white',
     padding: 22,
     justifyContent: 'center',
     alignItems: 'center',
@@ -76,14 +99,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   description: {
-    color: '#FFFFFF',
     marginTop: 10,
   },
   textInput: {
     height: 40,
-    borderColor: '#FF8C42',
     width: '100%',
-    borderWidth: 1,
     color: '#FFFFFF',
     textAlign: 'center',
   },

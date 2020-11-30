@@ -18,6 +18,7 @@ export default class App extends Component {
     this.state = {
       isReady: false,
       loggedIn: false,
+      username: '',
     };
   }
 
@@ -34,14 +35,23 @@ export default class App extends Component {
       setStorageKey('units', 'metric');
     }
 
-    // use this line to clear the key (for testing)
+    // use these lines to clear keys (for testing)
     // await setStorageKey('session_key', '');
+    // await setStorageKey('username', '');
+    // await setStorageKey('saved_locations', '');
 
     // check if logged in
-    const res = await getSessionKey();
+    let res = await getSessionKey();
     if (res === null) {
-      console.log('No session key found.');
-      this.setState({ isReady: true });
+      console.log('No session key found. Searching for username...');
+      res = await getStorageKey('username');
+      if (res === null) {
+        console.log('No username found.');
+        this.setState({ isReady: true });
+      } else {
+        console.log('Username found.');
+        this.setState({ isReady: true, username: res });
+      }
     } else {
       this.setState({ isReady: true, loggedIn: true });
     }
@@ -58,7 +68,7 @@ export default class App extends Component {
   };
 
   render() {
-    const { isReady, loggedIn } = this.state;
+    const { isReady, loggedIn, username } = this.state;
     if (!isReady) {
       return <Loading />;
     }
@@ -66,7 +76,9 @@ export default class App extends Component {
     return (
       <NavigationContainer>
         {loggedIn && <MainStack />}
-        {!loggedIn && <LoginScreen login={this.handleLogin} />}
+        {!loggedIn && (
+          <LoginScreen login={this.handleLogin} username={username} />
+        )}
       </NavigationContainer>
     );
   }

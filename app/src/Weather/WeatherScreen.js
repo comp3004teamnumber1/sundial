@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Text, Content } from 'native-base';
+import { Text, Content, Container } from 'native-base';
 import { dummy } from '../data/constants';
 import { getStorageKey } from '../util/Storage';
 import { getIcon, getWindDirection } from '../util/Util';
 import query from '../util/SundialAPI';
 import HourlyView from './HourlyView';
 import WeeklyView from './WeeklyView';
+import Header from '../components/Header';
 
 const styles = StyleSheet.create({
   content: {
@@ -95,38 +96,43 @@ export default class WeatherScreen extends Component {
     const { hourly, weekly, units, location } = this.state;
     const { navigation } = this.props;
     return (
-      <Content contentContainerStyle={styles.content}>
-        <Pressable onPress={() => navigation.navigate('WeatherNavigation')}>
-          <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
-            {location}
-          </Text>
-          <Text style={styles.locationDescription}>
-            {hourly[0].weather_type}
-          </Text>
-        </Pressable>
-        <View style={styles.locationView}>
-          <Text style={styles.locationSummary}>
-            {getIcon('Wind', 24)}
-            {`${hourly[0].wind_speed} ${getWindDirection(hourly[0].wind_deg)}`}
-          </Text>
-          <Text style={styles.locationSummary}>
-            {getIcon('Drizzle', 24)}
-            {` ${hourly[0].pop}%`}
-          </Text>
-          <Text style={styles.locationSummary}>
-            {getIcon('Drop', 24)}
-            {` ${hourly[0].humidity}%`}
-          </Text>
-          <Text style={styles.locationSummary}>
-            {/* TODO: Read UV from hourly */}
-            UV: Low
-          </Text>
-        </View>
-        <Text style={styles.subtitle}>Hourly</Text>
-        <HourlyView data={hourly} units={units} />
-        <Text style={styles.subtitle}>Daily</Text>
-        <WeeklyView data={weekly} units={units} />
-      </Content>
+      <Container>
+        <Header />
+        <Content contentContainerStyle={styles.content}>
+          <Pressable onPress={() => navigation.navigate('WeatherNavigation')}>
+            <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
+              {location}
+            </Text>
+            <Text style={styles.locationDescription}>
+              {hourly[0].weather_type}
+            </Text>
+          </Pressable>
+          <View style={styles.locationView}>
+            <Text style={styles.locationSummary}>
+              {getIcon('Wind', 24)}
+              {`${hourly[0].wind_speed} ${getWindDirection(
+                hourly[0].wind_deg
+              )}`}
+            </Text>
+            <Text style={styles.locationSummary}>
+              {getIcon('Drizzle', 24)}
+              {` ${hourly[0].pop}%`}
+            </Text>
+            <Text style={styles.locationSummary}>
+              {getIcon('Drop', 24)}
+              {` ${hourly[0].humidity}%`}
+            </Text>
+            <Text style={styles.locationSummary}>
+              {/* TODO: Read UV from hourly */}
+              {`UV: ${hourly[0].uvi}`}
+            </Text>
+          </View>
+          <Text style={styles.subtitle}>Hourly</Text>
+          <HourlyView data={hourly} units={units} />
+          <Text style={styles.subtitle}>Daily</Text>
+          <WeeklyView data={weekly} units={units} />
+        </Content>
+      </Container>
     );
   }
 }

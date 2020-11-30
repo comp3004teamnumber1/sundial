@@ -1,65 +1,80 @@
 import React, { Component } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import { Button, Card, CardItem, Fab, Spinner, Text, View } from 'native-base';
-import axios from 'axios';
+import { StyleSheet } from 'react-native';
+import { Button, Card, CardItem, Fab, List, Text, View } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
-import constants from '../data/constants';
-import { getSessionKey, setStorageKey, getStorageKey } from '../util/Storage';
-import { getIcon, getUnits } from '../util/Util';
-
+import { setStorageKey, getStorageKey } from '../util/Storage';
+import { getIcon, getUnits, getWindDirection } from '../util/Util';
+import query from './../util/SundialAPI';
 import AddWeatherLocation from './AddWeatherLocation';
+import Loading from '../components/Loading';
 
-let tempPlaces = [
-  // TODO: Make it so that places is a query from our asyncStorage
-  'London',
-  'Thunder Bay',
-  'Ottawa',
-  'Nepean',
-  'Dhaka',
-];
+//TODO: This is used only in development for debugging. Users will not be given a preset list of locations
+let dummy = '{"Ottawa":null}|{"Pooper Bay":null}|{"Ontario":null}|{"Dhaka":null}|{"Vietnam":null}';
 
 export default class WeatherNavigation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      places: tempPlaces.map(place => {
-        return { [place]: null };
-      }),
+      places: undefined,
       currentLocation: '',
       units: '',
       fabOpen: false,
-      modalVisible: true,
+      modalVisible: false,
     };
   }
 
+  async delete(location) {
+    // Although using state is faster, the source of truth for saved_locations comes from async storage
+
+    let savedLocations = await getStorageKey('saved_locations');
+    let locations = savedLocations.split('|')
+      .map(place => JSON.parse(place))
+      .map(json => Object.keys(json)[0]);
+
+    let updatedLocationsInStringJSON = locations.filter(loc => loc !== location)
+      .map(loc => `{"${loc}":null}`)
+      .join('|');
+    await setStorageKey('saved_locations', updatedLocationsInStringJSON);
+    this.setState({ savedLocations: updatedLocationsInStringJSON })
+  }
+
   async componentDidMount() {
-    let { places } = this.state;
-    places = places.map(place => Object.keys(place)[0]);
+    let savedLocations = await getStorageKey('saved_locations');
+    let places = savedLocations ? savedLocations.split('|') : undefined;
+    if (!places) {
+      this.setState({ places: ['|Sorry, you have no saved locations yet'] })
+      return;
+    }
 
-    if (places.length === 0) return;
-
+    places = places.map(place => Object.keys(JSON.parse(place))[0]);
     this.setState({ units: await getStorageKey('units') });
-    let sessionKey = await getSessionKey();
-    const headers = {
-      headers: {
-        'Session-Key': sessionKey,
-      },
-    };
     let promises = places.map(async place =>
-      axios.get(`${constants.SERVER_URL}/daily?location=${place}`, headers)
+      query('hourly', 'get', { location: place, units: this.state.units })
     );
+
     let res = (await Promise.all(promises)).map(r => {
       return {
-        data: r.data.days[0],
+        data: r.hours[0],
       };
     });
+
     this.setState({
       places: places.map((place, i) => {
         return { [place]: res[i] };
       }),
       currentLocation: await getStorageKey('current_location'),
     });
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    // TODO: I feel like this could be done a better way, but I'm not sure how
+    // componentDidUpdate will force componentDidMount to be called again so this component re-renders appropriately
+    let savedLocations = await getStorageKey('saved_locations');
+    if (prevState.savedLocations !== savedLocations) {
+      this.setState({ savedLocations });
+      this.componentDidMount();
+    }
   }
 
   render() {
@@ -71,33 +86,22 @@ export default class WeatherNavigation extends Component {
       modalVisible,
     } = this.state;
     const { navigation } = this.props;
-    let ready = Object.values(places[0])[0] !== null;
     return (
-      <View>
-        <ScrollView style={styles.container}>
-          <Text style={styles.header}>Locations</Text>
-
-          {places.map(information => {
-            let place = Object.keys(information)[0];
-            let data =
-              information[place] === null ? undefined : information[place].data;
-            return (
-              <Card key={`card${place}`} style={styles.card}>
-                {!ready ? (
-                  <CardItem style={styles.cardItem} bordered>
-                    <Text
-                      style={styles.locationText}
-                      adjustsFontSizeToFit
-                      numberOfLines={1}
-                      allowFontScaling
-                      minimumFontScale={0}
-                    >
-                      <Feather name='map-pin' size={24} color='white' />
-                      {place}
-                    </Text>
-                    <Spinner color='#FF8C42' />
-                  </CardItem>
-                ) : (
+      <View style={styles.container}>
+        <Text style={styles.header}>Locations</Text>
+        {places === undefined ? Loading() :
+          <List
+            style={styles.list}
+            dataArray={places}
+            keyExtractor={(item, index) => `favLocations${index.toString()}`}
+            renderRow={info => {
+              if (info === '|Sorry, you have no saved locations yet') {
+                return <Text style={styles.noLocations}>{info.substring(1)}</Text>
+              }
+              let place = Object.keys(info)[0];
+              let data = info[place].data;
+              return (
+                <Card style={styles.card}>
                   <CardItem
                     style={
                       currentLocation === place
@@ -109,8 +113,9 @@ export default class WeatherNavigation extends Component {
                     onPress={async () => {
                       await setStorageKey('current_location', place);
                       this.setState({ currentLocation: place }); // Forces re-render
-                      navigation.navigate('WeatherView');
+                      navigation.navigate('WeatherScreen');
                     }}
+                    onLongPress={() => this.delete(place)}
                   >
                     <Text style={styles.locationText}>
                       <Feather name='map-pin' size={24} color='white' />
@@ -119,7 +124,7 @@ export default class WeatherNavigation extends Component {
                     <View style={styles.weatherInformation}>
                       <Text style={styles.locationInfo}>
                         {getIcon('wind')}
-                        5.7 m/s W
+                        {`${data.wind_speed}${getUnits(units).wind} ${getWindDirection(data.wind_deg)}`}
                       </Text>
                       <Text style={styles.locationInfo}>
                         {getIcon(data.weather_type)}
@@ -127,11 +132,10 @@ export default class WeatherNavigation extends Component {
                       </Text>
                     </View>
                   </CardItem>
-                )}
-              </Card>
-            );
-          })}
-        </ScrollView>
+                </Card>
+              )
+            }}
+          />}
         <Fab
           active={fabOpen}
           direction='up'
@@ -153,6 +157,7 @@ export default class WeatherNavigation extends Component {
           style={styles.modal}
           isVisible={modalVisible}
           onBackdropPress={() => this.setState({ modalVisible: false })}
+          // Refresh state here or force re-render and componentwillmount
           onSwipeDirection='down'
           onSwipeComplete={() => this.setState({ modalVisible: false })}
           animationIn='slideInDown'
@@ -167,6 +172,10 @@ export default class WeatherNavigation extends Component {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#332E3C',
+    height: '100%'
+  },
+  list: {
     backgroundColor: '#332E3C',
   },
   header: {
@@ -204,7 +213,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 48,
     width: '100%',
-    // flex: 0
   },
   locationInfo: {
     color: '#FFFFFF',
@@ -227,4 +235,9 @@ const styles = StyleSheet.create({
     height: '20%',
     width: '100%',
   },
+  noLocations: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontSize: 24
+  }
 });
