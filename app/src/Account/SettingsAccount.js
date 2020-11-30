@@ -203,7 +203,7 @@ export default SettingsAccount = function () {
             setModal(true);
           }}
         >
-          <Feather name='lock' size={24} color='white' style={styles.icons} />
+          <Feather name='lock' size={24} color='white' />
           <Text style={styles.text}>
             Change Password
         </Text>
@@ -216,7 +216,7 @@ export default SettingsAccount = function () {
             setModal(true);
           }}
         >
-          <Feather name='thermometer' size={24} color='white' style={styles.icons} />
+          <Feather name='thermometer' size={24} color='white' />
           <Text style={styles.text}>
             Change Units
         </Text>
@@ -229,7 +229,7 @@ export default SettingsAccount = function () {
             setModal(true);
           }}
         >
-          <Feather name='home' size={24} color='white' style={styles.icons} />
+          <Feather name='home' size={24} color='white' />
           <Text style={styles.text}>
             Home Weather View
         </Text>
@@ -304,7 +304,8 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     paddingVertical: 10,
-    paddingLeft: 10
+    paddingLeft: 10,
+    alignItems: 'center'
   },
   input: {
     height: 40,
@@ -321,7 +322,4 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginTop: 20,
   },
-  icons: {
-    alignSelf: 'center',
-  }
 });
