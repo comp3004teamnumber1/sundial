@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import { Container, Text, Item, Input, View, ListItem, Radio, Left, Right, List, } from 'native-base';
+import { Container, Text, Item, Input, View, ListItem, Radio, Left, Right, List, Button, } from 'native-base';
 import Modal from 'react-native-modal';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
@@ -68,6 +68,14 @@ const ChangePassword = function () {
       <Text style={styles.warning}>
         {warning}
       </Text>
+
+      <Button style={{ alignSelf: 'center', backgroundColor: '#FF8C42', marginTop: 15 }}
+        onPress={async pass => { setWarning(await setPassword(oldPasswordText, pass.nativeEvent.text)) }}
+      >
+        <Text>
+          Change Password
+        </Text>
+      </Button>
     </View>
   );
 }
@@ -187,7 +195,7 @@ export default SettingsAccount = function () {
     <Container>
       <Header />
       <Container style={styles.content}>
-        <Text style={styles.title}>Account Settings</Text>
+        <Text style={styles.title}>Account</Text>
         <Pressable
           style={styles.press}
           onPress={() => {
@@ -195,7 +203,7 @@ export default SettingsAccount = function () {
             setModal(true);
           }}
         >
-          <Feather name='lock' size={24} color='white' />
+          <Feather name='lock' size={24} color='white' style={styles.icons} />
           <Text style={styles.text}>
             Change Password
         </Text>
@@ -208,7 +216,7 @@ export default SettingsAccount = function () {
             setModal(true);
           }}
         >
-          <Feather name='thermometer' size={24} color='white' />
+          <Feather name='thermometer' size={24} color='white' style={styles.icons} />
           <Text style={styles.text}>
             Change Units
         </Text>
@@ -221,9 +229,9 @@ export default SettingsAccount = function () {
             setModal(true);
           }}
         >
-          <Feather name='home' size={24} color='white' />
+          <Feather name='home' size={24} color='white' style={styles.icons} />
           <Text style={styles.text}>
-            Change weather information on Home Screen
+            Home Weather View
         </Text>
         </Pressable>
 
@@ -312,5 +320,8 @@ const styles = StyleSheet.create({
   warning: {
     color: '#FFFFFF',
     marginTop: 20,
+  },
+  icons: {
+    alignSelf: 'center',
   }
 });

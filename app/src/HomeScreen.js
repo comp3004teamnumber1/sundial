@@ -160,7 +160,7 @@ export default class HomeScreen extends Component {
             </Container>
             <Container style={styles.padded}>
               <Text style={styles.subtitle}>
-                {`${displayHourlyView ? 'Hourly' : 'Weekly'}:`}
+                {`${displayHourlyView ? 'Hourly' : 'Daily'}:`}
               </Text>
               {
                 displayHourlyView ?
