@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
 export default class AddEvent extends Component {
   constructor(props) {
     super(props);
-    if (props.route.params.date) {
+    if (props.route && props.route.params && props.route.params.date) {
       const [year, month, day] = props.route.params.date.split('-');
       date = moment()
         .set({ year, month: month - 1, date: day })
@@ -157,8 +157,10 @@ export default class AddEvent extends Component {
     }
 
     const { navigation, route } = this.props;
-    navigation.goBack();
-    route.params.onAdd();
+    navigation.navigate('CalendarHome');
+    if (route && route.params && route.params.onAdd) {
+      route.params.onAdd();
+    }
   };
 
   render() {

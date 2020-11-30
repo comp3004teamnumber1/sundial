@@ -241,6 +241,45 @@ OUTPUT:
 }
 ```
 
+#### GET: /consecutive
+
+PARAMS (QUERY): `/consecutive?location=str&weather=str&time=str`
+
+- `location`: a location, a city, an address
+- `weather`: ideal weather
+- `time`: how long the weather should last in days
+
+PARAMS (HEADERS): `{"Session-Key": "str"}`
+
+EXAMPLE: `/consecutive?location=Ottawa&weather=Clouds&time=2`
+
+SENDS: JSON
+
+200 - If it can find the consecutive days
+204 - If it can't find the consecutive days
+
+```json
+{
+  "start_date": "epoch_time:int",
+  "days": [
+    {
+      "date": "epoch_time:int",
+      "temp": "temp:int",
+      "feels_like_temp": "temp:int",
+      "pop": "pop:int",
+      "wind_speed": "speed:float",
+      "wind_deg": "deg:int",
+      "humidity": "humidity:int",
+      "weather_type": "weather_description:str",
+      "uvi": "uv_index:float",
+    },
+    {
+      "__comment": "array contains 7 more consecutive days with the same info, first one being today"
+    }
+  ],
+  "status": "status:int"
+}
+```
 #### POST: /password
 
 Changes the users password.

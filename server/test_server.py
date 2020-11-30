@@ -90,6 +90,12 @@ def suggest_task():
     )
     return task.json()
 
+def get_consecutive_days():
+    days = requests.get(
+        "http://127.0.0.1:5000/consecutive?location=Ottawa&ideal_weather=Rain&time=0&units=imperial",
+        headers={"Session-Key": session_key},
+    )
+    return days.json()
 
 def post_notification_day():
     notif = requests.post(
@@ -177,6 +183,10 @@ def test_suggest_task():
 def test_delete_task():
     assert delete_task().get("status") == 200
 
+def test_consecutive_days():
+    response = get_consecutive_days()
+    print(response)
+    assert response.get("status") == 204
 
 def test_post_notification_day():
     global notification_day_id
