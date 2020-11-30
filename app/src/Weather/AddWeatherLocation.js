@@ -53,7 +53,7 @@ export default class AddWeatherLocation extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
-          Add Location (Still WIP)
+          Add Location
         </Text>
         <Item>
           <Input

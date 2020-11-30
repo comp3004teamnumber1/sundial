@@ -8,7 +8,7 @@ import AccountStack from './AccountStack';
 
 const Tab = createBottomTabNavigator();
 
-export default function MainStack() {
+export default function MainStack({ logout }) {
   return (
     <Tab.Navigator
       initialRouteName='Home'
@@ -41,7 +41,10 @@ export default function MainStack() {
       <Tab.Screen name='Home' component={HomeScreen} />
       <Tab.Screen name='Calendar' component={CalendarStack} />
       <Tab.Screen name='Weather' component={WeatherStack} />
-      <Tab.Screen name='Account' component={AccountStack} />
+      {/* AccountStack screen implemented differently due to it needing props */}
+      <Tab.Screen name='Account' >
+        {props => <AccountStack {...props} logout={logout} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
