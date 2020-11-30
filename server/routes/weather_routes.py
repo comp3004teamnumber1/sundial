@@ -103,15 +103,15 @@ def get_consecutive_days():
         get_args.get("location"), get_args.get("units", "metric")
     )
     days = {"days": []}
-    if int(get_args.get("time")) <= 0:
-        return {"days": days, "status": 204}, 200
     # convert to json
     weather_data = api_return.json()
+    if int(get_args.get("time")) <= 0 or hasattr(weather_data, 'daily'):
+        return {"days": days, "status": 204}, 200
     weather_counter = 0
     last_day = -1
     for weatherIndex in range(len(weather_data["daily"])):
         weather_day = weather_data["daily"][weatherIndex]
-        if weather_day["weather"][0]["main"].lower() == get_args.get("ideal_weather").lower():
+        if weather.get("weather", [{}])[0].get("main", 0) == get_args.get("ideal_weather", "").lower():
             weather_counter += 1
         else:
             weather_counter = 0
@@ -125,14 +125,14 @@ def get_consecutive_days():
     for weather_index in range(int(get_args.get("time"))):
         weather = weather_data["daily"][weather_start + weather_index]
         day = {
-            "date": weather["dt"],
-            "temp": weather["temp"]["day"],
-            "feels_like_temp": weather["feels_like"]["day"],
-            "pop": weather["pop"],
-            "wind_speed": weather["wind_speed"],
-            "wind_deg": weather["wind_deg"],
-            "humidity": weather["humidity"],
-            "weather_type": weather["weather"][0]["main"],
+            "date": weather.get("dt", 0),
+            "temp": weather.get("temp", {}).get("day", 0),
+            "feels_like_temp": weather.get("feels_like", {}).get("day", 0),
+            "pop": weather.get("pop", 0),
+            "wind_speed": weather.get("wind_speed", 0),
+            "wind_deg": weather.get("wind_deg", 0),
+            "humidity": weather.get("humidity", 0),
+            "weather_type": weather.get("weather", [{}])[0].get("main", 0),
             "uvi": weather.get("uvi", -1)
         }
         days.append(day)

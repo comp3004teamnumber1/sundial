@@ -57,6 +57,12 @@ export default class App extends Component {
     }
   }
 
+  logOut = () => {
+    // TODO: query the "logout route"
+    setStorageKey('session_key', '');
+    this.setState({ loggedIn: false });
+  };
+
   handleLogin = async (username, session_key) => {
     const res1 = await setStorageKey('username', username);
     const res2 = await setStorageKey('session_key', session_key);
@@ -75,7 +81,7 @@ export default class App extends Component {
 
     return (
       <NavigationContainer>
-        {loggedIn && <MainStack />}
+        {loggedIn && <MainStack logout={this.logOut} />}
         {!loggedIn && (
           <LoginScreen login={this.handleLogin} username={username} />
         )}
