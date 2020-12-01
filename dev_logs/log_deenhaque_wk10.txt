@@ -1,0 +1,15 @@
+Deen Haque
+
+Discussion
+- Discussed navigation module with Bill (1hr)
+
+Development
+- Implemented Home screen setting under Account Settings to change information user can view on homescreen (1hr)
+- Fixed all bugs for when users change screens after changing units (3hrs)
+
+Code Review
+- Reviewed Vinh's loginscreen changes (1hr)
+- Discussed my PR (Account Settings) with Vinh to implement small improvements (1hr)
+
+Debugging
+- Discovered small unit change bug and discussed it with Nick (1hr)
