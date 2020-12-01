@@ -1,0 +1,8 @@
+- major refactor on the backend
+  - separated and organized the routes and functions into separate files
+  - organized dependencies per file
+  - removed redundant information and file
+- bug fix for caching weather data, able to cache both types of units separately now
+- researched and implemented a global variable module into the backend
+- added logic to the day weather tracker
+- worked on d3
