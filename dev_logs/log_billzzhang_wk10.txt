@@ -1,0 +1,8 @@
+Student: Bill Zhang #101106261
+Date: November 23 2020 - November 29 2020
+
+(7 HR) Working on consecutive days function
+    (5 HR) Implementing the backend functions and testing
+    (2 HR) Adding a front-end view for the information
+(2 HR) Updating the notifications branch to be pushed
+(1 HR) Discussed Navigation issues with Deen
