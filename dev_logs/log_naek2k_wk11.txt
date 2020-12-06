@@ -3,3 +3,6 @@
 - debugged notification sending
 - built a tool to send notifications on demand for demo
 - begun designing a microservice to schedule notification checks on user accounts
+- wrote the script for d4 yt video
+- discussed with vinh the d4 video
+- recorded and edited the d4 yt video
