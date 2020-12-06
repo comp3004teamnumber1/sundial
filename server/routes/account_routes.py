@@ -4,6 +4,8 @@ from helpers import (
     authenticate_route,
     check_encrypted_password,
     encrypt_password,
+    retrieve_settings,
+    save_settings,
 )
 from __main__ import app
 
@@ -33,7 +35,7 @@ def register():
         if queried_user[0] == username:
             return {"status": 401, "error": "That username is taken."}, 200
     c.execute(
-        "INSERT INTO users (username, password) VALUES ('{}', '{}')".format(
+        "INSERT INTO users (username, password, settings) VALUES ('{}', '{}', '')".format(
             username, encrypt_password(password)
         )
     )
@@ -59,8 +61,26 @@ def login():
     # authenticate the account
     if authenticate_login(username, password):
         global_vars.sessions.update({str(session_key): username})
-        return {"status": 200, "session_key": session_key}, 200
+        settings = retrieve_settings(username)
+        return {"status": 200, "session_key": session_key, "settings": settings}, 200
+
     return {"status": 401, "error": "Incorrect password."}, 200
+
+
+@app.route("/settings", methods=["POST"])
+def post_settings():
+    post_args = flask.request.get_json()
+    post_headers = flask.request.headers
+    print(
+        global_vars.sessions.get(post_headers.get("Session-Key")),
+        post_args.get("settings"),
+        flush=True,
+    )
+    save_settings(
+        global_vars.sessions.get(post_headers.get("Session-Key")),
+        post_args.get("settings"),
+    )
+    return {"status": 200}, 200
 
 
 # saves a token to a user
