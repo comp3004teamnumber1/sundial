@@ -1,0 +1,102 @@
+import requests
+import argparse
+from datetime import datetime
+from helpers import get_weather_data
+import sqlite3
+import global_vars
+import json
+
+
+def check_task_weather_changes(username):
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    curr_t = datetime.now().timestamp()
+
+    def formatted_date(date):
+        return datetime.fromtimestamp(int(date)).strftime("%Y-%m-%d-%H-%M")
+
+    c.execute(
+        "SELECT id, task, date, location, ideal_weather FROM tasks WHERE username = '{}' AND date > {} AND date < {}".format(
+            username, curr_t, curr_t + (86400 * 15)
+        )
+    )
+    tasks = c.fetchall()
+    task_suggestions = {}
+    for task in tasks:
+        weather_data = get_weather_data(task[3]).json()
+        task_str_date = formatted_date(task[2])
+        found_task = False
+        task_ok = False
+        suggested_date = 0
+        for day in weather_data.get("daily"):
+            if (
+                formatted_date(day.get("dt")).split("-")[:3]
+                == task_str_date.split("-")[:3]
+            ):
+                found_task = True
+                if task[4] == day["weather"][0]["main"]:
+                    print(
+                        "{} = {}".format(task[4], day["weather"][0]["main"]), flush=True
+                    )
+                    task_ok = True
+                continue
+            if task_ok:
+                break
+            if found_task:
+                if day["weather"][0]["main"] == task[4]:
+                    suggested_date = formatted_date(day.get("dt"))
+                    break
+        if suggested_date:
+            suggested_date = suggested_date.split("-")
+            task_str_date = task_str_date.split("-")
+            task_suggestions.update(
+                {
+                    task[0]: datetime(
+                        int(suggested_date[0]),
+                        int(suggested_date[1]),
+                        int(suggested_date[2]),
+                        int(task_str_date[3]),
+                        int(task_str_date[4]),
+                    ).timestamp()
+                }
+            )
+
+    return {"suggestions": task_suggestions, "status": 200}, 200
+
+
+def send_notification(username, data, expo=False):
+    # token = "ExponentPushToken[n63_cAKPSVK1btgwRLLeCv]"
+    token = expo
+    if not expo:
+        token = global_vars.tokens.get("username")
+    notification = {
+        "to": token,
+        "sound": "default",
+        "title": "Event weather has changed.",
+        "body": "Event weather has changed!",
+        "data": data,
+    }
+    push = requests.post(
+        "https://exp.host/--/api/v2/push/send",
+        data=json.dumps(notification),
+        headers={
+            "Accept": "application/json",
+            "Accept-encoding": "gzip, deflate",
+            "Content-Type": "application/json",
+        },
+    )
+    return push
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--expo", "-e")
+parser.add_argument("--user", "-u")
+args = parser.parse_args()
+
+event_changes = check_task_weather_changes(args.user)[0]
+
+print("Event Changes: {}".format(event_changes))
+print("Username: {}".format(args.user))
+print("Expo Token: {}".format(args.expo))
+
+print(send_notification(args.user, event_changes, args.expo).content)
