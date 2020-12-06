@@ -1,0 +1,5 @@
+- deliverable 4
+- added persistent settings to user accounts
+- debugged notification sending
+- built a tool to send notifications on demand for demo
+- begun designing a microservice to schedule notification checks on user accounts
