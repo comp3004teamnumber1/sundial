@@ -1,0 +1,6 @@
+- Wrote and edited deliverable 4 status report
+- Discussed deliverable 4 youtube video with Nick
+- Small style fixes on the frontend app
+- Completed a code review and tested Bill's push notifications feature
+- Debugged and updated hosted server to keep up with the changes
+- Discussed and planned out suggested dates data and screen setup with Nick
