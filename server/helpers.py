@@ -177,3 +177,28 @@ def send_notification(username, data, expo=False):
         },
     )
     return push
+
+
+def retrieve_settings(username):
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute("SELECT settings FROM users WHERE username = '{}'".format(username))
+    settings = c.fetchone()
+    conn.close()
+    if settings:
+        return settings[0]
+    else:
+        return ""
+
+
+def save_settings(username, settings):
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        "UPDATE users SET settings = '{}' WHERE username = '{}'".format(
+            settings, username
+        )
+    )
+    conn.commit()
+    conn.close()
+    return 0
