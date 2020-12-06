@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import moment from 'moment';
 import { dummy } from './data/constants';
 import { getStorageKey, setStorageKey } from './util/Storage';
-import { registerForPushNotificationsAsync, sendPushNotification, sendPushToken } from './Account/Notifications/pushNotifications';
+import { registerForPushNotificationsAsync, sendPushNotification, sendPushToken } from './util/pushNotifications';
 import query from './util/SundialAPI';
 // components
 import HourlyView from './Weather/HourlyView';
@@ -118,6 +118,7 @@ export default class HomeScreen extends Component {
     if (!hourly || !tasks || hourly.status !== 200 || tasks.status !== 200) {
       console.log('An error occurred while querying hourly/tasks');
       alert('Contact naek.ca for errors.');
+      return;
     }
 
     this.setState({

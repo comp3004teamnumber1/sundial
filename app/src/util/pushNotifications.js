@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import * as Notifications from 'expo-notifications';
-import query from '../../util/SundialAPI';
+import query from './SundialAPI';
 
 export async function registerForPushNotificationsAsync() {
   expoPushToken = null
