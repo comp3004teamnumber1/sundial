@@ -26,7 +26,9 @@ def check_encrypted_password(password, hashed):
 def init_db():
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
-    c.execute("""CREATE TABLE users (username text PRIMARY KEY, password text)""")
+    c.execute(
+        """CREATE TABLE users (username text PRIMARY KEY, password text, settings blob)"""
+    )
     c.execute(
         """CREATE TABLE tasks (id PRIMARY KEY, username text, task text, date integer, ideal_weather text, location text)"""
     )
