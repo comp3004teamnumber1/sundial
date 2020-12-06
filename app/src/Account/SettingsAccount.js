@@ -33,8 +33,8 @@ async function setPassword(oldPasswordText, pass) {
 }
 
 const ChangePassword = function () {
-  // const { oldPasswordText, warning } = this.state;
   let [oldPasswordText, setOldPassword] = useState('');
+  let [newPasswordText, setNewPassword] = useState('');
   let [warning, setWarning] = useState('');
   return (
     <View style={styles.modalContainer}>
@@ -56,12 +56,14 @@ const ChangePassword = function () {
       <Item>
         <Input
           style={styles.input}
+          onChangeText={e => { setNewPassword(e) }}
+          value={newPasswordText}
           autoCompleteType='off'
           autoCapitalize='none'
           autoCorrect={false}
           placeholder='New Password'
           password
-          onSubmitEditing={async pass => { setWarning(await setPassword(oldPasswordText, pass.nativeEvent.text)) }}
+          onSubmitEditing={async () => { setWarning(await setPassword(oldPasswordText, newPasswordText)) }}
         />
       </Item>
 
@@ -70,7 +72,7 @@ const ChangePassword = function () {
       </Text>
 
       <Button style={{ alignSelf: 'center', backgroundColor: '#FF8C42', marginTop: 15 }}
-        onPress={async pass => { setWarning(await setPassword(oldPasswordText, pass.nativeEvent.text)) }}
+        onPress={async () => { setWarning(await setPassword(oldPasswordText, newPasswordText)) }}
       >
         <Text>
           Change Password
@@ -86,6 +88,7 @@ const ChangeUnits = function () {
 
   async function updateUnits(unit) {
     await setStorageKey('units', unit);
+    // TODO: POST request to "/settings" with the key "settings" with your settings as a string
     return unit;
   }
 
@@ -139,6 +142,7 @@ const ChangeHome = function () {
 
   async function updateHome(newHome) {
     await setStorageKey('home_screen_displays_hourly_view', (`${newHome === 'Hourly Weather'}`));
+    // TODO: POST request to "/settings" with the key "settings" with your settings as a string
     return newHome;
   }
 

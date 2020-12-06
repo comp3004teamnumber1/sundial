@@ -113,6 +113,7 @@ export default class LoginScreen extends Component {
     } else {
       const { session_key } = res;
       login(username, session_key);
+      // TODO: Make the login request here
     }
   };
 

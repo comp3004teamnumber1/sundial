@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { Text, Content, Container } from 'native-base';
+import { Text, Content } from 'native-base';
 import { dummy } from '../data/constants';
 import { getStorageKey } from '../util/Storage';
 import { getIcon, getWindDirection } from '../util/Util';
 import query from '../util/SundialAPI';
 import HourlyView from './HourlyView';
 import WeeklyView from './WeeklyView';
-import Header from '../components/Header';
 
 const styles = StyleSheet.create({
   content: {
@@ -126,7 +125,6 @@ export default class WeatherScreen extends Component {
             {` ${hourly[0].humidity}%`}
           </Text>
           <Text style={styles.locationSummary}>
-            {/* TODO: Read UV from hourly */}
             {`UV: ${hourly[0].uvi}`}
           </Text>
         </View>

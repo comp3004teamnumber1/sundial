@@ -58,7 +58,6 @@ export default class App extends Component {
   }
 
   logOut = () => {
-    // TODO: query the "logout route"
     setStorageKey('session_key', '');
     this.setState({ loggedIn: false });
   };

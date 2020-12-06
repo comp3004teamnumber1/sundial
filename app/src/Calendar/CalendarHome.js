@@ -14,6 +14,8 @@ import {
   CardItem,
   Fab,
   Button,
+  Spinner,
+  View,
 } from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from '@expo/vector-icons';
@@ -147,6 +149,15 @@ export default class CalendarHome extends Component {
     const { navigation } = this.props;
 
     const renderTasks = () => {
+      if (tasks === dummy.taskPayload) {
+        return (
+          <Card style={styles.cardContainer}>
+            <View style={{ alignContent: 'center' }}>
+              <Spinner color='#FF8C42' />
+            </View>
+          </Card>
+        );
+      }
       let arr = [];
       for (let task of tasks) {
         arr.push(
@@ -174,7 +185,7 @@ export default class CalendarHome extends Component {
     };
 
     return (
-      <Container>
+      <Container style={{ backgroundColor: '#332E3C' }}>
         <Content
           contentContainerStyle={styles.container}
           refreshControl={
@@ -198,12 +209,12 @@ export default class CalendarHome extends Component {
           {tasks && tasks.length > 0 ? (
             renderTasks()
           ) : (
-            <Card style={styles.cardContainer}>
-              <CardItem style={styles.cardItem} bordered>
-                <Text style={styles.text}>No tasks found!</Text>
-              </CardItem>
-            </Card>
-          )}
+              <Card style={styles.cardContainer}>
+                <CardItem style={styles.cardItem} bordered>
+                  <Text style={styles.text}>No tasks found!</Text>
+                </CardItem>
+              </Card>
+            )}
         </Content>
         {pickerOpen ? (
           <DateTimePicker
