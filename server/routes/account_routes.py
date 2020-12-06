@@ -28,8 +28,9 @@ def register():
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
     c.execute("SELECT username FROM users WHERE username = '{}'".format(username))
-    if c.fetchone():
-        if c.fetchone()[0] == username:
+    queried_user = c.fetchone()
+    if queried_user:
+        if queried_user[0] == username:
             return {"status": 401, "error": "That username is taken."}, 200
     c.execute(
         "INSERT INTO users (username, password) VALUES ('{}', '{}')".format(
