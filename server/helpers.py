@@ -155,15 +155,17 @@ def check_day_notifications(username):
 
 
 # ! THIS MAY OR MAY NOT WORK, I'LL TEST LATER
-def send_notification(username):
+def send_notification(username, data, expo=False):
     # token = "ExponentPushToken[n63_cAKPSVK1btgwRLLeCv]"
-    token = global_vars.tokens.get("username")
+    token = expo
+    if not expo:
+        token = global_vars.tokens.get("username")
     notification = {
         "to": token,
         "sound": "default",
         "title": "Event weather has changed.",
         "body": "Event weather has changed!",
-        "data": {"id": 12345, "new_date": 1283192},
+        "data": data,
     }
     push = requests.post(
         "https://exp.host/--/api/v2/push/send",
