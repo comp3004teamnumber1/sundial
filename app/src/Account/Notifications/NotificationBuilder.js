@@ -128,7 +128,7 @@ export default class NotificationBuilder extends Component {
   deleteNotification = async id => {
     const res = await query(`notification/day/${id}`, 'delete');
     if (res === null || res.status !== 200) {
-      console.log('Error while deleting task');
+      console.log('Error while deleting alert');
     }
     this.handleRefresh();
   };
@@ -202,7 +202,7 @@ export default class NotificationBuilder extends Component {
           ) : (
             <Card style={styles.cardContainer}>
               <CardItem style={styles.cardItem} bordered>
-                <Text style={styles.text}>No tasks found!</Text>
+                <Text style={styles.text}>No alerts found!</Text>
               </CardItem>
             </Card>
           )}

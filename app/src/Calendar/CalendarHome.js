@@ -200,7 +200,7 @@ export default class CalendarHome extends Component {
           ) : (
             <Card style={styles.cardContainer}>
               <CardItem style={styles.cardItem} bordered>
-                <Text style={styles.text}>No tasks found!</Text>
+                <Text style={styles.text}>No events found!</Text>
               </CardItem>
             </Card>
           )}
