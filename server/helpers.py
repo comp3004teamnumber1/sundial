@@ -26,7 +26,9 @@ def check_encrypted_password(password, hashed):
 def init_db():
     conn = sqlite3.connect("db.db")
     c = conn.cursor()
-    c.execute("""CREATE TABLE users (username text PRIMARY KEY, password text)""")
+    c.execute(
+        """CREATE TABLE users (username text PRIMARY KEY, password text, settings blob)"""
+    )
     c.execute(
         """CREATE TABLE tasks (id PRIMARY KEY, username text, task text, date integer, ideal_weather text, location text)"""
     )
@@ -84,24 +86,25 @@ def get_lat_long(location):
 
 def get_weather_data(location, units="metric"):
     current_time = datetime.now().timestamp()
-    if not global_vars.cached_weather_data.get(location, 0):
+    if not global_vars.cached_weather_data.get(units, 0).get(location, 0):
         latlon = get_lat_long(location)
         api_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&appid={}".format(
             latlon[0], latlon[1], units, global_vars.config.OWM_API_KEY
         )
-        global_vars.cached_weather_data.update(
+        global_vars.cached_weather_data.get(units).update(
             {location: {"time": current_time, "data": requests.get(api_url)}}
         )
-        return global_vars.cached_weather_data.get(location).get("data")
+        return global_vars.cached_weather_data.get(units).get(location).get("data")
     else:
         if (
-            current_time - global_vars.cached_weather_data.get(location).get("time")
+            current_time
+            - global_vars.cached_weather_data.get(units).get(location).get("time")
             > 3600
         ):
-            global_vars.cached_weather_data.pop(location)
+            global_vars.cached_weather_data.get(units).pop(location)
             return get_weather_data(location, units)
         else:
-            return global_vars.cached_weather_data.get(location).get("data")
+            return global_vars.cached_weather_data.get(units).get(location).get("data")
 
 
 def build_insert_query(table, params):
@@ -154,15 +157,17 @@ def check_day_notifications(username):
 
 
 # ! THIS MAY OR MAY NOT WORK, I'LL TEST LATER
-def send_notification(username):
+def send_notification(username, data, expo=False):
     # token = "ExponentPushToken[n63_cAKPSVK1btgwRLLeCv]"
-    token = global_vars.tokens.get("username")
+    token = expo
+    if not expo:
+        token = global_vars.tokens.get("username")
     notification = {
         "to": token,
         "sound": "default",
         "title": "Event weather has changed.",
         "body": "Event weather has changed!",
-        "data": {"id": 12345, "new_date": 1283192},
+        "data": data,
     }
     push = requests.post(
         "https://exp.host/--/api/v2/push/send",
@@ -174,3 +179,28 @@ def send_notification(username):
         },
     )
     return push
+
+
+def retrieve_settings(username):
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute("SELECT settings FROM users WHERE username = '{}'".format(username))
+    settings = c.fetchone()
+    conn.close()
+    if settings:
+        return settings[0]
+    else:
+        return ""
+
+
+def save_settings(username, settings):
+    conn = sqlite3.connect("db.db")
+    c = conn.cursor()
+    c.execute(
+        "UPDATE users SET settings = '{}' WHERE username = '{}'".format(
+            settings, username
+        )
+    )
+    conn.commit()
+    conn.close()
+    return 0
