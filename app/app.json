@@ -17,6 +17,9 @@
       "visible": "leanback",
       "barStyle": "light-content",
       "backgroundColor": "#000000"
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

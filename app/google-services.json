@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "860374690230",
+    "firebase_url": "https://comp3004teamnumber1.firebaseio.com",
+    "project_id": "comp3004teamnumber1",
+    "storage_bucket": "comp3004teamnumber1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860374690230:android:b13b4283f34f355d5ab917",
+        "android_client_info": {
+          "package_name": "com.comp3004teamnumber1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "860374690230-rpirhavifl8iuntujfj2e9n9ciab9gjk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANBUQBsqe03JHrCG8NLnSzD7m29PIY2hg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "860374690230-rpirhavifl8iuntujfj2e9n9ciab9gjk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
