@@ -4,7 +4,7 @@ import { Container, Text, Item, Input, View, ListItem, Radio, Left, Right, List,
 import Modal from 'react-native-modal';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import { getStorageKey, setStorageKey } from '../util/Storage';
+import { getSettings, getStorageKey, setStorageKey } from '../util/Storage';
 import query from '../util/SundialAPI';
 
 async function setPassword(oldPasswordText, pass) {
@@ -88,6 +88,8 @@ const ChangeUnits = function () {
 
   async function updateUnits(unit) {
     await setStorageKey('units', unit);
+    console.log('settings!');
+    console.log(await getSettings());
     // TODO: POST request to "/settings" with the key "settings" with your settings as a string
     return unit;
   }
@@ -138,6 +140,7 @@ const ChangeUnits = function () {
 
 const ChangeHome = function () {
   let [oldHome, setOldHome] = useState(null);
+  let [settings, setSettings] = useState({});
   const options = ['Hourly Weather', 'Weekly Weather'];
 
   async function updateHome(newHome) {
@@ -156,6 +159,7 @@ const ChangeHome = function () {
         setOldHome(null);
       });
   });
+
 
   return (
     <View style={styles.modalContainer}>
