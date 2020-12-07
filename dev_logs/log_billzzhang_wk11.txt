@@ -1,0 +1,7 @@
+Student: Bill Zhang #101106261
+Date: November 30 2020 - December 6 2020
+
+(2 HR) Worked on Deliverable 4
+(1 HR) Debugging notifications
+(3 HR) Testing APK version of the sundial app
+(2 HR) Implementing code review changes 
