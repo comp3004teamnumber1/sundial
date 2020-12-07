@@ -1,0 +1,10 @@
+Deen Haque
+
+Discussion
+- Discussed /settings with Nick (1hr)
+
+Development
+- Fixed bugs to make Calendar Screen iOS friendlier (2hrs)
+- Fixed a bug where users couldn't change their password (1hr)
+- Fixed a visual bug where the header was transparent on iOS (should be black like the rest of the app) (1hr)
+- Implementing a /settings route to keep user settings consistent across sessions. (3hrs)
