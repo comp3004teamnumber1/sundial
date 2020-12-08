@@ -103,10 +103,10 @@ export default class HomeScreen extends Component {
       this.handleNotificationResponse
     );
 
-    setTimeout(() => {
-      console.log('Sending Notif...');
-      sendPushNotification(expoPushToken);
-    }, 3000);
+    // setTimeout(() => {
+    //   console.log('Sending Notif...');
+    //   sendPushNotification(expoPushToken);
+    // }, 3000);
   }
 
   componentWillUnmount() {
