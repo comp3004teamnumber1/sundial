@@ -113,7 +113,7 @@ export default class Suggested extends Component {
       alert('An error occurred. Please try again.');
       return;
     }
-    navigation.goBack();
+    navigation.navigate('Calendar');
     alert('Success!');
   };
 
