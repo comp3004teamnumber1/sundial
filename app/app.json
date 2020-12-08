@@ -2,7 +2,7 @@
   "expo": {
     "name": "Sundial",
     "description": "A modern weather app",
-    "owner": "comp3004teamnumber1",
+    "owner": "vinhvn",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#000000",
@@ -19,7 +19,8 @@
       "backgroundColor": "#000000"
     },
     "android": {
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
     }
   }
 }

@@ -4,9 +4,11 @@ import * as Notifications from 'expo-notifications';
 import query from './SundialAPI';
 
 export async function registerForPushNotificationsAsync() {
-  expoPushToken = null
+  expoPushToken = null;
   if (Constants.isDevice) {
-    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
@@ -43,9 +45,23 @@ export async function sendPushNotification(expoPushToken) {
   const message = {
     to: expoPushToken,
     sound: 'default',
-    title: 'Original Title',
+    title: 'Event weather has changed.',
     body: 'And here is the body!',
-    data: { data: 'goes here' },
+    data: {
+      status: 200,
+      suggestions: [
+        {
+          date: 1607474700,
+          original: {
+            id: '009348c2-42ad-42db-a3a6-e33a231139b7',
+            task: 'Social Distancing Party',
+            date: 1607400000,
+            ideal_weather: 'Clear',
+            location: 'Ottawa, ON',
+          },
+        },
+      ],
+    },
   };
 
   await fetch('https://exp.host/--/api/v2/push/send', {
