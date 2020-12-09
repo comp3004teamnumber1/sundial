@@ -173,14 +173,12 @@ export default class HomeScreen extends Component {
     });
   }
 
-  handleNotificationResponse = async res => {
+  handleNotificationResponse = res => {
     const { navigation } = this.props;
-    console.log(res);
     if (
       res.notification.request.content.title === 'Event weather has changed.'
     ) {
       const data = res.notification.request.content.data.suggestions;
-      console.log(data);
       navigation.navigate('Calendar', {
         screen: 'Suggested',
         params: { data },
