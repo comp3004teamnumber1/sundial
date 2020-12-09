@@ -1,10 +1,14 @@
 import requests
+import global_vars
+from time import sleep
+import requests
 import argparse
 from datetime import datetime
 from helpers import get_weather_data
 import sqlite3
-import global_vars
 import json
+
+HOUR = 60 * 60
 
 
 def check_task_weather_changes(username):
@@ -68,14 +72,11 @@ def check_task_weather_changes(username):
                 }
             )
 
-    return {"suggestions": task_suggestions, "status": 200}, 200
+    return {"suggestions": task_suggestions}
 
 
-def send_notification(username, data, expo=False):
-    # token = "ExponentPushToken[n63_cAKPSVK1btgwRLLeCv]"
+def send_notification(username, data, expo):
     token = expo
-    if not expo:
-        token = global_vars.tokens.get("username")
     notification = {
         "to": token,
         "sound": "default",
@@ -95,15 +96,19 @@ def send_notification(username, data, expo=False):
     return push
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--expo", "-e")
-parser.add_argument("--user", "-u")
-args = parser.parse_args()
-
-event_changes = check_task_weather_changes(args.user)[0]
-
-print("Event Changes: {}".format(event_changes))
-print("Username: {}".format(args.user))
-print("Expo Token: {}".format(args.expo))
-
-print(send_notification(args.user, event_changes, args.expo).content)
+while True:
+    tokens = (
+        requests.get(
+            "{}/token".format(global_vars.config.HOST),
+            headers={"Internal-Code": global_vars.config.INTERNAL_CODE},
+        )
+        .json()
+        .get("tokens", {})
+    )
+    for user, token in tokens.items():
+        weather_changes = check_task_weather_changes(user)
+        if weather_changes:
+            print("Sending notification >> USER={} EXPO={}".format(user, token))
+            notif = send_notification(user, weather_changes, token)
+            print(notif.content)
+    sleep(HOUR)
