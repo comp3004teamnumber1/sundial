@@ -110,5 +110,6 @@ while True:
     for user, token in tokens.items():
         weather_changes = check_task_weather_changes(user)
         if weather_changes:
+            print("Sending notification >> USER={} EXPO={}".format(user, token))
             send_notification(user, weather_changes, token)
     sleep(HOUR)
