@@ -75,10 +75,8 @@ def check_task_weather_changes(username):
     return {"suggestions": task_suggestions, "status": 200}, 200
 
 
-def send_notification(username, data, expo=False):
+def send_notification(username, data, expo):
     token = expo
-    if not expo:
-        token = global_vars.tokens.get("username")
     notification = {
         "to": token,
         "sound": "default",
@@ -111,5 +109,6 @@ while True:
         weather_changes = check_task_weather_changes(user)
         if weather_changes:
             print("Sending notification >> USER={} EXPO={}".format(user, token))
-            send_notification(user, weather_changes, token)
+            notif = send_notification(user, weather_changes, token)
+            print(notif.content)
     sleep(HOUR)
