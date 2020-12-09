@@ -132,3 +132,11 @@ def change_password():
             "error": "Your password does not match your current password.",
             "status": 401,
         }, 200
+
+
+@app.route("/token", methods=["GET"])
+def get_token():
+    get_headers = flask.request.headers
+    if get_headers.get("Internal-Code", "") != global_vars.config.INTERNAL_CODE:
+        return {"status": 401}, 200
+    return {"tokens": global_vars.tokens, "status": 200}, 200
