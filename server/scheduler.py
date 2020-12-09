@@ -82,7 +82,7 @@ def send_notification(username, data, expo):
         "sound": "default",
         "title": "Event weather has changed.",
         "body": "Event weather has changed!",
-        "data": json.dumps(data),
+        "data": data,
     }
     push = requests.post(
         "https://exp.host/--/api/v2/push/send",
