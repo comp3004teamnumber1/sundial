@@ -72,7 +72,7 @@ def check_task_weather_changes(username):
                 }
             )
 
-    return {"suggestions": task_suggestions, "status": 200}, 200
+    return {"suggestions": task_suggestions}
 
 
 def send_notification(username, data, expo):
