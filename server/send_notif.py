@@ -21,7 +21,7 @@ def check_task_weather_changes(username):
         )
     )
     tasks = c.fetchall()
-    task_suggestions = {}
+    task_suggestions = []
     for task in tasks:
         weather_data = get_weather_data(task[3]).json()
         task_str_date = formatted_date(task[2])
@@ -49,15 +49,22 @@ def check_task_weather_changes(username):
         if suggested_date:
             suggested_date = suggested_date.split("-")
             task_str_date = task_str_date.split("-")
-            task_suggestions.update(
+            task_suggestions.append(
                 {
-                    task[0]: datetime(
+                    "date": datetime(
                         int(suggested_date[0]),
                         int(suggested_date[1]),
                         int(suggested_date[2]),
                         int(task_str_date[3]),
                         int(task_str_date[4]),
-                    ).timestamp()
+                    ).timestamp(),
+                    "original": {
+                        "id": task[0],
+                        "task": task[1],
+                        "date": task[2],
+                        "location": task[3],
+                        "ideal_weather": task[4],
+                    },
                 }
             )
 
