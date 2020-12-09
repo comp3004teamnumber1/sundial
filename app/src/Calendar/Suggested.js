@@ -86,7 +86,7 @@ export default class Suggested extends Component {
     };
   }
 
-  handlePress = id => {
+  handlePress = (id, date) => {
     Alert.alert(
       'Change Date',
       "Are you sure you want to change this event's date?",
@@ -98,23 +98,23 @@ export default class Suggested extends Component {
         {
           text: 'Yes',
           onPress: () => {
-            this.changeEvent(id);
+            this.changeEvent(id, date);
           },
         },
       ]
     );
   };
 
-  changeEvent = async id => {
-    const { navigation } = this.props;
-    const res = await query(`task/${id}`, 'post');
+  changeEvent = async (id, date) => {
+    const res = await query(`task/${id}`, 'post', { date });
     if (res === null || res.status !== 200) {
       console.log('Error while updating task');
       alert('An error occurred. Please try again.');
       return;
     }
-    navigation.navigate('Calendar');
     alert('Success!');
+    const { navigation } = this.props;
+    navigation.navigate('CalendarHome');
   };
 
   render() {
@@ -129,7 +129,7 @@ export default class Suggested extends Component {
           <TouchableOpacity
             key={s.original.id}
             onPress={() => {
-              this.handlePress(s.original.id);
+              this.handlePress(s.original.id, s.date);
             }}
           >
             <Card style={styles.cardContainer}>
