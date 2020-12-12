@@ -4,7 +4,7 @@ import { Container, Text, Item, Input, View, ListItem, Radio, Left, Right, List,
 import Modal from 'react-native-modal';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import { getSettings, getStorageKey, setStorageKey } from '../util/Storage';
+import { getStorageKey, setStorageKey } from '../util/Storage';
 import query from '../util/SundialAPI';
 
 async function setPassword(oldPasswordText, pass) {
@@ -36,6 +36,7 @@ const ChangePassword = function () {
   let [oldPasswordText, setOldPassword] = useState('');
   let [newPasswordText, setNewPassword] = useState('');
   let [warning, setWarning] = useState('');
+
   return (
     <View style={styles.modalContainer}>
       <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
@@ -82,27 +83,21 @@ const ChangePassword = function () {
   );
 }
 
-const ChangeUnits = function () {
+const ChangeUnits = function ({ updateSettings }) {
   let [oldUnit, setOldUnit] = useState(null);
   const availableUnits = ['Metric', 'Imperial'];
 
   async function updateUnits(unit) {
     await setStorageKey('units', unit);
-    console.log('settings!');
-    console.log(await getSettings());
-    // TODO: POST request to "/settings" with the key "settings" with your settings as a string
+    updateSettings('units', unit);
     return unit;
   }
 
   useEffect(() => {
-    getStorageKey('units').then(
-      (res) => {
-        setOldUnit(res);
-      },
-      (err) => {
-        console.log(err);
-        setOldUnit(null);
-      });
+    async function getUnits() {
+      setOldUnit(await getStorageKey('units'));
+    }
+    getUnits();
   });
 
   return (
@@ -138,28 +133,25 @@ const ChangeUnits = function () {
   );
 }
 
-const ChangeHome = function () {
+const ChangeHome = function ({ updateSettings }) {
   let [oldHome, setOldHome] = useState(null);
-  let [settings, setSettings] = useState({});
   const options = ['Hourly Weather', 'Weekly Weather'];
 
   async function updateHome(newHome) {
-    await setStorageKey('home_screen_displays_hourly_view', (`${newHome === 'Hourly Weather'}`));
-    // TODO: POST request to "/settings" with the key "settings" with your settings as a string
+    const home = newHome === 'Hourly Weather';
+    await setStorageKey('home_screen_displays_hourly_view', (`${home}`));
+    updateSettings('home_screen_displays_hourly_view', home);
     return newHome;
   }
 
   useEffect(() => {
-    getStorageKey('home_screen_displays_hourly_view').then(
-      (res) => {
-        setOldHome(res == 'true' ? options[0] : options[1]);
-      },
-      (err) => {
-        console.log(err);
-        setOldHome(null);
-      });
-  });
-
+    async function getHomeDisplay() {
+      // oldHome = await getStorageKey('home_screen_displays_hourly_view') === 'true' ? options[0] : options[1];
+      setOldHome(await getStorageKey('home_screen_displays_hourly_view') === 'true' ? options[0] : options[1]);
+      console.log('oldHome', oldHome);
+    }
+    getHomeDisplay();
+  }, [oldHome]);
 
   return (
     <View style={styles.modalContainer}>
@@ -171,6 +163,7 @@ const ChangeHome = function () {
         dataArray={options}
         keyExtractor={(item, index) => `homeWeather${index.toString()}`}
         renderRow={(option) => {
+          console.log('option', option, 'oldHome', oldHome);
           return (
             <ListItem
               onPress={async () => setOldHome(await updateHome(option))}
@@ -194,13 +187,95 @@ const ChangeHome = function () {
   )
 }
 
+const ChangeTime = function ({ updateSettings }) {
+  let [oldTime, setOldTime] = useState('');
+  const options = ['12 hour format', '24 hour format'];
+
+  async function updateTime(time) {
+    await setStorageKey('time', time);
+    updateSettings('time', time);
+    return await getStorageKey('time');
+  }
+
+  useEffect(() => {
+    async function getTime() {
+      setOldTime(await getStorageKey('time'));
+    }
+    getTime();
+  });
+  getStorageKey('time').then(
+    res => console.log(res)
+  )
+  return (
+    <View style={styles.modalContainer}>
+      <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
+        Time Format
+      </Text>
+      <List
+        style={{ width: '100%' }}
+        dataArray={options}
+        keyExtractor={(item, index) => `time${index.toString()}`}
+        renderRow={(option) => {
+          return (
+            <ListItem
+              onPress={async () => setOldTime(await updateTime(option))}
+            >
+              <Left>
+                <Text style={{ color: 'white' }}>
+                  {option}
+                </Text>
+              </Left>
+              <Right>
+                <Radio
+                  color='#f0ad4e'
+                  selectedColor='#6699CC'
+                  selected={option == oldTime}
+                />
+              </Right>
+            </ListItem>
+          );
+        }} />
+    </View>
+  )
+
+}
+
 export default SettingsAccount = function () {
   let [modalVisible, setModal] = useState(false);
   let [passwordChange, setPassWordChange] = useState(false);
   let [unitChange, setUnitChange] = useState(false);
   let [homeChange, setHomeChange] = useState(false);
+  let [settings, setSettings] = useState({});
+  let [timeChange, setTimeChange] = useState(false);
+
+  useEffect(() => {
+    async function getLocations() {
+      //TODO no need to save curr_loc since it's overwritten in Home
+      const [saved, current] = await Promise.all([
+        getStorageKey('saved_locations'),
+        getStorageKey('current_location'),
+      ]);
+      settings.saved_locations = saved;
+      settings.current_location = current;
+    }
+    getLocations();
+  }, []);
+
+  function updateSettings(key, value) {
+    setSettings({ ...settings, [key]: value });
+    console.log('setSettings | settingsAccount has updated value');
+  }
+
+  function saveSettings() {
+    // talk to the server here.
+    query('/settings', 'post', { settings: JSON.stringify(settings) });
+    console.log('UPDATED SETTINGS');
+  }
+
   return (
     <Container>
+      {console.log('render settings!')}
+      {console.log(settings)}
       <Header />
       <Container style={styles.content}>
         <Text style={styles.title}>Account</Text>
@@ -243,6 +318,19 @@ export default SettingsAccount = function () {
         </Text>
         </Pressable>
 
+        <Pressable
+          style={styles.press}
+          onPress={() => {
+            setTimeChange(true);
+            setModal(true);
+          }}
+        >
+          <Feather name='clock' size={24} color='white' />
+          <Text style={styles.text}>
+            Change Time Format
+        </Text>
+        </Pressable>
+
         <Modal
           style={styles.modal}
           isVisible={modalVisible}
@@ -251,6 +339,8 @@ export default SettingsAccount = function () {
             setPassWordChange(false);
             setUnitChange(false);
             setHomeChange(false);
+            setTimeChange(false);
+            saveSettings();
           }}
           onSwipeDirection='down'
           onSwipeComplete={() => {
@@ -258,13 +348,16 @@ export default SettingsAccount = function () {
             setPassWordChange(false);
             setUnitChange(false);
             setHomeChange(false);
+            setTimeChange(false);
+            saveSettings();
           }}
           animationIn='slideInDown'
           animationOut='slideOutUp'
         >
-          {passwordChange && <ChangePassword />}
-          {unitChange && <ChangeUnits />}
-          {homeChange && <ChangeHome />}
+          {passwordChange && <ChangePassword settings={settings} updateSettings={updateSettings} />}
+          {unitChange && <ChangeUnits settings={settings} updateSettings={updateSettings} />}
+          {homeChange && <ChangeHome settings={settings} updateSettings={updateSettings} />}
+          {timeChange && <ChangeTime settings={settings} updateSettings={updateSettings} />}
         </Modal>
       </Container>
     </Container>

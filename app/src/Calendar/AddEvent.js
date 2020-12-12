@@ -97,15 +97,20 @@ export default class AddEvent extends Component {
       errorMsg: '',
       mode: 'date',
       pickerOpen: false,
+      time: '',
     };
   }
 
   async componentDidMount() {
-    const current_location = await getStorageKey('current_location');
+    const [current_location, time] = await Promise.all([
+      getStorageKey('current_location'),
+      getStorageKey('time'),
+    ]);
+
     if (!current_location) {
       return;
     }
-    this.setState({ location: current_location });
+    this.setState({ location: current_location, time });
   }
 
   handleDateChange = (event, newDate) => {
@@ -171,6 +176,7 @@ export default class AddEvent extends Component {
       mode,
       pickerOpen,
       tracking,
+      time,
     } = this.state;
 
     return (
@@ -213,7 +219,7 @@ export default class AddEvent extends Component {
                 <Feather name='clock' size={24} color='white' />
               </Label>
               <Text style={styles.textInput}>
-                {moment(date).format('h:mm a')}
+                {time === '12 hour format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')}
               </Text>
             </Item>
             <Item>

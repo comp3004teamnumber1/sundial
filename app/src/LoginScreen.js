@@ -12,6 +12,7 @@ import {
 } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import query from './util/SundialAPI';
+import { getStorageKey, setStorageKey } from './util/Storage';
 
 const styles = StyleSheet.create({
   content: {
@@ -111,9 +112,18 @@ export default class LoginScreen extends Component {
         errorMsg: 'Incorrect username/password. Please try again.',
       });
     } else {
-      const { session_key } = res;
+      let { session_key, settings } = res;
       login(username, session_key);
       // TODO: Make the login request here
+
+      // console.log('res');
+      // console.log(res);
+      // settings = JSON.parse(settings);
+      // console.log(settings);
+      // settings = JSON.stringify(settings);
+      // console.log(settings);
+
+      // await setStorageKey('settings', settings);
     }
   };
 

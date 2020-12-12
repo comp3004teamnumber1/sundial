@@ -71,6 +71,8 @@ export default class HomeScreen extends Component {
       units: '',
       displayHourlyView: false, // if true is passed in, homescreen displays hourly info. If false, weekly info.
       weather: null,
+      time: '',
+      now: ''
     };
   }
 
@@ -92,7 +94,10 @@ export default class HomeScreen extends Component {
       longitude: location.coords.longitude,
     });
 
-    const units = await getStorageKey('units');
+    const [units, time] = await Promise.all([
+      getStorageKey('units'),
+      getStorageKey('time'),
+    ]);
     await setStorageKey('current_location', city[0].city);
     // get saved locations
     const savedLocations = await getStorageKey('saved_locations');
@@ -123,19 +128,20 @@ export default class HomeScreen extends Component {
 
     this.setState({
       units,
+      time,
       displayHourlyView,
       weather: displayHourlyView ? weather.hours : weather.days.slice(0, weather.days.length - 1),
       currCity: city,
       ready: true,
       tasks: tasks.tasks,
+      now: time === '12 hour format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')
     });
   }
 
   render() {
     let { ready } = this.state;
     if (ready) {
-      const { weather, currCity, tasks, units, displayHourlyView } = this.state;
-      const now = moment().format('MMM DD h:mm A');
+      const { weather, currCity, tasks, units, displayHourlyView, now } = this.state;
 
       return (
         <ScrollView style={styles.container}>

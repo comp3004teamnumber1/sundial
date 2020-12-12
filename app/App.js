@@ -7,6 +7,7 @@ import {
   getSessionKey,
   getStorageKey,
   setStorageKey,
+  getSettings,
 } from './src/util/Storage';
 import MainStack from './src/MainStack';
 import LoginScreen from './src/LoginScreen';
@@ -30,10 +31,29 @@ export default class App extends Component {
       ...Feather.font,
     });
 
-    // Default metric units
-    if (!(await getStorageKey('units'))) {
-      setStorageKey('units', 'metric');
-    }
+    // Default metric units & time formatting
+    const [units, time, homeScreenView, settings] = await Promise.all([
+      getStorageKey('units'),
+      getStorageKey('time'),
+      getStorageKey('home_screen_displays_hourly_view'),
+      getStorageKey('settings')
+    ]);
+
+    if (!units)
+      await setStorageKey('units', 'metric');
+
+    if (!time)
+      await setStorageKey('time', '12 hour format');
+
+    if (!homeScreenView)
+      await setStorageKey('home_screen_displays_hourly_view', 'false');
+
+    // used for debugging purposes  
+    await setStorageKey('settings', '{ "unit": "metric", "home": "WEIRDCHAMP" }');
+    console.log('settings below');
+    console.log(await getSettings());
+    // const { home } = await getSettings();
+    // console.log(home);
 
     // use these lines to clear keys (for testing)
     // await setStorageKey('session_key', '');
@@ -63,9 +83,11 @@ export default class App extends Component {
   };
 
   handleLogin = async (username, session_key) => {
-    const res1 = await setStorageKey('username', username);
-    const res2 = await setStorageKey('session_key', session_key);
-    if (!res1 || !res2) {
+    const [user, session] = await Promise.all([
+      setStorageKey('username', username),
+      setStorageKey('session_key', session_key),
+    ]);
+    if (!user || !session) {
       console.log('Error setting login credentials');
       return;
     }

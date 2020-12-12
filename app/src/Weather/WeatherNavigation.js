@@ -9,9 +9,6 @@ import query from './../util/SundialAPI';
 import AddWeatherLocation from './AddWeatherLocation';
 import Loading from '../components/Loading';
 
-//TODO: This is used only in development for debugging. Users will not be given a preset list of locations
-let dummy = '{"Ottawa":null}|{"Pooper Bay":null}|{"Ontario":null}|{"Dhaka":null}|{"Vietnam":null}';
-
 export default class WeatherNavigation extends Component {
   constructor(props) {
     super(props);
@@ -75,8 +72,6 @@ export default class WeatherNavigation extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    // TODO: I feel like this could be done a better way, but I'm not sure how
-    // componentDidUpdate will force componentDidMount to be called again so this component re-renders appropriately
     let savedLocations = await getStorageKey('saved_locations');
     let units = await getStorageKey('units');
 

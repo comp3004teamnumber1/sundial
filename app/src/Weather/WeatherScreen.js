@@ -8,48 +8,6 @@ import query from '../util/SundialAPI';
 import HourlyView from './HourlyView';
 import WeeklyView from './WeeklyView';
 
-const styles = StyleSheet.create({
-  content: {
-    backgroundColor: '#231F29',
-    flexGrow: 1,
-    alignItems: 'center',
-    padding: 24,
-  },
-  title: {
-    color: '#ffffff',
-    fontSize: 48,
-  },
-  subtitle: {
-    color: '#ffffff',
-    fontSize: 24,
-    paddingVertical: 12,
-  },
-  locationView: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: '100%',
-    minHeight: 60,
-    maxHeight: 60,
-  },
-  locationTitle: {
-    color: '#ffffff',
-    textAlign: 'center',
-  },
-  locationDescription: {
-    textAlign: 'justify',
-    color: '#ffffff',
-    fontStyle: 'italic',
-    fontSize: 24,
-  },
-  locationSummary: {
-    color: '#ffffff',
-    textAlign: 'center',
-    width: '50%',
-    fontSize: 24,
-  },
-});
-
 export default class WeatherScreen extends Component {
   constructor(props) {
     super(props);
@@ -136,3 +94,46 @@ export default class WeatherScreen extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  content: {
+    backgroundColor: '#332E3C',
+    flexGrow: 1,
+    alignItems: 'center',
+    padding: 24,
+  },
+  title: {
+    color: '#ffffff',
+    fontSize: 48,
+  },
+  subtitle: {
+    color: '#ffffff',
+    fontSize: 24,
+    paddingVertical: 20,
+  },
+  locationView: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    minHeight: 60,
+    maxHeight: 60,
+  },
+  locationTitle: {
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  locationDescription: {
+    textAlign: 'center',
+    color: '#ffffff',
+    fontStyle: 'italic',
+    fontSize: 24,
+  },
+  locationSummary: {
+    color: '#ffffff',
+    textAlign: 'center',
+    width: '50%',
+    fontSize: 24,
+  },
+});
+

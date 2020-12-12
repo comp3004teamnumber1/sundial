@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { func } from 'prop-types';
 
 // getStorageKey(key) accepts a string argument 'key'
 // and returns the corresponding value if found.
@@ -24,20 +23,9 @@ export async function setStorageKey(key, value) {
   }
 }
 
-export async function getKeys() {
-  try {
-    return await AsyncStorage.getAllKeys();
-  } catch (error) {
-    return null;
-  }
-}
-
 export async function getSettings() {
   try {
-    let settings = (await getKeys()).map(async key => ({ [key]: await getStorageKey(key) }));
-    (await getKeys()).forEach(async key => {
-      settings.push({ [key]: await getStorageKey(key) })
-    });
+    let settings = JSON.parse(await getStorageKey('settings'));
     return settings;
   }
   catch (e) {
