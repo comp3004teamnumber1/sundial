@@ -71,11 +71,6 @@ def login():
 def post_settings():
     post_args = flask.request.get_json()
     post_headers = flask.request.headers
-    print(
-        global_vars.sessions.get(post_headers.get("Session-Key")),
-        post_args.get("settings"),
-        flush=True,
-    )
     save_settings(
         global_vars.sessions.get(post_headers.get("Session-Key")),
         post_args.get("settings"),
