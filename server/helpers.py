@@ -92,6 +92,7 @@ def get_lat_long(location):
 
 def get_weather_data(location, units="metric"):
     current_time = datetime.now().timestamp()
+    units = units.lower()
     if not global_vars.cached_weather_data.get(units, {}).get(location, {}):
         latlon = get_lat_long(location)
         api_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&appid={}".format(

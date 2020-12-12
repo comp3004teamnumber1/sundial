@@ -35,7 +35,7 @@ def post_login_changed():
 
 def get_hourly():
     hourly = requests.get(
-        "http://127.0.0.1:5000/hourly?location=Ottawa, Ontario&units=imperial",
+        "http://127.0.0.1:5000/hourly?location=Canada&units=Imperial",
         headers={"Session-Key": session_key},
     )
     return hourly.json()
@@ -223,9 +223,9 @@ def test_delete_notification_day():
     assert response.get("status", 0) == 200
 
 
-def test_post_password():
-    response = post_password()
-    assert response.get("status", 0) == 200
+# def test_post_password():
+#    response = post_password()
+#    assert response.get("status", 0) == 200
 
 
 def test_post_settings():
@@ -233,8 +233,8 @@ def test_post_settings():
     assert response.get("status", 0) == 200
 
 
-def test_changed_password():
-    global session_key
-    response = post_login_changed()
-    session_key = response.get("session_key", 0)
-    assert session_key != 0
+# def test_changed_password():
+#    global session_key
+#    response = post_login_changed()
+#    session_key = response.get("session_key", 0)
+#    assert session_key != 0
