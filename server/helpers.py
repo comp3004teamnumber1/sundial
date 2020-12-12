@@ -71,7 +71,7 @@ def get_lat_long(location):
     query = c.fetchone()
     if not query:
         geolocation = Nominatim(user_agent="sundial").geocode(location)
-        if not geolocation:
+        if not geolocation.latitude:
             latlon = {"latitude": 0, "longitude": 0}
         else:
             latlon = {
@@ -92,7 +92,7 @@ def get_lat_long(location):
 
 def get_weather_data(location, units="metric"):
     current_time = datetime.now().timestamp()
-    if not global_vars.cached_weather_data.get(units, 0).get(location, 0):
+    if not global_vars.cached_weather_data.get(units, {}).get(location, {}):
         latlon = get_lat_long(location)
         api_url = "http://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&appid={}".format(
             latlon[0], latlon[1], units, global_vars.config.OWM_API_KEY
