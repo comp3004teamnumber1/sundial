@@ -71,20 +71,17 @@ def get_lat_long(location):
     query = c.fetchone()
     if not query:
         geolocation = Nominatim(user_agent="sundial").geocode(location)
-        if geolocation:
-            latlon = {
-                "latitude": geolocation.latitude,
-                "longitude": geolocation.longitude,
-            }
-            c.execute(
-                "INSERT INTO cached_locations (location, lat, lon) VALUES ('{}', '{}', '{}')".format(
-                    location, latlon.get("latitude"), latlon.get("longitude")
-                )
+        latlon = {"latitude": geolocation.latitude, "longitude": geolocation.longitude}
+        if not geolocation:
+            latlon = {"latitude": 0, "longitude": 0}
+        c.execute(
+            "INSERT INTO cached_locations (location, lat, lon) VALUES ('{}', '{}', '{}')".format(
+                location, latlon.get("latitude"), latlon.get("longitude")
             )
-            conn.commit()
-            conn.close()
-            return latlon.get("latitude"), latlon.get("longitude")
-        return 0, 0
+        )
+        conn.commit()
+        conn.close()
+        return latlon.get("latitude"), latlon.get("longitude")
     conn.close()
     return query[0], query[1]
 
