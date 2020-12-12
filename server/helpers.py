@@ -71,7 +71,7 @@ def get_lat_long(location):
     query = c.fetchone()
     if not query:
         geolocation = Nominatim(user_agent="sundial").geocode(location)
-        if not geolocation.latitude:
+        if not geolocation:
             latlon = {"latitude": 0, "longitude": 0}
         else:
             latlon = {
