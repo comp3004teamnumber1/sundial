@@ -51,9 +51,10 @@ export default function Settings({ navigation, logout }) {
 
       <ListItem
         // button
-        onPress={() =>
-          logout()
-        }
+        onPress={() => {
+          navigation.navigate('Home');
+          logout();
+        }}
         style={{
           ...styles.listItem,
         }}
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
   },
   listItem: {
     marginVertical: 8,
-    width: '100%'
+    width: '100%',
   },
   text: {
     color: '#ffffff',
