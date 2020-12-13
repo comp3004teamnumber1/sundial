@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Text, Content } from 'native-base';
 import { dummy } from '../data/constants';
-import { getStorageKey } from '../util/Storage';
+import { getSettings, getStorageKey } from '../util/Storage';
 import { getIcon, getWindDirection } from '../util/Util';
 import query from '../util/SundialAPI';
 import HourlyView from './HourlyView';
@@ -28,15 +28,13 @@ export default class WeatherScreen extends Component {
 
   async getVitalData() {
     // get relevant info for request
-    const [location, units] = await Promise.all([
-      getStorageKey('current_location'),
-      getStorageKey('units'),
-    ]);
+    const location = await getStorageKey('current_location');
+    const { units } = await getSettings();
 
     // query data
     const data = {
       location: location || 'Ottawa, Ontario',
-      units: units || 'metric',
+      units: units.toLowerCase() || 'metric',
     };
     const [hourly, weekly] = await Promise.all([
       query('hourly', 'get', data),

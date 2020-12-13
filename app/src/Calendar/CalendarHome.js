@@ -25,7 +25,7 @@ import { dummy } from '../data/constants';
 import { getIcon } from '../util/Util';
 import query from '../util/SundialAPI';
 import CalendarMonthView from './CalendarMonthView';
-import { getStorageKey } from '../util/Storage';
+import { getSettings } from '../util/Storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -109,7 +109,7 @@ export default class CalendarHome extends Component {
   // eslint-disable-next-line react/destructuring-assignment
   updateTasks = async (date = this.state.date) => {
     const momentDate = moment(date);
-    this.setState({ time: await getStorageKey('time') });
+    this.setState({ time: (await getSettings()).time });
     const formattedDate = momentDate.format('YYYY-MM-DD');
     const offset = momentDate.utcOffset();
     const res = await query('task', 'get', { date: formattedDate, offset });
@@ -175,7 +175,7 @@ export default class CalendarHome extends Component {
               <CardItem style={styles.cardHeader} header bordered>
                 {getIcon(task.ideal_weather, 24, '#ff8c42')}
                 <Text style={styles.textHeader}>
-                  {time === '12 hour format' ? moment().unix(task.date).format('MMM DD h:mm A') : moment().unix(task.date).format('MMM DD kk:mm')}
+                  {time === '12 Hour Format' ? moment().unix(task.date).format('MMM DD h:mm A') : moment().unix(task.date).format('MMM DD kk:mm')}
                 </Text>
               </CardItem>
               <CardItem style={styles.cardItem} bordered>

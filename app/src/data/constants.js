@@ -12,7 +12,6 @@ export const dummy = {
       wind_deg: '',
       pop: 'Loading...',
       humidity: 'Loading...',
-      // TODO: Add UV here
     },
     {
       date: 1603046864,
@@ -69,7 +68,6 @@ export const dummy = {
       wind_deg: '',
       pop: 'Loading...',
       humidity: 'Loading...',
-      // TODO: Add UV here
     },
     {
       date: 1602090000,

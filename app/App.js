@@ -7,7 +7,6 @@ import {
   getSessionKey,
   getStorageKey,
   setStorageKey,
-  getSettings,
 } from './src/util/Storage';
 import MainStack from './src/MainStack';
 import LoginScreen from './src/LoginScreen';
@@ -30,30 +29,6 @@ export default class App extends Component {
       Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
       ...Feather.font,
     });
-
-    // Default metric units & time formatting
-    const [units, time, homeScreenView, settings] = await Promise.all([
-      getStorageKey('units'),
-      getStorageKey('time'),
-      getStorageKey('home_screen_displays_hourly_view'),
-      getStorageKey('settings')
-    ]);
-
-    if (!units)
-      await setStorageKey('units', 'metric');
-
-    if (!time)
-      await setStorageKey('time', '12 hour format');
-
-    if (!homeScreenView)
-      await setStorageKey('home_screen_displays_hourly_view', 'false');
-
-    // used for debugging purposes  
-    await setStorageKey('settings', '{ "unit": "metric", "home": "WEIRDCHAMP" }');
-    console.log('settings below');
-    console.log(await getSettings());
-    // const { home } = await getSettings();
-    // console.log(home);
 
     // use these lines to clear keys (for testing)
     // await setStorageKey('session_key', '');
@@ -79,6 +54,8 @@ export default class App extends Component {
 
   logOut = () => {
     setStorageKey('session_key', '');
+    setStorageKey('settings', '');
+    setStorageKey('current_location', '');
     this.setState({ loggedIn: false });
   };
 

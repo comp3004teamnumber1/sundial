@@ -16,7 +16,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import { getStorageKey } from '../util/Storage';
+import { getSettings } from '../util/Storage';
 import query from '../util/SundialAPI';
 
 const styles = StyleSheet.create({
@@ -102,10 +102,7 @@ export default class AddEvent extends Component {
   }
 
   async componentDidMount() {
-    const [current_location, time] = await Promise.all([
-      getStorageKey('current_location'),
-      getStorageKey('time'),
-    ]);
+    const { time, current_location } = await getSettings();
 
     if (!current_location) {
       return;
@@ -219,7 +216,7 @@ export default class AddEvent extends Component {
                 <Feather name='clock' size={24} color='white' />
               </Label>
               <Text style={styles.textInput}>
-                {time === '12 hour format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')}
+                {time === '12 Hour Format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')}
               </Text>
             </Item>
             <Item>

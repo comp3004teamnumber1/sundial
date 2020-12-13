@@ -4,38 +4,38 @@ import { Container, Text, Item, Input, View, ListItem, Radio, Left, Right, List,
 import Modal from 'react-native-modal';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import { getStorageKey, setStorageKey } from '../util/Storage';
+import { getSettings, setStorageKey } from '../util/Storage';
 import query from '../util/SundialAPI';
-
-async function setPassword(oldPasswordText, pass) {
-  if (!pass || !oldPasswordText) {
-    return 'A password field is empty.';
-  }
-
-  if (!pass.replace(/ /g, '')) {
-    return 'A password field is empty.';
-  }
-
-  const res = await query('password', 'post',
-    {
-      old_password: oldPasswordText,
-      new_password: pass
-    });
-
-  if (res.status === 200) {
-    return 'Password updated successfully!';
-  }
-  if (res.status === 401) {
-    return 'Your old password is incorrect.';
-  }
-
-  return 'Something went wrong. Please try again.';
-}
 
 const ChangePassword = function () {
   let [oldPasswordText, setOldPassword] = useState('');
   let [newPasswordText, setNewPassword] = useState('');
   let [warning, setWarning] = useState('');
+
+  async function setPassword(oldPasswordText, pass) {
+    if (!pass || !oldPasswordText) {
+      return 'A password field is empty.';
+    }
+
+    if (!pass.replace(/ /g, '')) {
+      return 'A password field is empty.';
+    }
+
+    const res = await query('password', 'post',
+      {
+        old_password: oldPasswordText,
+        new_password: pass
+      });
+
+    if (res.status === 200) {
+      return 'Password updated successfully!';
+    }
+    if (res.status === 401) {
+      return 'Your old password is incorrect.';
+    }
+
+    return 'Something went wrong. Please try again.';
+  }
 
   return (
     <View style={styles.modalContainer}>
@@ -83,22 +83,19 @@ const ChangePassword = function () {
   );
 }
 
-const ChangeUnits = function ({ updateSettings }) {
-  let [oldUnit, setOldUnit] = useState(null);
+const ChangeUnits = function ({ old, updateSettings }) {
+  let [oldUnit, setOldUnit] = useState(old);
   const availableUnits = ['Metric', 'Imperial'];
 
   async function updateUnits(unit) {
-    await setStorageKey('units', unit);
     updateSettings('units', unit);
     return unit;
   }
 
   useEffect(() => {
-    async function getUnits() {
-      setOldUnit(await getStorageKey('units'));
-    }
-    getUnits();
-  });
+    // Default to Metric if needed
+    setOldUnit(!availableUnits.includes(old) ? availableUnits[0] : old);
+  }, [old, oldUnit]);
 
   return (
     <View style={styles.modalContainer}>
@@ -112,7 +109,7 @@ const ChangeUnits = function ({ updateSettings }) {
         renderRow={(unit) => {
           return (
             <ListItem
-              onPress={async () => setOldUnit(await updateUnits(unit.toLowerCase()))}
+              onPress={async () => setOldUnit(await updateUnits(unit))}
             >
               <Left>
                 <Text style={{ color: 'white' }}>
@@ -123,7 +120,7 @@ const ChangeUnits = function ({ updateSettings }) {
                 <Radio
                   color='#f0ad4e'
                   selectedColor='#6699CC'
-                  selected={unit.toLowerCase() == oldUnit}
+                  selected={unit == oldUnit}
                 />
               </Right>
             </ListItem>
@@ -133,25 +130,19 @@ const ChangeUnits = function ({ updateSettings }) {
   );
 }
 
-const ChangeHome = function ({ updateSettings }) {
-  let [oldHome, setOldHome] = useState(null);
+const ChangeHome = function ({ old, updateSettings }) {
+  let [oldHome, setOldHome] = useState(old);
   const options = ['Hourly Weather', 'Weekly Weather'];
 
   async function updateHome(newHome) {
-    const home = newHome === 'Hourly Weather';
-    await setStorageKey('home_screen_displays_hourly_view', (`${home}`));
-    updateSettings('home_screen_displays_hourly_view', home);
+    updateSettings('home_screen_display', newHome);
     return newHome;
   }
 
   useEffect(() => {
-    async function getHomeDisplay() {
-      // oldHome = await getStorageKey('home_screen_displays_hourly_view') === 'true' ? options[0] : options[1];
-      setOldHome(await getStorageKey('home_screen_displays_hourly_view') === 'true' ? options[0] : options[1]);
-      console.log('oldHome', oldHome);
-    }
-    getHomeDisplay();
-  }, [oldHome]);
+    // Default to Hourly Weather if needed
+    setOldHome(!options.includes(old) ? options[0] : old);
+  }, [old, oldHome]);
 
   return (
     <View style={styles.modalContainer}>
@@ -163,7 +154,6 @@ const ChangeHome = function ({ updateSettings }) {
         dataArray={options}
         keyExtractor={(item, index) => `homeWeather${index.toString()}`}
         renderRow={(option) => {
-          console.log('option', option, 'oldHome', oldHome);
           return (
             <ListItem
               onPress={async () => setOldHome(await updateHome(option))}
@@ -187,25 +177,20 @@ const ChangeHome = function ({ updateSettings }) {
   )
 }
 
-const ChangeTime = function ({ updateSettings }) {
+const ChangeTime = function ({ old, updateSettings }) {
   let [oldTime, setOldTime] = useState('');
-  const options = ['12 hour format', '24 hour format'];
+  const options = ['12 Hour Format', '24 Hour Format'];
 
   async function updateTime(time) {
-    await setStorageKey('time', time);
     updateSettings('time', time);
-    return await getStorageKey('time');
+    return time;
   }
 
   useEffect(() => {
-    async function getTime() {
-      setOldTime(await getStorageKey('time'));
-    }
-    getTime();
-  });
-  getStorageKey('time').then(
-    res => console.log(res)
-  )
+    // Default to 12 hour format if needed
+    setOldTime(!options.includes(old) ? options[0] : old);
+  }, [old, oldTime]);
+
   return (
     <View style={styles.modalContainer}>
       <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
@@ -249,33 +234,24 @@ export default SettingsAccount = function () {
   let [timeChange, setTimeChange] = useState(false);
 
   useEffect(() => {
-    async function getLocations() {
-      //TODO no need to save curr_loc since it's overwritten in Home
-      const [saved, current] = await Promise.all([
-        getStorageKey('saved_locations'),
-        getStorageKey('current_location'),
-      ]);
-      settings.saved_locations = saved;
-      settings.current_location = current;
+    async function initSettings() {
+      let oldSettings = await getSettings();
+      setSettings(oldSettings);
     }
-    getLocations();
+    initSettings();
   }, []);
 
   function updateSettings(key, value) {
     setSettings({ ...settings, [key]: value });
-    console.log('setSettings | settingsAccount has updated value');
   }
 
-  function saveSettings() {
-    // talk to the server here.
+  async function saveSettings() {
+    await setStorageKey('settings', JSON.stringify(settings));
     query('/settings', 'post', { settings: JSON.stringify(settings) });
-    console.log('UPDATED SETTINGS');
   }
 
   return (
     <Container>
-      {console.log('render settings!')}
-      {console.log(settings)}
       <Header />
       <Container style={styles.content}>
         <Text style={styles.title}>Account</Text>
@@ -355,9 +331,9 @@ export default SettingsAccount = function () {
           animationOut='slideOutUp'
         >
           {passwordChange && <ChangePassword settings={settings} updateSettings={updateSettings} />}
-          {unitChange && <ChangeUnits settings={settings} updateSettings={updateSettings} />}
-          {homeChange && <ChangeHome settings={settings} updateSettings={updateSettings} />}
-          {timeChange && <ChangeTime settings={settings} updateSettings={updateSettings} />}
+          {unitChange && <ChangeUnits settings={settings} old={settings.units} updateSettings={updateSettings} />}
+          {homeChange && <ChangeHome settings={settings} old={settings.home_screen_display} updateSettings={updateSettings} />}
+          {timeChange && <ChangeTime settings={settings} old={settings.time} updateSettings={updateSettings} />}
         </Modal>
       </Container>
     </Container>

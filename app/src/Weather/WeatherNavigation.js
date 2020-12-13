@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { Button, Card, CardItem, Fab, List, Text, View } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
-import { setStorageKey, getStorageKey } from '../util/Storage';
+import { setStorageKey, getStorageKey, getSettings } from '../util/Storage';
 import { getIcon, getUnits, getWindDirection } from '../util/Util';
 import query from './../util/SundialAPI';
 import AddWeatherLocation from './AddWeatherLocation';
@@ -15,6 +15,7 @@ export default class WeatherNavigation extends Component {
     this.state = {
       places: undefined,
       currentLocation: '',
+      saved_locations: '',
       units: '',
       fabOpen: false,
       modalVisible: false,
@@ -23,17 +24,16 @@ export default class WeatherNavigation extends Component {
 
   async delete(location) {
     // Although using state is faster, the source of truth for saved_locations comes from async storage
-
-    let savedLocations = await getStorageKey('saved_locations');
-    let locations = savedLocations.split('|')
+    const settings = await getSettings();
+    let locations = settings.saved_locations.split('|')
       .map(place => JSON.parse(place))
       .map(json => Object.keys(json)[0]);
 
     let updatedLocationsInStringJSON = locations.filter(loc => loc !== location)
       .map(loc => `{"${loc}":null}`)
       .join('|');
-    await setStorageKey('saved_locations', updatedLocationsInStringJSON);
-    this.setState({ savedLocations: updatedLocationsInStringJSON })
+    await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: updatedLocationsInStringJSON }));
+    this.setState({ saved_locations: updatedLocationsInStringJSON })
   }
 
   async componentDidMount() {
@@ -44,19 +44,19 @@ export default class WeatherNavigation extends Component {
   }
 
   async getVitalData() {
-    let savedLocations = await getStorageKey('saved_locations');
-    let places = savedLocations ? savedLocations.split('|') : undefined;
+    const { saved_locations, units } = await getSettings();
+    let places = saved_locations ? saved_locations.split('|') : undefined;
     if (!places) {
       this.setState({ places: ['|Sorry, you have no saved locations yet'] })
       return;
     }
 
     places = places.map(place => Object.keys(JSON.parse(place))[0]);
-    this.setState({ units: await getStorageKey('units') });
-    let promises = places.map(async place =>
-      query('hourly', 'get', { location: place, units: this.state.units })
-    );
+    this.setState({ units });
 
+    let promises = places.map(async place =>
+      query('hourly', 'get', { location: place, units })
+    );
     let res = (await Promise.all(promises)).map(r => {
       return {
         data: r.hours[0],
@@ -71,15 +71,18 @@ export default class WeatherNavigation extends Component {
     });
   }
 
-  async componentDidUpdate(prevProps, prevState) {
-    let savedLocations = await getStorageKey('saved_locations');
-    let units = await getStorageKey('units');
-
-    if (prevState.savedLocations !== savedLocations || prevState.units !== units) {
-      this.setState({ savedLocations, units });
-      this.getVitalData();
-    }
-  }
+  // async componentDidUpdate(prevProps, prevState) {
+  //   const settings = await getSettings();
+  //   const { saved_locations, units } = settings;
+  //   if (prevState.saved_locations !== saved_locations) {
+  //     console.log('getsettings', saved_locations, units);
+  //     console.log('prevstate  ', prevState.saved_locations, prevState.units);
+  //     console.log('\n');
+  //     // this.setState({ saved_locations, units });
+  //     await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations }));
+  //     this.getVitalData();
+  //   }
+  // }
 
   render() {
     const {

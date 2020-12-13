@@ -5,7 +5,7 @@ import { EvilIcons } from 'react-native-vector-icons';
 import * as Location from 'expo-location';
 import moment from 'moment';
 import { dummy } from './data/constants';
-import { getStorageKey, setStorageKey } from './util/Storage';
+import { getSettings, getStorageKey, setStorageKey } from './util/Storage';
 import query from './util/SundialAPI';
 // components
 import HourlyView from './Weather/HourlyView';
@@ -93,16 +93,13 @@ export default class HomeScreen extends Component {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     });
-
-    const [units, time] = await Promise.all([
-      getStorageKey('units'),
-      getStorageKey('time'),
-    ]);
+    const settings = await getSettings();
+    const { units, time } = settings;
     await setStorageKey('current_location', city[0].city);
     // get saved locations
-    const savedLocations = await getStorageKey('saved_locations');
+    const { savedLocations } = settings;
     if (!savedLocations) {
-      await setStorageKey('saved_locations', `{"${city[0].city}":null}`)
+      await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `{"${city[0].city}":null}` }));
     }
     else {
       let locations = savedLocations.split('|')
@@ -110,15 +107,15 @@ export default class HomeScreen extends Component {
         .map(json => Object.keys(json)[0]);
 
       if (!locations.includes(city[0].city)) {
-        await setStorageKey('saved_locations', `${savedLocations}|{"${city[0].city}":null}`);
+        await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `${savedLocations}|{"${city[0].city}":null}` }));
       }
     }
 
-    const displayHourlyView = JSON.parse(await getStorageKey('home_screen_displays_hourly_view'));
+    const displayHourlyView = (await getSettings()).home_screen_display === 'Hourly Weather';
     // query
     const weather = await query(displayHourlyView ? 'hourly' : 'daily', 'get', {
       location: city[0].city,
-      units,
+      units: units.toLowerCase(),
     });
     const tasks = await query('task', 'get', { current: 'true' });
     if (!weather || !tasks || weather.status !== 200 || tasks.status !== 200) {
@@ -134,7 +131,7 @@ export default class HomeScreen extends Component {
       currCity: city,
       ready: true,
       tasks: tasks.tasks,
-      now: time === '12 hour format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')
+      now: time === '12 Hour Format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')
     });
   }
 

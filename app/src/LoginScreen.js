@@ -12,7 +12,7 @@ import {
 } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import query from './util/SundialAPI';
-import { getStorageKey, setStorageKey } from './util/Storage';
+import { setStorageKey, getSettings } from './util/Storage';
 
 const styles = StyleSheet.create({
   content: {
@@ -114,16 +114,22 @@ export default class LoginScreen extends Component {
     } else {
       let { session_key, settings } = res;
       login(username, session_key);
-      // TODO: Make the login request here
 
-      // console.log('res');
-      // console.log(res);
-      // settings = JSON.parse(settings);
-      // console.log(settings);
-      // settings = JSON.stringify(settings);
-      // console.log(settings);
+      try {
 
-      // await setStorageKey('settings', settings);
+        settings = JSON.parse(settings);
+      }
+      catch (e) {
+        settings = {};
+      }
+      finally {
+        settings.home_screen_display = settings.home_screen_display || 'Weekly Weather';
+        settings.units = settings.units || 'Metric';
+        settings.time = settings.time || '12 Hour Format';
+        settings.saved_locations = settings.saved_locations || '';
+
+        await setStorageKey('settings', JSON.stringify(settings));
+      }
     }
   };
 
