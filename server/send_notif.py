@@ -79,8 +79,8 @@ def send_notification(username, data, expo=False):
     notification = {
         "to": token,
         "sound": "default",
-        "title": "Event weather has changed.",
-        "body": "Event weather has changed!",
+        "title": "Event weather has changed!",
+        "body": "Tap here to view suggested dates.",
         "data": data,
     }
     push = requests.post(

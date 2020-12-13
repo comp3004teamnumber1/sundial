@@ -80,8 +80,8 @@ def send_notification(username, data, expo):
     notification = {
         "to": token,
         "sound": "default",
-        "title": "Event weather has changed.",
-        "body": "Event weather has changed!",
+        "title": "Event weather has changed!",
+        "body": "Tap here to view suggested dates.",
         "data": data,
     }
     push = requests.post(
@@ -111,4 +111,4 @@ while True:
             print("Sending notification >> USER={} EXPO={}".format(user, token))
             notif = send_notification(user, weather_changes, token)
             print(notif.content)
-    sleep(HOUR)
+    sleep(HOUR * 24)
