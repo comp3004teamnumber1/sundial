@@ -162,11 +162,11 @@ export default class AddEvent extends Component {
     }
 
     if (res.status === 204) {
-      this.setState({ modalOpen: true, date: 0 });
+      this.setState({ modalOpen: true, date: 0, errorMsg: '' });
       return;
     }
 
-    this.setState({ modalOpen: true, date: res.days[0].date });
+    this.setState({ modalOpen: true, date: res.days[0].date, errorMsg: '' });
   };
 
   render() {

@@ -4,15 +4,31 @@ import { Container, Text, View } from 'native-base';
 import { EvilIcons } from 'react-native-vector-icons';
 import * as Location from 'expo-location';
 import moment from 'moment';
+import { ScrollView } from 'react-native-gesture-handler';
+import * as Notifications from 'expo-notifications';
+
 import { dummy } from './data/constants';
 import { getSettings, getStorageKey, setStorageKey } from './util/Storage';
 import query from './util/SundialAPI';
+import {
+  registerForPushNotificationsAsync,
+  sendPushNotification,
+  sendPushToken,
+} from './util/pushNotifications';
+
 // components
 import HourlyView from './Weather/HourlyView';
 import WeeklyView from './Weather/WeeklyView';
 import UpNext from './Calendar/UpNext';
 import Loading from './components/Loading';
-import { ScrollView } from 'react-native-gesture-handler';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const styles = StyleSheet.create({
   content: {
@@ -81,6 +97,24 @@ export default class HomeScreen extends Component {
     navigation.addListener('focus', async () => {
       await this.getVitalData();
     });
+
+    // register for notifications
+    expoPushToken = await registerForPushNotificationsAsync();
+    sendPushToken(expoPushToken);
+    this.onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
+      this.handleNotificationResponse
+    );
+
+    // setTimeout(() => {
+    //   console.log('Sending Notif...');
+    //   sendPushNotification(expoPushToken);
+    // }, 3000);
+  }
+
+  componentWillUnmount() {
+    Notifications.removeNotificationSubscription(
+      this.onResponseReceivedListener
+    );
   }
 
   async getVitalData() {
@@ -102,7 +136,8 @@ export default class HomeScreen extends Component {
       await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `{"${city[0].city}":null}` }));
     }
     else {
-      let locations = savedLocations.split('|')
+      let locations = savedLocations
+        .split('|')
         .map(place => JSON.parse(place))
         .map(json => Object.keys(json)[0]);
 
@@ -120,20 +155,36 @@ export default class HomeScreen extends Component {
     const tasks = await query('task', 'get', { current: 'true' });
     if (!weather || !tasks || weather.status !== 200 || tasks.status !== 200) {
       console.log('An error occurred while querying hourly/tasks');
-      // Bill, I'll leave it up to you what to do here
+      alert('Contact naek.ca for errors.');
+      return;
     }
 
     this.setState({
       units,
       time,
       displayHourlyView,
-      weather: displayHourlyView ? weather.hours : weather.days.slice(0, weather.days.length - 1),
+      weather: displayHourlyView
+        ? weather.hours
+        : weather.days.slice(0, weather.days.length - 1),
       currCity: city,
       ready: true,
       tasks: tasks.tasks,
       now: time === '12 Hour Format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')
     });
   }
+
+  handleNotificationResponse = res => {
+    const { navigation } = this.props;
+    if (
+      res.notification.request.content.title === 'Event weather has changed.'
+    ) {
+      const data = res.notification.request.content.data.suggestions;
+      navigation.navigate('Calendar', {
+        screen: 'Suggested',
+        params: { data },
+      });
+    }
+  };
 
   render() {
     let { ready } = this.state;
@@ -165,11 +216,19 @@ export default class HomeScreen extends Component {
               <Text style={styles.subtitle}>
                 {`${displayHourlyView ? 'Hourly' : 'Daily'}:`}
               </Text>
-              {
-                displayHourlyView ?
-                  <HourlyView style={styles.padded} data={weather} units={units} /> :
-                  <WeeklyView style={styles.padded} data={weather} units={units} />
-              }
+              {displayHourlyView ? (
+                <HourlyView
+                  style={styles.padded}
+                  data={weather}
+                  units={units}
+                />
+              ) : (
+                  <WeeklyView
+                    style={styles.padded}
+                    data={weather}
+                    units={units}
+                  />
+                )}
             </Container>
           </Container>
         </ScrollView>

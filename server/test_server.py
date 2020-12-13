@@ -6,6 +6,7 @@ task_id = ""
 notification_day_id = ""
 username = "naek"
 password = "naek_password"
+changed_password = "naek_pass"
 
 
 def post_register():
@@ -24,9 +25,17 @@ def post_login():
     return login.json()
 
 
+def post_login_changed():
+    login = requests.post(
+        "http://127.0.0.1:5000/login",
+        json={"username": username, "password": changed_password},
+    )
+    return login.json()
+
+
 def get_hourly():
     hourly = requests.get(
-        "http://127.0.0.1:5000/hourly?location=Ottawa, Ontario&units=imperial",
+        "http://127.0.0.1:5000/hourly?location=Canada&units=Imperial",
         headers={"Session-Key": session_key},
     )
     return hourly.json()
@@ -59,7 +68,7 @@ def post_task_update():
         "http://127.0.0.1:5000/task/{}".format(task_id),
         json={
             "task": "Read 3004 notes.",
-            "date": 1605888000,
+            "date": 1607129107,
             "ideal_weather": "Clear",
         },
         headers={"Session-Key": session_key},
@@ -130,7 +139,16 @@ def post_password():
     response = requests.post(
         "http://127.0.0.1:5000/password",
         headers={"Session-Key": session_key},
-        json={"old_password": password, "new_password": password},
+        json={"old_password": password, "new_password": changed_password},
+    )
+    return response.json()
+
+
+def post_settings():
+    response = requests.post(
+        "http://127.0.0.1:5000/settings",
+        headers={"Session-Key": session_key},
+        json={"settings": "{settings idk}"},
     )
     return response.json()
 
@@ -205,6 +223,18 @@ def test_delete_notification_day():
     assert response.get("status", 0) == 200
 
 
-def test_post_password():
-    response = post_password()
+# def test_post_password():
+#    response = post_password()
+#    assert response.get("status", 0) == 200
+
+
+def test_post_settings():
+    response = post_settings()
     assert response.get("status", 0) == 200
+
+
+# def test_changed_password():
+#    global session_key
+#    response = post_login_changed()
+#    session_key = response.get("session_key", 0)
+#    assert session_key != 0

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Input, Item, Spinner, Text } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import query from './../util/SundialAPI';
-import { getSettings, getStorageKey, setStorageKey } from '../util/Storage';
+import { getSettings, setStorageKey } from '../util/Storage';
 
 export default class AddWeatherLocation extends Component {
   constructor(props) {
@@ -20,10 +20,7 @@ export default class AddWeatherLocation extends Component {
     this.setState({ isLoading: true });
     const settings = await getSettings();
     const { units, saved_locations } = settings;
-    console.log('SETTINGS IS: ', settings);
-    console.log('query has location', location, 'units', units);
     let res = await query('hourly', 'get', { location, units: units.toLowerCase() });
-    console.log('res is:', res.hours[0]);
     if (res.hours === undefined) {
       this.setState({ isBadLocation: true, isLoading: false, input: '' });
       console.log('a bad location!');
@@ -34,11 +31,9 @@ export default class AddWeatherLocation extends Component {
 
     if (saved_locations === '') {
       this.setState({ isBadLocation: false, isDuplicateLocation: false, isLoading: false, input: '' });
-      console.log({ ...settings, saved_locations: `{"${location}":null}` });
       await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `{"${location}":null}` }));
       return;
     }
-    console.log(saved_locations.split('|'));
     let locations = saved_locations.split('|')
       .map(place => JSON.parse(place))
       .map(json => Object.keys(json)[0]);
@@ -49,9 +44,6 @@ export default class AddWeatherLocation extends Component {
     }
 
     this.setState({ isBadLocation: false, isDuplicateLocation: false, isLoading: false, input: '' });
-    console.log(JSON.stringify({ ...settings, saved_locations: `{"${location}":null}` })); // only loc
-    console.log(); // more than one loc
-
     await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `${saved_locations}|{"${location}":null}` }));
   };
 
