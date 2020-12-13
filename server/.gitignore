@@ -1,0 +1,5 @@
+config.py
+.vscode
+__pycache__
+.pytest_cache
+db.db
