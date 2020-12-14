@@ -5,4 +5,6 @@ Discussion
 
 Development
 - (Buggily) implemented reading the login payload, after refactoring user settings because iOS crashes with saving the current implementation (2hrs)
-- Some stuff from last week (most notably the /settings implementation) is very buggy, due to the settings key in the local storage not containing the expected values, so I spent alot of time trying to debug that (5hrs)
+- Some stuff from last week (most notably the /settings implementation) is very buggy, due to the settings key in the local storage not containing the expected values, so I spent alo
+
+Am still debugging stuff if I'm being honest.
