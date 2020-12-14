@@ -111,7 +111,7 @@ def get_consecutive_days():
     last_day = -1
     for weatherIndex in range(len(weather_data["daily"])):
         weather_day = weather_data["daily"][weatherIndex]
-        if weather_day.get("weather", [{}])[0].get("main", 0).lower == get_args.get("ideal_weather", "").lower():
+        if weather_day.get("weather", [{}])[0].get("main", 0).lower() == get_args.get("ideal_weather", "").lower():
             weather_counter += 1
         else:
             weather_counter = 0
