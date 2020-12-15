@@ -16,10 +16,6 @@ export default class AddWeatherLocation extends Component {
     };
   }
 
-  componentDidMount() {
-
-  }
-
   validateRequest = async location => {
     this.setState({ isLoading: true });
     const settings = await getSettings();
