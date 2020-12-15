@@ -20,31 +20,29 @@ export default class WeatherNavigation extends Component {
       fabOpen: false,
       modalVisible: false,
     };
-  }
-
-  async delete(location) {
-    // Although using state is faster, the source of truth for saved_locations comes from async storage
-    const settings = await getSettings();
-    let locations = settings.saved_locations.split('|')
-      .map(place => JSON.parse(place))
-      .map(json => Object.keys(json)[0]);
-
-    let updatedLocationsInStringJSON = locations.filter(loc => loc !== location)
-      .map(loc => `{"${loc}":null}`)
-      .join('|');
-    await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: updatedLocationsInStringJSON }));
-    this.setState({ saved_locations: updatedLocationsInStringJSON })
+    this.setSavedLocations = this.setSavedLocations.bind(this);
   }
 
   async componentDidMount() {
+    console.log('COMPONENTDIDMOUNT IS BEING CALLED ==================');
+    this.setState({ saved_locations: (await getSettings()).saved_locations });
     const { navigation } = this.props;
     navigation.addListener('focus', async () => {
       await this.getVitalData();
     });
+    this.getVitalData();
   }
 
   async getVitalData() {
-    const { saved_locations, units } = await getSettings();
+    console.log('GETVITALDATA IS BEING CALLED ================');
+    // const { saved_locations, units } = await getSettings();
+    const settings = await getSettings();
+    console.log('settings in getvitaldata', settings);
+    const { units } = settings;
+    const { saved_locations } = this.state;
+    console.log('Settings saved_locations is:', saved_locations);
+    console.log('WeatherNavigation\'s saved_locations is:', saved_locations);
+
     let places = saved_locations ? saved_locations.split('|') : undefined;
     if (!places) {
       this.setState({ places: ['|Sorry, you have no saved locations yet'] })
@@ -52,7 +50,6 @@ export default class WeatherNavigation extends Component {
     }
 
     places = places.map(place => Object.keys(JSON.parse(place))[0]);
-    this.setState({ units });
 
     let promises = places.map(async place =>
       query('hourly', 'get', { location: place, units })
@@ -63,12 +60,45 @@ export default class WeatherNavigation extends Component {
       };
     });
 
+    const updatedSettings = { ...settings, saved_locations: saved_locations };
+    console.log('updated settings in weather nav!', updatedSettings);
+    await setStorageKey('settings', JSON.stringify(updatedSettings));
+
+    query('/settings', 'post', { settings: JSON.stringify(updatedSettings) });
     this.setState({
       places: places.map((place, i) => {
         return { [place]: res[i] };
       }),
       currentLocation: await getStorageKey('current_location'),
+      saved_locations,
+      units
     });
+  }
+
+  async delete(location) {
+    // Although using state is faster, the source of truth for saved_locations comes from async storage
+    // const settings = await getSettings();
+    const { saved_locations } = this.state;
+    let locations = saved_locations.split('|')
+      .map(place => JSON.parse(place))
+      .map(json => Object.keys(json)[0]);
+
+    let updatedLocationsInStringJSON = locations.filter(loc => loc !== location)
+      .map(loc => `{"${loc}":null}`)
+      .join('|');
+
+    console.log('WeatherNav is deleting ', location, ' new saved_locations is:', updatedLocationsInStringJSON);
+    // await setStorageKey('settings', JSON.stringify({ ...(await getSettings()), saved_locations: updatedLocationsInStringJSON }));
+    this.setState({ saved_locations: updatedLocationsInStringJSON })
+    this.getVitalData();
+  }
+
+  setSavedLocations(saved_locations) {
+    console.log('WeatherNav is being updated by AddWeatherLoc!');
+    console.log(saved_locations, '\n');
+    this.setState({ saved_locations: saved_locations });
+    console.log('WeatherNav State:', { ...this.state, places: Object.keys(this.state.places[0])[0] });
+    this.getVitalData();
   }
 
   // async componentDidUpdate(prevProps, prevState) {
@@ -91,6 +121,7 @@ export default class WeatherNavigation extends Component {
       units,
       fabOpen,
       modalVisible,
+      saved_locations
     } = this.state;
     const { navigation } = this.props;
     return (
@@ -170,7 +201,7 @@ export default class WeatherNavigation extends Component {
           animationIn='slideInDown'
           animationOut='slideOutUp'
         >
-          <AddWeatherLocation />
+          <AddWeatherLocation saved_locations={saved_locations} setSavedLocations={this.setSavedLocations} />
         </Modal>
       </View>
     );
@@ -179,11 +210,11 @@ export default class WeatherNavigation extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#332E3C',
+    backgroundColor: '#231F29',
     height: '100%'
   },
   list: {
-    backgroundColor: '#332E3C',
+    backgroundColor: '#231F29',
   },
   header: {
     color: '#FFFFFF',

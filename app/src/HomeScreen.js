@@ -8,11 +8,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
 
 import { dummy } from './data/constants';
-import { getSettings, getStorageKey, setStorageKey } from './util/Storage';
+import { getSettings, setStorageKey } from './util/Storage';
 import query from './util/SundialAPI';
 import {
   registerForPushNotificationsAsync,
-  sendPushNotification,
   sendPushToken,
 } from './util/pushNotifications';
 
@@ -127,22 +126,23 @@ export default class HomeScreen extends Component {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     });
+    await setStorageKey('current_location', city[0].city);
     const settings = await getSettings();
     const { units, time } = settings;
-    await setStorageKey('current_location', city[0].city);
     // get saved locations
-    const { savedLocations } = settings;
-    if (!savedLocations) {
+    const { saved_locations } = settings;
+    console.log('home screen getting saved_locations', settings);
+    if (!saved_locations) {
       await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `{"${city[0].city}":null}` }));
     }
     else {
-      let locations = savedLocations
+      let locations = saved_locations
         .split('|')
         .map(place => JSON.parse(place))
         .map(json => Object.keys(json)[0]);
 
       if (!locations.includes(city[0].city)) {
-        await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `${savedLocations}|{"${city[0].city}":null}` }));
+        await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `${saved_locations}|{"${city[0].city}":null}` }));
       }
     }
 

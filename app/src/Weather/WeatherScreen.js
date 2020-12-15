@@ -95,7 +95,7 @@ export default class WeatherScreen extends Component {
 
 const styles = StyleSheet.create({
   content: {
-    backgroundColor: '#332E3C',
+    backgroundColor: '#231F29',
     flexGrow: 1,
     alignItems: 'center',
     padding: 24,

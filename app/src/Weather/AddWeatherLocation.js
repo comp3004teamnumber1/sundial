@@ -16,10 +16,16 @@ export default class AddWeatherLocation extends Component {
     };
   }
 
+  componentDidMount() {
+
+  }
+
   validateRequest = async location => {
     this.setState({ isLoading: true });
     const settings = await getSettings();
-    const { units, saved_locations } = settings;
+    const { units } = settings;
+    const { saved_locations, setSavedLocations } = this.props;
+    console.log('AddWeatherLoc\'s saved_location props are:', this.props.saved_locations);
     let res = await query('hourly', 'get', { location, units: units.toLowerCase() });
     if (res.hours === undefined) {
       this.setState({ isBadLocation: true, isLoading: false, input: '' });
@@ -31,7 +37,8 @@ export default class AddWeatherLocation extends Component {
 
     if (saved_locations === '') {
       this.setState({ isBadLocation: false, isDuplicateLocation: false, isLoading: false, input: '' });
-      await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `{"${location}":null}` }));
+      // await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `{"${location}":null}` }));
+      setSavedLocations(`{"${location}":null}`);
       return;
     }
     let locations = saved_locations.split('|')
@@ -44,7 +51,8 @@ export default class AddWeatherLocation extends Component {
     }
 
     this.setState({ isBadLocation: false, isDuplicateLocation: false, isLoading: false, input: '' });
-    await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `${saved_locations}|{"${location}":null}` }));
+    // await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `${saved_locations}|{"${location}":null}` }));
+    setSavedLocations(`${saved_locations}|{"${location}":null}`);
   };
 
   render() {
