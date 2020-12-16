@@ -16,7 +16,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import { getSettings } from '../util/Storage';
+import { getSettings, getStorageKey } from '../util/Storage';
 import query from '../util/SundialAPI';
 
 const styles = StyleSheet.create({
@@ -102,12 +102,20 @@ export default class AddEvent extends Component {
   }
 
   async componentDidMount() {
-    const { time, current_location } = await getSettings();
+    const { navigation } = this.props;
+    navigation.addListener('focus', async () => {
+      await this.getVitalData();
+    });
+  }
+
+  async getVitalData() {
+    const { time } = await getSettings();
+    const current_location = await getStorageKey('current_location');
 
     if (!current_location) {
       return;
     }
-    this.setState({ location: current_location, time });
+    this.setState({ location: current_location, time: time });
   }
 
   handleDateChange = (event, newDate) => {
@@ -175,7 +183,6 @@ export default class AddEvent extends Component {
       tracking,
       time,
     } = this.state;
-
     return (
       <Container style={styles.container}>
         <Header />

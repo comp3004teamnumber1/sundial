@@ -18,9 +18,9 @@ export default class AddWeatherLocation extends Component {
 
   validateRequest = async location => {
     this.setState({ isLoading: true });
-    const settings = await getSettings();
-    const { units } = settings;
-    const { saved_locations, setSavedLocations } = this.props;
+    // const settings = await getSettings();
+    // const { units } = settings;
+    const { saved_locations, setSavedLocations, units } = this.props;
     console.log('AddWeatherLoc\'s saved_location props are:', this.props.saved_locations);
     let res = await query('hourly', 'get', { location, units: units.toLowerCase() });
     if (res.hours === undefined) {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 import { Button, Card, CardItem, Fab, List, Text, View } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
@@ -65,6 +65,7 @@ export default class WeatherNavigation extends Component {
     await setStorageKey('settings', JSON.stringify(updatedSettings));
 
     query('/settings', 'post', { settings: JSON.stringify(updatedSettings) });
+
     this.setState({
       places: places.map((place, i) => {
         return { [place]: res[i] };
@@ -100,19 +101,6 @@ export default class WeatherNavigation extends Component {
     console.log('WeatherNav State:', { ...this.state, places: Object.keys(this.state.places[0])[0] });
     this.getVitalData();
   }
-
-  // async componentDidUpdate(prevProps, prevState) {
-  //   const settings = await getSettings();
-  //   const { saved_locations, units } = settings;
-  //   if (prevState.saved_locations !== saved_locations) {
-  //     console.log('getsettings', saved_locations, units);
-  //     console.log('prevstate  ', prevState.saved_locations, prevState.units);
-  //     console.log('\n');
-  //     // this.setState({ saved_locations, units });
-  //     await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations }));
-  //     this.getVitalData();
-  //   }
-  // }
 
   render() {
     const {
@@ -153,7 +141,24 @@ export default class WeatherNavigation extends Component {
                       this.setState({ currentLocation: place }); // Forces re-render
                       navigation.navigate('WeatherScreen');
                     }}
-                    onLongPress={() => this.delete(place)}
+                    onLongPress={() =>
+                      Alert.alert(
+                        'Delete Saved Location',
+                        'Are you sure you want to delete this location?',
+                        [
+                          {
+                            text: 'No',
+                            style: 'cancel',
+                          },
+                          {
+                            text: 'Yes',
+                            onPress: () => {
+                              this.delete(place);
+                            },
+                          },
+                        ]
+                      )
+                    }
                   >
                     <Text style={styles.locationText}>
                       <Feather name='map-pin' size={24} color='white' />
@@ -201,7 +206,7 @@ export default class WeatherNavigation extends Component {
           animationIn='slideInDown'
           animationOut='slideOutUp'
         >
-          <AddWeatherLocation saved_locations={saved_locations} setSavedLocations={this.setSavedLocations} />
+          <AddWeatherLocation saved_locations={saved_locations} units={units} setSavedLocations={this.setSavedLocations} />
         </Modal>
       </View>
     );
