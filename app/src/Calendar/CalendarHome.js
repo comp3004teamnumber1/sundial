@@ -100,7 +100,6 @@ export default class CalendarHome extends Component {
     this.setDate(currDate);
   };
 
-
   setDate = newDate => {
     this.setState({ date: newDate });
     this.updateTasks(newDate);
@@ -175,7 +174,9 @@ export default class CalendarHome extends Component {
               <CardItem style={styles.cardHeader} header bordered>
                 {getIcon(task.ideal_weather, 24, '#ff8c42')}
                 <Text style={styles.textHeader}>
-                  {time === '12 Hour Format' ? moment().unix(task.date).format('MMM DD h:mm A') : moment().unix(task.date).format('MMM DD kk:mm')}
+                  {moment
+                    .unix(task.date)
+                    .format(time === '12 Hour Format' ? 'h:mm A' : 'kk:mm')}
                 </Text>
               </CardItem>
               <CardItem style={styles.cardItem} bordered>
@@ -213,12 +214,12 @@ export default class CalendarHome extends Component {
           {tasks && tasks.length > 0 ? (
             renderTasks()
           ) : (
-              <Card style={styles.cardContainer}>
-                <CardItem style={styles.cardItem} bordered>
-                  <Text style={styles.text}>No events found!</Text>
-                </CardItem>
-              </Card>
-            )}
+            <Card style={styles.cardContainer}>
+              <CardItem style={styles.cardItem} bordered>
+                <Text style={styles.text}>No events found!</Text>
+              </CardItem>
+            </Card>
+          )}
         </Content>
         {pickerOpen ? (
           <DateTimePicker
