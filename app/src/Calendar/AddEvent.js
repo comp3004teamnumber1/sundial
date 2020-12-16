@@ -216,7 +216,9 @@ export default class AddEvent extends Component {
                 <Feather name='clock' size={24} color='white' />
               </Label>
               <Text style={styles.textInput}>
-                {time === '12 Hour Format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')}
+                {time === '12 Hour Format'
+                  ? moment().format('h:mm A')
+                  : moment().format('kk:mm')}
               </Text>
             </Item>
             <Item>
