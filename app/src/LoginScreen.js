@@ -128,7 +128,6 @@ export default class LoginScreen extends Component {
         settings.time = settings.time || '12 Hour Format';
         settings.saved_locations = settings.saved_locations || '';
         await setStorageKey('settings', JSON.stringify(settings));
-        console.log('after logging in,', (await getSettings()));
       }
     }
   };

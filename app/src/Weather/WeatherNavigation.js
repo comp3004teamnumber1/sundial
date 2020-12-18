@@ -24,7 +24,6 @@ export default class WeatherNavigation extends Component {
   }
 
   async componentDidMount() {
-    console.log('COMPONENTDIDMOUNT IS BEING CALLED ==================');
     this.setState({ saved_locations: (await getSettings()).saved_locations });
     const { navigation } = this.props;
     navigation.addListener('focus', async () => {
@@ -34,14 +33,9 @@ export default class WeatherNavigation extends Component {
   }
 
   async getVitalData() {
-    console.log('GETVITALDATA IS BEING CALLED ================');
-    // const { saved_locations, units } = await getSettings();
     const settings = await getSettings();
-    console.log('settings in getvitaldata', settings);
     const { units } = settings;
     const { saved_locations } = this.state;
-    console.log('Settings saved_locations is:', saved_locations);
-    console.log('WeatherNavigation\'s saved_locations is:', saved_locations);
 
     let places = saved_locations ? saved_locations.split('|') : undefined;
     if (!places) {
@@ -61,9 +55,7 @@ export default class WeatherNavigation extends Component {
     });
 
     const updatedSettings = { ...settings, saved_locations: saved_locations };
-    console.log('updated settings in weather nav!', updatedSettings);
     await setStorageKey('settings', JSON.stringify(updatedSettings));
-
     query('/settings', 'post', { settings: JSON.stringify(updatedSettings) });
 
     this.setState({
@@ -77,8 +69,6 @@ export default class WeatherNavigation extends Component {
   }
 
   async delete(location) {
-    // Although using state is faster, the source of truth for saved_locations comes from async storage
-    // const settings = await getSettings();
     const { saved_locations } = this.state;
     let locations = saved_locations.split('|')
       .map(place => JSON.parse(place))
@@ -88,17 +78,12 @@ export default class WeatherNavigation extends Component {
       .map(loc => `{"${loc}":null}`)
       .join('|');
 
-    console.log('WeatherNav is deleting ', location, ' new saved_locations is:', updatedLocationsInStringJSON);
-    // await setStorageKey('settings', JSON.stringify({ ...(await getSettings()), saved_locations: updatedLocationsInStringJSON }));
     this.setState({ saved_locations: updatedLocationsInStringJSON })
     this.getVitalData();
   }
 
   setSavedLocations(saved_locations) {
-    console.log('WeatherNav is being updated by AddWeatherLoc!');
-    console.log(saved_locations, '\n');
     this.setState({ saved_locations: saved_locations });
-    console.log('WeatherNav State:', { ...this.state, places: Object.keys(this.state.places[0])[0] });
     this.getVitalData();
   }
 
@@ -200,7 +185,6 @@ export default class WeatherNavigation extends Component {
           style={styles.modal}
           isVisible={modalVisible}
           onBackdropPress={() => this.setState({ modalVisible: false })}
-          // Refresh state here or force re-render and componentwillmount
           onSwipeDirection='down'
           onSwipeComplete={() => this.setState({ modalVisible: false })}
           animationIn='slideInDown'

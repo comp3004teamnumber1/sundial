@@ -131,7 +131,6 @@ export default class HomeScreen extends Component {
     const { units, time } = settings;
     // get saved locations
     const { saved_locations } = settings;
-    console.log('home screen getting saved_locations', settings);
     if (!saved_locations) {
       await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `{"${city[0].city}":null}` }));
     }

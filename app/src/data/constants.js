@@ -116,36 +116,6 @@ export const dummy = {
     },
   ],
   taskPayload: "Loading tasks...",
-  // taskPayload: [
-  //   {
-  //     id: 1,
-  //     task: 'Tasks',
-  //     date: 1602104400,
-  //     ideal_weather: 'Clear',
-  //     location: 'Ottawa',
-  //   },
-  //   {
-  //     id: 2,
-  //     task: 'Eat Dinner',
-  //     date: 1602114400,
-  //     ideal_weather: 'Clouds',
-  //     location: 'Ottawa',
-  //   },
-  //   {
-  //     id: 3,
-  //     task: 'Eat Yourself',
-  //     date: 1602124400,
-  //     ideal_weather: 'Clear',
-  //     location: 'Ottawa',
-  //   },
-  //   {
-  //     id: 4,
-  //     task: 'Eat myself',
-  //     date: 1602134400,
-  //     ideal_weather: 'Rain',
-  //     location: 'Ottawa',
-  //   },
-  // ],
   notificationsPayload: [
     {
       id: 1,

@@ -45,7 +45,6 @@ export default class WeatherScreen extends Component {
       // Deen, i'll let you decide where to go from here
     }
 
-    // set our state
     this.setState({
       location: location || this.state.location,
       units: units || this.state.units,
@@ -134,4 +133,3 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
 });
-
