@@ -12,7 +12,6 @@ export const dummy = {
       wind_deg: '',
       pop: 'Loading...',
       humidity: 'Loading...',
-      // TODO: Add UV here
     },
     {
       date: 1603046864,
@@ -69,7 +68,6 @@ export const dummy = {
       wind_deg: '',
       pop: 'Loading...',
       humidity: 'Loading...',
-      // TODO: Add UV here
     },
     {
       date: 1602090000,
@@ -117,36 +115,7 @@ export const dummy = {
       humidity: 'Loading...',
     },
   ],
-  taskPayload: [
-    {
-      id: 1,
-      task: 'Eat lunch',
-      date: 1602104400,
-      ideal_weather: 'Clear',
-      location: 'Ottawa',
-    },
-    {
-      id: 2,
-      task: 'Eat Dinner',
-      date: 1602114400,
-      ideal_weather: 'Clouds',
-      location: 'Ottawa',
-    },
-    {
-      id: 3,
-      task: 'Eat Yourself',
-      date: 1602124400,
-      ideal_weather: 'Clear',
-      location: 'Ottawa',
-    },
-    {
-      id: 4,
-      task: 'Eat myself',
-      date: 1602134400,
-      ideal_weather: 'Rain',
-      location: 'Ottawa',
-    },
-  ],
+  taskPayload: "Loading tasks...",
   notificationsPayload: [
     {
       id: 1,

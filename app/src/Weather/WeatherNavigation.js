@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 import { Button, Card, CardItem, Fab, List, Text, View } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
-import { setStorageKey, getStorageKey } from '../util/Storage';
+import { setStorageKey, getStorageKey, getSettings } from '../util/Storage';
 import { getIcon, getUnits, getWindDirection } from '../util/Util';
 import query from './../util/SundialAPI';
 import AddWeatherLocation from './AddWeatherLocation';
 import Loading from '../components/Loading';
-
-//TODO: This is used only in development for debugging. Users will not be given a preset list of locations
-let dummy = '{"Ottawa":null}|{"Pooper Bay":null}|{"Ontario":null}|{"Dhaka":null}|{"Vietnam":null}';
 
 export default class WeatherNavigation extends Component {
   constructor(props) {
@@ -18,72 +15,76 @@ export default class WeatherNavigation extends Component {
     this.state = {
       places: undefined,
       currentLocation: '',
+      saved_locations: '',
       units: '',
       fabOpen: false,
       modalVisible: false,
     };
-  }
-
-  async delete(location) {
-    // Although using state is faster, the source of truth for saved_locations comes from async storage
-
-    let savedLocations = await getStorageKey('saved_locations');
-    let locations = savedLocations.split('|')
-      .map(place => JSON.parse(place))
-      .map(json => Object.keys(json)[0]);
-
-    let updatedLocationsInStringJSON = locations.filter(loc => loc !== location)
-      .map(loc => `{"${loc}":null}`)
-      .join('|');
-    await setStorageKey('saved_locations', updatedLocationsInStringJSON);
-    this.setState({ savedLocations: updatedLocationsInStringJSON })
+    this.setSavedLocations = this.setSavedLocations.bind(this);
   }
 
   async componentDidMount() {
+    this.setState({ saved_locations: (await getSettings()).saved_locations });
     const { navigation } = this.props;
     navigation.addListener('focus', async () => {
       await this.getVitalData();
     });
+    this.getVitalData();
   }
 
   async getVitalData() {
-    let savedLocations = await getStorageKey('saved_locations');
-    let places = savedLocations ? savedLocations.split('|') : undefined;
+    const settings = await getSettings();
+    const { units } = settings;
+    const { saved_locations } = this.state;
+
+    let places = saved_locations ? saved_locations.split('|') : undefined;
     if (!places) {
       this.setState({ places: ['|Sorry, you have no saved locations yet'] })
       return;
     }
 
     places = places.map(place => Object.keys(JSON.parse(place))[0]);
-    this.setState({ units: await getStorageKey('units') });
-    let promises = places.map(async place =>
-      query('hourly', 'get', { location: place, units: this.state.units })
-    );
 
+    let promises = places.map(async place =>
+      query('hourly', 'get', { location: place, units })
+    );
     let res = (await Promise.all(promises)).map(r => {
       return {
         data: r.hours[0],
       };
     });
 
+    const updatedSettings = { ...settings, saved_locations: saved_locations };
+    await setStorageKey('settings', JSON.stringify(updatedSettings));
+    query('/settings', 'post', { settings: JSON.stringify(updatedSettings) });
+
     this.setState({
       places: places.map((place, i) => {
         return { [place]: res[i] };
       }),
       currentLocation: await getStorageKey('current_location'),
+      saved_locations,
+      units
     });
   }
 
-  async componentDidUpdate(prevProps, prevState) {
-    // TODO: I feel like this could be done a better way, but I'm not sure how
-    // componentDidUpdate will force componentDidMount to be called again so this component re-renders appropriately
-    let savedLocations = await getStorageKey('saved_locations');
-    let units = await getStorageKey('units');
+  async delete(location) {
+    const { saved_locations } = this.state;
+    let locations = saved_locations.split('|')
+      .map(place => JSON.parse(place))
+      .map(json => Object.keys(json)[0]);
 
-    if (prevState.savedLocations !== savedLocations || prevState.units !== units) {
-      this.setState({ savedLocations, units });
-      this.getVitalData();
-    }
+    let updatedLocationsInStringJSON = locations.filter(loc => loc !== location)
+      .map(loc => `{"${loc}":null}`)
+      .join('|');
+
+    this.setState({ saved_locations: updatedLocationsInStringJSON })
+    this.getVitalData();
+  }
+
+  setSavedLocations(saved_locations) {
+    this.setState({ saved_locations: saved_locations });
+    this.getVitalData();
   }
 
   render() {
@@ -93,6 +94,7 @@ export default class WeatherNavigation extends Component {
       units,
       fabOpen,
       modalVisible,
+      saved_locations
     } = this.state;
     const { navigation } = this.props;
     return (
@@ -124,7 +126,24 @@ export default class WeatherNavigation extends Component {
                       this.setState({ currentLocation: place }); // Forces re-render
                       navigation.navigate('WeatherScreen');
                     }}
-                    onLongPress={() => this.delete(place)}
+                    onLongPress={() =>
+                      Alert.alert(
+                        'Delete Saved Location',
+                        'Are you sure you want to delete this location?',
+                        [
+                          {
+                            text: 'No',
+                            style: 'cancel',
+                          },
+                          {
+                            text: 'Yes',
+                            onPress: () => {
+                              this.delete(place);
+                            },
+                          },
+                        ]
+                      )
+                    }
                   >
                     <Text style={styles.locationText}>
                       <Feather name='map-pin' size={24} color='white' />
@@ -166,13 +185,12 @@ export default class WeatherNavigation extends Component {
           style={styles.modal}
           isVisible={modalVisible}
           onBackdropPress={() => this.setState({ modalVisible: false })}
-          // Refresh state here or force re-render and componentwillmount
           onSwipeDirection='down'
           onSwipeComplete={() => this.setState({ modalVisible: false })}
           animationIn='slideInDown'
           animationOut='slideOutUp'
         >
-          <AddWeatherLocation />
+          <AddWeatherLocation saved_locations={saved_locations} units={units} setSavedLocations={this.setSavedLocations} />
         </Modal>
       </View>
     );
@@ -181,11 +199,11 @@ export default class WeatherNavigation extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#332E3C',
+    backgroundColor: '#231F29',
     height: '100%'
   },
   list: {
-    backgroundColor: '#332E3C',
+    backgroundColor: '#231F29',
   },
   header: {
     color: '#FFFFFF',

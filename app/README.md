@@ -93,6 +93,17 @@ async () => {
 }
 ```
 
+`getSettings()` returns all the values under `settings` as a JSON object.
+
+```js
+async () => {
+  const settings = await getSettings();
+  if (settings) {
+    // work with the settings
+  }
+}
+```
+
 #### 🔑 Current Keys
 
 ```json
@@ -100,11 +111,15 @@ async () => {
   "session_key": "string",
   "username": "string",
   "current_location": "string",
-  "units": "string",
-  "saved_locations": "string in the following format: {\"place1\":null}|{\"place2\":null}|{\"place3\":null}|{\"place4\":null}|{\"place5\":null}",
-  "home_screen_displays_hourly_view": "string: true|false"
+  "options": {
+    "units": "string",
+    "saved_locations": "string in the following format: {\"place1\":null}|{\"place2\":null}|{\"place3\":null}|{\"place4\":null}|{\"place5\":null}",
+    "home_screen_display": "string: Hourly Weather|Weekly Weather",
+    "time": "string: 12 Hour Format|24 Hour Format"
+  }
 }
 ```
+Note that options is a JSON object, but is stringified due to the constraints of the local storage.
 
 ## 🗂️ More Reading
 

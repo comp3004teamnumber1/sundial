@@ -14,6 +14,8 @@ import {
   CardItem,
   Fab,
   Button,
+  Spinner,
+  View,
 } from 'native-base';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from '@expo/vector-icons';
@@ -23,6 +25,7 @@ import { dummy } from '../data/constants';
 import { getIcon } from '../util/Util';
 import query from '../util/SundialAPI';
 import CalendarMonthView from './CalendarMonthView';
+import { getSettings } from '../util/Storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -77,6 +80,7 @@ export default class CalendarHome extends Component {
       tasks: dummy.taskPayload,
       fabOpen: false,
       refreshing: false,
+      time: '',
     };
   }
 
@@ -104,6 +108,7 @@ export default class CalendarHome extends Component {
   // eslint-disable-next-line react/destructuring-assignment
   updateTasks = async (date = this.state.date) => {
     const momentDate = moment(date);
+    this.setState({ time: (await getSettings()).time });
     const formattedDate = momentDate.format('YYYY-MM-DD');
     const offset = momentDate.utcOffset();
     const res = await query('task', 'get', { date: formattedDate, offset });
@@ -143,10 +148,19 @@ export default class CalendarHome extends Component {
   };
 
   render() {
-    const { date, tasks, fabOpen, pickerOpen, refreshing } = this.state;
+    const { date, tasks, fabOpen, pickerOpen, refreshing, time } = this.state;
     const { navigation } = this.props;
 
     const renderTasks = () => {
+      if (tasks === dummy.taskPayload) {
+        return (
+          <Card style={styles.cardContainer}>
+            <View style={{ alignContent: 'center' }}>
+              <Spinner color='#FF8C42' />
+            </View>
+          </Card>
+        );
+      }
       let arr = [];
       for (let task of tasks) {
         arr.push(
@@ -160,7 +174,9 @@ export default class CalendarHome extends Component {
               <CardItem style={styles.cardHeader} header bordered>
                 {getIcon(task.ideal_weather, 24, '#ff8c42')}
                 <Text style={styles.textHeader}>
-                  {moment.unix(task.date).format('h:mm a')}
+                  {moment
+                    .unix(task.date)
+                    .format(time === '12 Hour Format' ? 'h:mm A' : 'kk:mm')}
                 </Text>
               </CardItem>
               <CardItem style={styles.cardItem} bordered>
@@ -174,7 +190,7 @@ export default class CalendarHome extends Component {
     };
 
     return (
-      <Container>
+      <Container style={{ backgroundColor: '#332E3C' }}>
         <Content
           contentContainerStyle={styles.container}
           refreshControl={

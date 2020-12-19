@@ -8,11 +8,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import * as Notifications from 'expo-notifications';
 
 import { dummy } from './data/constants';
-import { getStorageKey, setStorageKey } from './util/Storage';
+import { getSettings, setStorageKey } from './util/Storage';
 import query from './util/SundialAPI';
 import {
   registerForPushNotificationsAsync,
-  sendPushNotification,
   sendPushToken,
 } from './util/pushNotifications';
 
@@ -87,6 +86,8 @@ export default class HomeScreen extends Component {
       units: '',
       displayHourlyView: false, // if true is passed in, homescreen displays hourly info. If false, weekly info.
       weather: null,
+      time: '',
+      now: ''
     };
   }
 
@@ -125,34 +126,30 @@ export default class HomeScreen extends Component {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     });
-
-    const units = await getStorageKey('units');
     await setStorageKey('current_location', city[0].city);
+    const settings = await getSettings();
+    const { units, time } = settings;
     // get saved locations
-    const savedLocations = await getStorageKey('saved_locations');
-    if (!savedLocations) {
-      await setStorageKey('saved_locations', `{"${city[0].city}":null}`);
-    } else {
-      let locations = savedLocations
+    const { saved_locations } = settings;
+    if (!saved_locations) {
+      await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `{"${city[0].city}":null}` }));
+    }
+    else {
+      let locations = saved_locations
         .split('|')
         .map(place => JSON.parse(place))
         .map(json => Object.keys(json)[0]);
 
       if (!locations.includes(city[0].city)) {
-        await setStorageKey(
-          'saved_locations',
-          `${savedLocations}|{"${city[0].city}":null}`
-        );
+        await setStorageKey('settings', JSON.stringify({ ...settings, saved_locations: `${saved_locations}|{"${city[0].city}":null}` }));
       }
     }
 
-    const displayHourlyView = JSON.parse(
-      await getStorageKey('home_screen_displays_hourly_view')
-    );
+    const displayHourlyView = (await getSettings()).home_screen_display === 'Hourly Weather';
     // query
     const weather = await query(displayHourlyView ? 'hourly' : 'daily', 'get', {
       location: city[0].city,
-      units,
+      units: units.toLowerCase(),
     });
     const tasks = await query('task', 'get', { current: 'true' });
     if (!weather || !tasks || weather.status !== 200 || tasks.status !== 200) {
@@ -163,6 +160,7 @@ export default class HomeScreen extends Component {
 
     this.setState({
       units,
+      time,
       displayHourlyView,
       weather: displayHourlyView
         ? weather.hours
@@ -170,6 +168,7 @@ export default class HomeScreen extends Component {
       currCity: city,
       ready: true,
       tasks: tasks.tasks,
+      now: time === '12 Hour Format' ? moment().format('MMM DD h:mm A') : moment().format('MMM DD kk:mm')
     });
   }
 
@@ -189,8 +188,7 @@ export default class HomeScreen extends Component {
   render() {
     let { ready } = this.state;
     if (ready) {
-      const { weather, currCity, tasks, units, displayHourlyView } = this.state;
-      const now = moment().format('MMM DD h:mm A');
+      const { weather, currCity, tasks, units, displayHourlyView, now } = this.state;
 
       return (
         <ScrollView style={styles.container}>
@@ -224,12 +222,12 @@ export default class HomeScreen extends Component {
                   units={units}
                 />
               ) : (
-                <WeeklyView
-                  style={styles.padded}
-                  data={weather}
-                  units={units}
-                />
-              )}
+                  <WeeklyView
+                    style={styles.padded}
+                    data={weather}
+                    units={units}
+                  />
+                )}
             </Container>
           </Container>
         </ScrollView>

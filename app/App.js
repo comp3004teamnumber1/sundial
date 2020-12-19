@@ -30,11 +30,6 @@ export default class App extends Component {
       ...Feather.font,
     });
 
-    // Default metric units
-    if (!(await getStorageKey('units'))) {
-      setStorageKey('units', 'metric');
-    }
-
     // use these lines to clear keys (for testing)
     // await setStorageKey('session_key', '');
     // await setStorageKey('username', '');
@@ -58,15 +53,18 @@ export default class App extends Component {
   }
 
   logOut = () => {
-    // TODO: query the "logout route"
     setStorageKey('session_key', '');
+    setStorageKey('settings', '');
+    setStorageKey('current_location', '');
     this.setState({ loggedIn: false });
   };
 
   handleLogin = async (username, session_key) => {
-    const res1 = await setStorageKey('username', username);
-    const res2 = await setStorageKey('session_key', session_key);
-    if (!res1 || !res2) {
+    const [user, session] = await Promise.all([
+      setStorageKey('username', username),
+      setStorageKey('session_key', session_key),
+    ]);
+    if (!user || !session) {
       console.log('Error setting login credentials');
       return;
     }

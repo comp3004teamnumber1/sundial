@@ -70,12 +70,12 @@ export function getIcon(description = '', size = 48, color = 'white') {
 
 export function getUnits(preference) {
   switch (preference) {
-    case 'metric':
+    case 'Metric':
       return {
         temp: '°C',
         wind: 'm/s',
       };
-    case 'imperial':
+    case 'Imperial':
       return {
         temp: '°F',
         wind: 'mi/h',

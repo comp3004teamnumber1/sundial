@@ -4,38 +4,39 @@ import { Container, Text, Item, Input, View, ListItem, Radio, Left, Right, List,
 import Modal from 'react-native-modal';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import { getStorageKey, setStorageKey } from '../util/Storage';
+import { getSettings, setStorageKey } from '../util/Storage';
 import query from '../util/SundialAPI';
 
-async function setPassword(oldPasswordText, pass) {
-  if (!pass || !oldPasswordText) {
-    return 'A password field is empty.';
-  }
-
-  if (!pass.replace(/ /g, '')) {
-    return 'A password field is empty.';
-  }
-
-  const res = await query('password', 'post',
-    {
-      old_password: oldPasswordText,
-      new_password: pass
-    });
-
-  if (res.status === 200) {
-    return 'Password updated successfully!';
-  }
-  if (res.status === 401) {
-    return 'Your old password is incorrect.';
-  }
-
-  return 'Something went wrong. Please try again.';
-}
-
 const ChangePassword = function () {
-  // const { oldPasswordText, warning } = this.state;
   let [oldPasswordText, setOldPassword] = useState('');
+  let [newPasswordText, setNewPassword] = useState('');
   let [warning, setWarning] = useState('');
+
+  async function setPassword(oldPasswordText, pass) {
+    if (!pass || !oldPasswordText) {
+      return 'A password field is empty.';
+    }
+
+    if (!pass.replace(/ /g, '')) {
+      return 'A password field is empty.';
+    }
+
+    const res = await query('password', 'post',
+      {
+        old_password: oldPasswordText,
+        new_password: pass
+      });
+
+    if (res.status === 200) {
+      return 'Password updated successfully!';
+    }
+    if (res.status === 401) {
+      return 'Your old password is incorrect.';
+    }
+
+    return 'Something went wrong. Please try again.';
+  }
+
   return (
     <View style={styles.modalContainer}>
       <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
@@ -56,12 +57,14 @@ const ChangePassword = function () {
       <Item>
         <Input
           style={styles.input}
+          onChangeText={e => { setNewPassword(e) }}
+          value={newPasswordText}
           autoCompleteType='off'
           autoCapitalize='none'
           autoCorrect={false}
           placeholder='New Password'
           password
-          onSubmitEditing={async pass => { setWarning(await setPassword(oldPasswordText, pass.nativeEvent.text)) }}
+          onSubmitEditing={async () => { setWarning(await setPassword(oldPasswordText, newPasswordText)) }}
         />
       </Item>
 
@@ -70,7 +73,7 @@ const ChangePassword = function () {
       </Text>
 
       <Button style={{ alignSelf: 'center', backgroundColor: '#FF8C42', marginTop: 15 }}
-        onPress={async pass => { setWarning(await setPassword(oldPasswordText, pass.nativeEvent.text)) }}
+        onPress={async () => { setWarning(await setPassword(oldPasswordText, newPasswordText)) }}
       >
         <Text>
           Change Password
@@ -80,25 +83,19 @@ const ChangePassword = function () {
   );
 }
 
-const ChangeUnits = function () {
-  let [oldUnit, setOldUnit] = useState(null);
+const ChangeUnits = function ({ old, updateSettings }) {
+  let [oldUnit, setOldUnit] = useState(old);
   const availableUnits = ['Metric', 'Imperial'];
 
   async function updateUnits(unit) {
-    await setStorageKey('units', unit);
+    updateSettings('units', unit);
     return unit;
   }
 
   useEffect(() => {
-    getStorageKey('units').then(
-      (res) => {
-        setOldUnit(res);
-      },
-      (err) => {
-        console.log(err);
-        setOldUnit(null);
-      });
-  });
+    // Default to Metric if needed
+    setOldUnit(!availableUnits.includes(old) ? availableUnits[0] : old);
+  }, [old, oldUnit]);
 
   return (
     <View style={styles.modalContainer}>
@@ -112,7 +109,7 @@ const ChangeUnits = function () {
         renderRow={(unit) => {
           return (
             <ListItem
-              onPress={async () => setOldUnit(await updateUnits(unit.toLowerCase()))}
+              onPress={async () => setOldUnit(await updateUnits(unit))}
             >
               <Left>
                 <Text style={{ color: 'white' }}>
@@ -123,7 +120,7 @@ const ChangeUnits = function () {
                 <Radio
                   color='#f0ad4e'
                   selectedColor='#6699CC'
-                  selected={unit.toLowerCase() == oldUnit}
+                  selected={unit == oldUnit}
                 />
               </Right>
             </ListItem>
@@ -133,25 +130,19 @@ const ChangeUnits = function () {
   );
 }
 
-const ChangeHome = function () {
-  let [oldHome, setOldHome] = useState(null);
+const ChangeHome = function ({ old, updateSettings }) {
+  let [oldHome, setOldHome] = useState(old);
   const options = ['Hourly Weather', 'Weekly Weather'];
 
   async function updateHome(newHome) {
-    await setStorageKey('home_screen_displays_hourly_view', (`${newHome === 'Hourly Weather'}`));
+    updateSettings('home_screen_display', newHome);
     return newHome;
   }
 
   useEffect(() => {
-    getStorageKey('home_screen_displays_hourly_view').then(
-      (res) => {
-        setOldHome(res == 'true' ? options[0] : options[1]);
-      },
-      (err) => {
-        console.log(err);
-        setOldHome(null);
-      });
-  });
+    // Default to Hourly Weather if needed
+    setOldHome(!options.includes(old) ? options[0] : old);
+  }, [old, oldHome]);
 
   return (
     <View style={styles.modalContainer}>
@@ -186,11 +177,79 @@ const ChangeHome = function () {
   )
 }
 
+const ChangeTime = function ({ old, updateSettings }) {
+  let [oldTime, setOldTime] = useState('');
+  const options = ['12 Hour Format', '24 Hour Format'];
+
+  async function updateTime(time) {
+    updateSettings('time', time);
+    return time;
+  }
+
+  useEffect(() => {
+    // Default to 12 hour format if needed
+    setOldTime(!options.includes(old) ? options[0] : old);
+  }, [old, oldTime]);
+
+  return (
+    <View style={styles.modalContainer}>
+      <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
+        Time Format
+      </Text>
+      <List
+        style={{ width: '100%' }}
+        dataArray={options}
+        keyExtractor={(item, index) => `time${index.toString()}`}
+        renderRow={(option) => {
+          return (
+            <ListItem
+              onPress={async () => setOldTime(await updateTime(option))}
+            >
+              <Left>
+                <Text style={{ color: 'white' }}>
+                  {option}
+                </Text>
+              </Left>
+              <Right>
+                <Radio
+                  color='#f0ad4e'
+                  selectedColor='#6699CC'
+                  selected={option == oldTime}
+                />
+              </Right>
+            </ListItem>
+          );
+        }} />
+    </View>
+  )
+
+}
+
 export default SettingsAccount = function () {
   let [modalVisible, setModal] = useState(false);
   let [passwordChange, setPassWordChange] = useState(false);
   let [unitChange, setUnitChange] = useState(false);
   let [homeChange, setHomeChange] = useState(false);
+  let [settings, setSettings] = useState({});
+  let [timeChange, setTimeChange] = useState(false);
+
+  useEffect(() => {
+    async function initSettings() {
+      let oldSettings = await getSettings();
+      setSettings(oldSettings);
+    }
+    initSettings();
+  }, []);
+
+  function updateSettings(key, value) {
+    setSettings({ ...settings, [key]: value });
+  }
+
+  async function saveSettings() {
+    await setStorageKey('settings', JSON.stringify(settings));
+    query('/settings', 'post', { settings: JSON.stringify(settings) });
+  }
+
   return (
     <Container>
       <Header />
@@ -235,6 +294,19 @@ export default SettingsAccount = function () {
         </Text>
         </Pressable>
 
+        <Pressable
+          style={styles.press}
+          onPress={() => {
+            setTimeChange(true);
+            setModal(true);
+          }}
+        >
+          <Feather name='clock' size={24} color='white' />
+          <Text style={styles.text}>
+            Change Time Format
+        </Text>
+        </Pressable>
+
         <Modal
           style={styles.modal}
           isVisible={modalVisible}
@@ -243,6 +315,8 @@ export default SettingsAccount = function () {
             setPassWordChange(false);
             setUnitChange(false);
             setHomeChange(false);
+            setTimeChange(false);
+            saveSettings();
           }}
           onSwipeDirection='down'
           onSwipeComplete={() => {
@@ -250,13 +324,16 @@ export default SettingsAccount = function () {
             setPassWordChange(false);
             setUnitChange(false);
             setHomeChange(false);
+            setTimeChange(false);
+            saveSettings();
           }}
           animationIn='slideInDown'
           animationOut='slideOutUp'
         >
-          {passwordChange && <ChangePassword />}
-          {unitChange && <ChangeUnits />}
-          {homeChange && <ChangeHome />}
+          {passwordChange && <ChangePassword settings={settings} updateSettings={updateSettings} />}
+          {unitChange && <ChangeUnits settings={settings} old={settings.units} updateSettings={updateSettings} />}
+          {homeChange && <ChangeHome settings={settings} old={settings.home_screen_display} updateSettings={updateSettings} />}
+          {timeChange && <ChangeTime settings={settings} old={settings.time} updateSettings={updateSettings} />}
         </Modal>
       </Container>
     </Container>

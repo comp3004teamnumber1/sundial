@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Input, Item, Spinner, Text } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import query from './../util/SundialAPI';
-import { getStorageKey, setStorageKey } from '../util/Storage';
+import { getSettings, setStorageKey } from '../util/Storage';
 
 export default class AddWeatherLocation extends Component {
   constructor(props) {
@@ -18,7 +18,8 @@ export default class AddWeatherLocation extends Component {
 
   validateRequest = async location => {
     this.setState({ isLoading: true });
-    let res = await query('hourly', 'get', { location, units: await getStorageKey('units') });
+    const { saved_locations, setSavedLocations, units } = this.props;
+    let res = await query('hourly', 'get', { location, units: units.toLowerCase() });
     if (res.hours === undefined) {
       this.setState({ isBadLocation: true, isLoading: false, input: '' });
       console.log('a bad location!');
@@ -27,14 +28,12 @@ export default class AddWeatherLocation extends Component {
       return;
     }
 
-    let savedLocations = await getStorageKey('saved_locations');
-    if (savedLocations === null) {
+    if (saved_locations === '') {
       this.setState({ isBadLocation: false, isDuplicateLocation: false, isLoading: false, input: '' });
-      await setStorageKey('saved_locations', `{"${location}":null}`);
+      setSavedLocations(`{"${location}":null}`);
       return;
     }
-
-    let locations = savedLocations.split('|')
+    let locations = saved_locations.split('|')
       .map(place => JSON.parse(place))
       .map(json => Object.keys(json)[0]);
 
@@ -44,7 +43,7 @@ export default class AddWeatherLocation extends Component {
     }
 
     this.setState({ isBadLocation: false, isDuplicateLocation: false, isLoading: false, input: '' });
-    await setStorageKey('saved_locations', `${savedLocations}|{"${location}":null}`);
+    setSavedLocations(`${saved_locations}|{"${location}":null}`);
   };
 
   render() {

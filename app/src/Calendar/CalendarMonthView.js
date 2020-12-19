@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
   colHeader: {
     flex: 1,
     flexShrink: 0,
-    paddingVertical: 20,
     backgroundColor: '#332E3C',
     alignItems: 'center',
     justifyContent: 'center',
@@ -30,7 +29,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexShrink: 0,
     maxWidth: 48,
-    paddingVertical: 20,
     backgroundColor: '#332E3C',
     alignItems: 'center',
     justifyContent: 'center',
@@ -39,7 +37,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexShrink: 0,
     maxWidth: 48,
-    paddingVertical: 20,
     backgroundColor: '#FF8C42',
     alignItems: 'center',
     justifyContent: 'center',

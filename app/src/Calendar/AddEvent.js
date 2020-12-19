@@ -16,7 +16,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { Feather } from '@expo/vector-icons';
 import Header from '../components/Header';
-import { getStorageKey } from '../util/Storage';
+import { getSettings, getStorageKey } from '../util/Storage';
 import query from '../util/SundialAPI';
 
 const styles = StyleSheet.create({
@@ -97,15 +97,25 @@ export default class AddEvent extends Component {
       errorMsg: '',
       mode: 'date',
       pickerOpen: false,
+      time: '',
     };
   }
 
   async componentDidMount() {
+    const { navigation } = this.props;
+    navigation.addListener('focus', async () => {
+      await this.getVitalData();
+    });
+  }
+
+  async getVitalData() {
+    const { time } = await getSettings();
     const current_location = await getStorageKey('current_location');
+
     if (!current_location) {
       return;
     }
-    this.setState({ location: current_location });
+    this.setState({ location: current_location, time: time });
   }
 
   handleDateChange = (event, newDate) => {
@@ -171,8 +181,8 @@ export default class AddEvent extends Component {
       mode,
       pickerOpen,
       tracking,
+      time,
     } = this.state;
-
     return (
       <Container style={styles.container}>
         <Header />
@@ -213,7 +223,9 @@ export default class AddEvent extends Component {
                 <Feather name='clock' size={24} color='white' />
               </Label>
               <Text style={styles.textInput}>
-                {moment(date).format('h:mm a')}
+                {moment().format(
+                  time === '12 Hour Format' ? 'h:mm A' : 'kk:mm'
+                )}
               </Text>
             </Item>
             <Item>

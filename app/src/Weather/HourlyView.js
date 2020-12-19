@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Container, List, Text } from 'native-base';
 import moment from 'moment';
 import { getIcon, getUnits } from '../util/Util';
+import { getSettings } from '../util/Storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -51,7 +52,16 @@ const styles = StyleSheet.create({
 });
 
 export default function HourlyView({ data, units }) {
+  let [timeFormat, setTime] = useState('');
   const now = moment();
+
+  useEffect(() => {
+    async function getTime() {
+      setTime((await getSettings()).time);
+    }
+    getTime();
+  }, []);
+
   return (
     <Container style={styles.container}>
       <List
@@ -71,7 +81,7 @@ export default function HourlyView({ data, units }) {
               }
               key={item.date}
             >
-              <Text style={styles.text}>{time.format('h A')}</Text>
+              <Text style={styles.text}>{timeFormat === '12 Hour Format' ? time.format('h A') : time.format('kk')}</Text>
               {getIcon(item.weather_type)}
               <Text style={styles.tempPrimary}>
                 {`${item.temp !== 'Loading...' ? item.temp.toFixed(1) : ''}${getUnits(units).temp

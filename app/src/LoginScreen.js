@@ -12,6 +12,7 @@ import {
 } from 'native-base';
 import { Feather } from '@expo/vector-icons';
 import query from './util/SundialAPI';
+import { getSettings, setStorageKey } from './util/Storage';
 
 const styles = StyleSheet.create({
   content: {
@@ -111,8 +112,23 @@ export default class LoginScreen extends Component {
         errorMsg: 'Incorrect username/password. Please try again.',
       });
     } else {
-      const { session_key } = res;
+      let { session_key, settings } = res;
       login(username, session_key);
+
+      // No need to worry about /register since registering users are logged in anyways
+      try {
+        settings = JSON.parse(settings);
+      }
+      catch (e) {
+        settings = {};
+      }
+      finally {
+        settings.home_screen_display = settings.home_screen_display || 'Weekly Weather';
+        settings.units = settings.units || 'Metric';
+        settings.time = settings.time || '12 Hour Format';
+        settings.saved_locations = settings.saved_locations || '';
+        await setStorageKey('settings', JSON.stringify(settings));
+      }
     }
   };
 

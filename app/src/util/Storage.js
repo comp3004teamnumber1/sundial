@@ -23,6 +23,17 @@ export async function setStorageKey(key, value) {
   }
 }
 
+// getSettings() returns the value in the settings key as an object
+export async function getSettings() {
+  try {
+    let settings = JSON.parse(await getStorageKey('settings'));
+    return settings;
+  }
+  catch (e) {
+    return null;
+  }
+}
+
 // May be a useful wrapper
 export async function getSessionKey() {
   return getStorageKey('session_key');
