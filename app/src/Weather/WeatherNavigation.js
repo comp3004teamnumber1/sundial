@@ -9,9 +9,6 @@ import query from './../util/SundialAPI';
 import AddWeatherLocation from './AddWeatherLocation';
 import Loading from '../components/Loading';
 
-//TODO: This is used only in development for debugging. Users will not be given a preset list of locations
-let dummy = '{"Ottawa":null}|{"Pooper Bay":null}|{"Ontario":null}|{"Dhaka":null}|{"Vietnam":null}';
-
 export default class WeatherNavigation extends Component {
   constructor(props) {
     super(props);
